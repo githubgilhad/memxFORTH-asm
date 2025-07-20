@@ -27,5 +27,5 @@ asm.S: words.inc
 #	./forth2inc.py
 
 all: disassm tags
-tags:
-	ctags -R .
+#tags:
+#	ctags -R .
