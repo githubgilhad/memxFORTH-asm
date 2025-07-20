@@ -4,6 +4,9 @@
 ; === Konstanta pro baud rate 115200 při 16 MHz: UBRR = 16
 .equ BAUD_UBRR,16
 
+; === RTS / CTS PINY
+.equ RTS_PIN,PD2
+.equ CTS_PIN,PD3
 
 
 .macro IRQ_push_entry	; {{{
@@ -87,6 +90,23 @@ usart0_setup:
 	ldi r16, (1 << UCSZ01) | (1 << UCSZ00)
 	sts UCSR0C, r16
 
+	; RTS pin jako výstup
+	sbi DDRD, RTS_PIN
+	cbi PORTD, RTS_PIN	   ; výchozí: RTS = 0 (můžeme přijímat)
+
+	; CTS pin jako vstup
+	cbi DDRD, CTS_PIN
+	sbi PORTD, CTS_PIN	   ; pull-up
+
+	; CTS pin jako zdroj interruptu
+	lds r16, EICRA		; EICRA pg.110
+	andi r16, 0b00111111
+	ori r16,  0b00100000  ; ISC21:20 = 10 → falling edge
+	sts EICRA, r16		; OVERIT PIN
+
+	sbi EIMSK, INT3      ; povolit INT3
+	sbis PIND, CTS_PIN	; CTS check – if is low, we can send so no need for INT
+	cbi EIMSK, INT3      ; zakazat INT3
 
 	ret
 
@@ -117,6 +137,12 @@ USART0_RX_ISR:
 RX__skip_overflow:
 	sts RX_Head, r19	; normal way
 
+	cpi r18, RX_BUFFER_SIZE - RX_BUFFER_THRESHOLD	; RTS: is nearly full?
+	brlt RTS_CLEAR
+	sbi PORTD, RTS_PIN	; if yes set RTS 
+	rjmp RX_EXIT
+RTS_CLEAR:
+	cbi PORTD, RTS_PIN	;if not, clear RTS
 
 RX_EXIT:
 RX_FULL:
@@ -151,6 +177,7 @@ RX__skip_overflow_read:
 	ldi r25, 1
 	ret
 RX_EMPTY_FUNC:
+	cbi PORTD, RTS_PIN	; clear RTS
 	ldi r24, 0x00
 	clr r25
 	ret
@@ -164,6 +191,24 @@ RX_EMPTY_FUNC:
 .global USART0_UDRE_ISR
 USART0_UDRE_ISR:
 	IRQ_push_entry
+	
+	sbis PIND, CTS_PIN	; CTS check – if is low, we can send
+	NOP ; FIXME suppose we can send anytime
+	rjmp TX_send		; yes, we can
+				; no we cannot - disable USART0_UDRE_ISR, enable CTS_PIN INTR
+	
+	sbi EIMSK, INT3      ; povolit INT3
+; USART0_UDRE_ISR_disable:
+	push r16
+	lds r16, UCSR0B		; disable us
+	andi r16, ~(1 << UDRIE0)
+	sts UCSR0B, r16
+
+	pop r16
+	IRQ_pop_entry
+	reti
+
+TX_send:
 	IRQ_push_16_20_Z
 
 	lds r18, TX_Count
@@ -197,6 +242,18 @@ TX__exit:
 	IRQ_pop_entry
 	reti
 
+.global INT3_ISR
+INT3_ISR:	; called when CTS is low and send is still blocked
+	IRQ_push_entry
+	cbi EIMSK, INT3      ; zakazat INT3
+	push r16
+	lds r16, UCSR0B		; enable TX
+	ori r16, (1 << UDRIE0)
+	sts UCSR0B, r16
+
+	pop r16
+	IRQ_pop_entry
+	reti
 
 
 
