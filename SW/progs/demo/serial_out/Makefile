@@ -37,7 +37,7 @@ $(BUILD)/$(TARGET).o: $(SRC)
 	$(CC) $(CFLAGS) -I$(dir $<)  -c $< -o $@
 
 %.o: %.S
-	$(MAKE) -C $(dir $<) $(BUILD)/$(notdir $@)
+	$(MAKE) MCU=$(MCU) BUILD=$(BUILD) -C $(dir $<) $(BUILD)/$(notdir $@)
 #	$(CC) $(CFLAGS) -I$(dir $<) -c $< -o $@
 
 $(BUILD)/$(TARGET).hex: $(BUILD)/$(TARGET).elf
