@@ -8,13 +8,13 @@ OBJDUMP = avr-objdump
 LIB_PREFIX = ../../../libs
 
 CFLAGS = -mmcu=$(MCU) -Wall -Os -nostartfiles
-SRC = main.S
+SRC ?=  $(notdir $(CURDIR)).S
 TARGET := $(notdir $(CURDIR))
 
 # ========== Automatická detekce knihoven ==========
 # Vyhledá řádky jako: ; LIBS: serial file
 
-LIB_LINES := $(shell grep -i '^; *LIBS:' $(SRC)|sed "s/; *LIBS://")
+# LIB_LINES := $(shell grep -i '^; *LIBS:' $(SRC)|sed "s/; *LIBS://")
 # $(info $(foreach line,$(LIB_LINES),### $(line) ###))
 # LIBS := $(patsubst %,$(LIB_DIR)/$(BUILD)/%, $(LIB_LINES))
 # LIBS_DIRS := $(patsubst %,$(LIB_DIR)/%, $(LIB_LINES))
@@ -24,7 +24,7 @@ LIB_LINES := $(shell grep -i '^; *LIBS:' $(SRC)|sed "s/; *LIBS://")
 LIB_NAMES := $(shell grep -o '^;\s*LIBS:.*' $(SRC) | sed 's/^;\s*LIBS: //' | tr ' ' '\n' | sort -u)
 LIB_OBJS := $(foreach lib,$(LIB_NAMES),$(LIB_PREFIX)/$(lib)/$(BUILD)/$(notdir $(lib)).o)
 
-OBJ = $(BUILD)/$(TARGET).o $(LIB_OBJS)
+OBJS = $(BUILD)/$(TARGET).o $(LIB_OBJS)
 
 # $(info $(LIB_LINES) ## $(LIBS) ## $(LIB_OBJS) )
 

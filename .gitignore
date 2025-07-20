@@ -2,7 +2,7 @@
 *.log
 *.swp
 *.elf
-*.elf.dis
+*.dis
 *.export
 ._*
 tmp
