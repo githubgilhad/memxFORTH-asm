@@ -132,7 +132,7 @@ USART0_RX_ISR:
 	; count ok?
 	lds r18, RX0_Count
 	cpi r18, RX0_BUFFER_SIZE	; is buffer full?
-	breq RX0_FULL ; if yes, exit and ignore this char
+	breq .L_RX0_exit ; if yes, exit and ignore this char
 
 	lds r19, RX0_Head	; not full, add char
 	ldi ZL, lo8(RX0_Buffer)
@@ -150,8 +150,7 @@ USART0_RX_ISR:
 	sts RX0_Head, r19	; normal way
 
 
-RX0_EXIT:
-RX0_FULL:
+.L_RX0_exit:
 	IRQ_pop_16_20_Z
 	IRQ_pop_entry
 	reti
@@ -162,7 +161,7 @@ RX0_Read:
 	lds r18, RX0_Count
 	mov r25,r18
 	cpi r18, 0
-	breq RX0_EMPTY_FUNC
+	breq .L_RX0_empty
 	lds r19, RX0_Tail
 	ldi ZL, lo8(RX0_Buffer)
 	ldi ZH, hi8(RX0_Buffer)
@@ -183,14 +182,14 @@ RX0_Read:
 	sts RX0_Tail, r19
 ;	ldi r25, 1
 	ret
-RX0_EMPTY_FUNC:
+.L_RX0_empty:
 	clr r24
 ;	clr r25
 	ret
 
-; === RX0_available: r24 = RX0_Count (# of waiting chars)
-.global RX0_available
-RX0_available:
+; === RX0_Available: r24 = RX0_Count (# of waiting chars)
+.global RX0_Available
+RX0_Available:
 	lds r24,RX0_Count
 	ret
 
@@ -202,7 +201,7 @@ USART0_UDRE_ISR:
 
 	lds r18, TX0_Count
 	cpi r18, 0
-	breq TX0_EMPTY
+	breq .L_TX0_empty
 
 	lds r19, TX0_Tail
 	ldi ZL, lo8(TX0_Buffer)
@@ -220,13 +219,13 @@ USART0_UDRE_ISR:
 1:
 	sts TX0_Tail, r19	; normal way
 
-	rjmp TX0__exit
-TX0_EMPTY:
+	rjmp .L_TX0_exit
+.L_TX0_empty:
 	; zakázat UDRE interrupt pokud nic k odeslání
 	lds r16, UCSR0B
 	andi r16, ~(1 << UDRIE0)
 	sts UCSR0B, r16
-TX0__exit:
+.L_TX0_exit:
 	IRQ_pop_16_20_Z
 	IRQ_pop_entry
 	reti
@@ -267,15 +266,15 @@ TX0_Write:
 	mov r24,r18
 	ret
 
-; === TX0_used: output: r24 used space in TX buffer
-.global TX0_used
-TX0_used:
+; === TX0_Used: output: r24 used space in TX buffer
+.global TX0_Used
+TX0_Used:
 	lds r24, TX0_Count
 	ret
 
-; === TX0_free: output: r24 available space in TX buffer
-.global TX0_free
-TX0_free:
+; === TX0_Free: output: r24 available space in TX buffer
+.global TX0_Free
+TX0_Free:
 	ldi r24, TX0_BUFFER_SIZE
 	lds r25, TX0_Count
 	sub r24,r25

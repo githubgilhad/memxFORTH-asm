@@ -2,12 +2,7 @@
 ; LIBS:  isr_stub  vectors_table
 #include <avr/io.h>
 #include <avr/interrupt.h>
-.extern usart0_setup
-.extern RX0_Read
-.extern TX0_Write
-.extern RX0_available
-.extern TX0_free
-
+;	
 .section .text
 nop	; ctors end and trampolines will be here, lets have RESET named
 ; === RESET
@@ -35,9 +30,9 @@ setup:
 
 loop:
 	
-	rcall RX0_available
+	rcall RX0_Available
 	sts PORTK,r24
-	rcall TX0_used
+	rcall TX0_Used
 	out _SFR_IO_ADDR(PORTF),r24
 	
 	rcall RX0_Read

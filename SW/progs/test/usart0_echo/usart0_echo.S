@@ -2,9 +2,6 @@
 ; LIBS:  isr_stub  vectors_table
 #include <avr/io.h>
 #include <avr/interrupt.h>
-.extern usart0_setup
-.extern RX0_Read
-.extern TX0_Write
 
 .section .text
 nop	; ctors end and trampolines will be here, lets have RESET named
