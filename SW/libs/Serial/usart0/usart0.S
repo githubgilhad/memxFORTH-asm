@@ -44,22 +44,22 @@
 .endm			; }}}
 
 ; === RX/TX buffer velikosti
-.equ RX_BUFFER_SIZE,64
-.equ RX_BUFFER_THRESHOLD,8
-.equ TX_BUFFER_SIZE,32
+.equ RX0_BUFFER_SIZE,64
+.equ RX0_BUFFER_THRESHOLD,8
+.equ TX0_BUFFER_SIZE,32
 
 ; === Sekce dat
 .section .bss
 qwer1: .byte 0
-RX_Count:		.byte 0	; if zero, head==tail means empty, if RX_BUFFER_SIZE,  head==tail means full
-RX_Head:		.byte 0	; new character will came here
-RX_Tail:		.byte 0	; outcoming character will came from here
-RX_Buffer:		.skip RX_BUFFER_SIZE	; data
+RX0_Count:		.byte 0	; if zero, head==tail means empty, if RX0_BUFFER_SIZE,  head==tail means full
+RX0_Head:		.byte 0	; new character will came here
+RX0_Tail:		.byte 0	; outcoming character will came from here
+RX0_Buffer:		.skip RX0_BUFFER_SIZE	; data
 
-TX_Count:		.byte 0
-TX_Head:		.byte 0
-TX_Tail:		.byte 0
-TX_Buffer:		.skip TX_BUFFER_SIZE
+TX0_Count:		.byte 0
+TX0_Head:		.byte 0
+TX0_Tail:		.byte 0
+TX0_Buffer:		.skip TX0_BUFFER_SIZE
 qwer2: .byte 0
 
 .section .text
@@ -69,12 +69,12 @@ nop	; ctors end and trampolines will be here, lets have RESET named
 ; === setup()
 .global usart0_setup
 usart0_setup:
-	sts RX_Count, r1
-	sts RX_Head,  r1
-	sts RX_Tail,  r1
-	sts TX_Count, r1
-	sts TX_Head,  r1
-	sts TX_Tail,  r1
+	sts RX0_Count, r1
+	sts RX0_Head,  r1
+	sts RX0_Tail,  r1
+	sts TX0_Count, r1
+	sts TX0_Head,  r1
+	sts TX0_Tail,  r1
 ;
 	; USART0 init: 8N1, RX+TX enable, RX interrupt, UDRE interrupt enable (TX)
 	ldi r16, hi8(BAUD_UBRR)
@@ -130,68 +130,69 @@ USART0_RX_ISR:
 	lds r16, UDR0	; incomming data
 
 	; count ok?
-	lds r18, RX_Count
-	cpi r18, RX_BUFFER_SIZE	; is buffer full?
-	breq RX_FULL ; if yes, exit and ignore this char
+	lds r18, RX0_Count
+	cpi r18, RX0_BUFFER_SIZE	; is buffer full?
+	breq RX0_FULL ; if yes, exit and ignore this char
 
-	lds r19, RX_Head	; not full, add char
-	ldi ZL, lo8(RX_Buffer)
-	ldi ZH, hi8(RX_Buffer)
+	lds r19, RX0_Head	; not full, add char
+	ldi ZL, lo8(RX0_Buffer)
+	ldi ZH, hi8(RX0_Buffer)
 	add ZL, r19
 	adc ZH, r1
 	st Z, r16
-	inc r18		; RX_Count++
-	sts RX_Count, r18
+	inc r18		; RX0_Count++
+	sts RX0_Count, r18
 	inc r19		; HEAD++
-	cpi r19, RX_BUFFER_SIZE
-	brlt RX__skip_overflow	; modulo overflow?
+	cpi r19, RX0_BUFFER_SIZE
+	brlt 1f	; modulo overflow?
 	clr r19			; yes, max->0
-RX__skip_overflow:
-	sts RX_Head, r19	; normal way
+1:
+	sts RX0_Head, r19	; normal way
 
 
-RX_EXIT:
-RX_FULL:
+RX0_EXIT:
+RX0_FULL:
 	IRQ_pop_16_20_Z
 	IRQ_pop_entry
 	reti
 
-; === RX0_Read: Výstup r24 = znak, r25 = delka bufferu PRED ctenim (1..RX_BUFFER_SIZE) pokud data, jinak 0
+; === RX0_Read: Výstup r24 = znak, r25 = delka bufferu PRED ctenim (1..RX0_BUFFER_SIZE) pokud data, jinak 0
 .global RX0_Read
 RX0_Read:
-	lds r18, RX_Count
+	lds r18, RX0_Count
 	mov r25,r18
 	cpi r18, 0
-	breq RX_EMPTY_FUNC
-	lds r19, RX_Tail
-	ldi ZL, lo8(RX_Buffer)
-	ldi ZH, hi8(RX_Buffer)
+	breq RX0_EMPTY_FUNC
+	lds r19, RX0_Tail
+	ldi ZL, lo8(RX0_Buffer)
+	ldi ZH, hi8(RX0_Buffer)
 	add ZL, r19
 	adc ZH, r1
 	ld r24, Z
 	in r20,_SFR_IO_ADDR(SREG)
 	cli			; ==== no interrupts here
-	lds r18, RX_Count	; RX_Count --
+	lds r18, RX0_Count	; RX0_Count --
 	dec r18
-	sts RX_Count, r18
+	sts RX0_Count, r18
 	out _SFR_IO_ADDR(SREG),r20		; ==== ok
 	inc r19
-	cpi r19, RX_BUFFER_SIZE
-	brlt RX__skip_overflow_read
+	cpi r19, RX0_BUFFER_SIZE
+	brlt 1f
 	clr r19
-RX__skip_overflow_read:
-	sts RX_Tail, r19
+1:
+	sts RX0_Tail, r19
 ;	ldi r25, 1
 	ret
-RX_EMPTY_FUNC:
+RX0_EMPTY_FUNC:
 	clr r24
 ;	clr r25
 	ret
 
-
-
-
-
+; === RX0_available: r24 = RX0_Count (# of waiting chars)
+.global RX0_available
+RX0_available:
+	lds r24,RX0_Count
+	ret
 
 ; === USART0 UDRE ISR	 - is output register empty?
 .global USART0_UDRE_ISR
@@ -199,33 +200,33 @@ USART0_UDRE_ISR:
 	IRQ_push_entry
 	IRQ_push_16_20_Z
 
-	lds r18, TX_Count
+	lds r18, TX0_Count
 	cpi r18, 0
-	breq TX_EMPTY
+	breq TX0_EMPTY
 
-	lds r19, TX_Tail
-	ldi ZL, lo8(TX_Buffer)
-	ldi ZH, hi8(TX_Buffer)
+	lds r19, TX0_Tail
+	ldi ZL, lo8(TX0_Buffer)
+	ldi ZH, hi8(TX0_Buffer)
 	add ZL, r19
 	adc ZH, r1
 	ld  r16,Z
 	sts UDR0, r16	; send it
-	dec r18		; TX_Count--
-	sts TX_Count, r18
+	dec r18		; TX0_Count--
+	sts TX0_Count, r18
 	inc r19		; Tail++
-	cpi r19, TX_BUFFER_SIZE
-	brlt TX__skip_overflow	; modulo overflow?
+	cpi r19, TX0_BUFFER_SIZE
+	brlt 1f	; modulo overflow?
 	clr r19			; yes, max->0
-TX__skip_overflow:
-	sts TX_Tail, r19	; normal way
+1:
+	sts TX0_Tail, r19	; normal way
 
-	rjmp TX__exit
-TX_EMPTY:
+	rjmp TX0__exit
+TX0_EMPTY:
 	; zakázat UDRE interrupt pokud nic k odeslání
 	lds r16, UCSR0B
 	andi r16, ~(1 << UDRIE0)
 	sts UCSR0B, r16
-TX__exit:
+TX0__exit:
 	IRQ_pop_16_20_Z
 	IRQ_pop_entry
 	reti
@@ -236,29 +237,28 @@ TX__exit:
 ; === TX0_Write: vstup r24 = znak, blokuje při plném bufferu, vystup r24 - aktualni delka bufferu
 .global TX0_Write
 TX0_Write:
-TX_WAIT:
-	lds r18, TX_Count
-	cpi r18, TX_BUFFER_SIZE
-	breq TX_WAIT
-	lds r19, TX_Head
-	ldi ZL, lo8(TX_Buffer)
-	ldi ZH, hi8(TX_Buffer)
+	lds r18, TX0_Count
+	cpi r18, TX0_BUFFER_SIZE
+	breq TX0_Write
+	lds r19, TX0_Head
+	ldi ZL, lo8(TX0_Buffer)
+	ldi ZH, hi8(TX0_Buffer)
 	add ZL, r19
 	adc ZH, r1
 	st Z, r24
 	in r25,_SFR_IO_ADDR(SREG)
 	cli			; ==== no interrupts here
-	lds r18, TX_Count	; TX_Count ++
+	lds r18, TX0_Count	; TX0_Count ++
 	inc r18
-	sts TX_Count, r18
+	sts TX0_Count, r18
 	out _SFR_IO_ADDR(SREG),r25		; ==== ok
-	lds r19, TX_Head
+	lds r19, TX0_Head
 	inc r19
-	cpi r19, TX_BUFFER_SIZE
-	brlt TX__skip_overflow_write
+	cpi r19, TX0_BUFFER_SIZE
+	brlt 1f
 	clr r19
-TX__skip_overflow_write:
-	sts TX_Head, r19
+1:
+	sts TX0_Head, r19
 
 	; povolit UDRE interrupt
 	lds r16, UCSR0B
@@ -267,3 +267,16 @@ TX__skip_overflow_write:
 	mov r24,r18
 	ret
 
+; === TX0_used: output: r24 used space in TX buffer
+.global TX0_used
+TX0_used:
+	lds r24, TX0_Count
+	ret
+
+; === TX0_free: output: r24 available space in TX buffer
+.global TX0_free
+TX0_free:
+	ldi r24, TX0_BUFFER_SIZE
+	lds r25, TX0_Count
+	sub r24,r25
+	ret
