@@ -50,7 +50,7 @@
 
 ; === Sekce dat
 .section .bss
-qwer1: .byte 0
+ignoreme_1: .byte 0
 RX0_Count:		.byte 0	; if zero, head==tail means empty, if RX0_BUFFER_SIZE,  head==tail means full
 RX0_Head:		.byte 0	; new character will came here
 RX0_Tail:		.byte 0	; outcoming character will came from here
@@ -60,7 +60,7 @@ TX0_Count:		.byte 0
 TX0_Head:		.byte 0
 TX0_Tail:		.byte 0
 TX0_Buffer:		.skip TX0_BUFFER_SIZE
-qwer2: .byte 0
+ignoreme_2: .byte 0
 
 .section .text
 
@@ -123,6 +123,9 @@ usart0_setup:
 	ret
 
 ; === USART0 RX ISR
+
+.global __vector_25
+__vector_25:
 .global USART0_RX_ISR
 USART0_RX_ISR:
 	IRQ_push_entry
@@ -194,6 +197,9 @@ RX0_Available:
 	ret
 
 ; === USART0 UDRE ISR	 - is output register empty?
+
+.global __vector_26
+__vector_26:
 .global USART0_UDRE_ISR
 USART0_UDRE_ISR:
 	IRQ_push_entry

@@ -6,7 +6,11 @@ uint8_t TX0_Write(char c);	// c=char to write, r24=buf_used. BLOCKS if buffer fu
 uint8_t RX0_Available();	// available chars in RX buffer
 uint8_t TX0_Used();		// used space in TX buffer
 uint8_t TX0_Free();		// available space in TX buffer
+
+// not needed here, gcc automagically links __vector_xx on the right places (starting with __vector_00 for RESET)
+void __vector_26();
 void USART0_RX_ISR();
+void __vector_27();
 void USART0_UDRE_ISR();
 
 #endif
