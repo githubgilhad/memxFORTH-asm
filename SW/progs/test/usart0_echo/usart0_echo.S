@@ -1,10 +1,10 @@
 ;	LIBS: Serial/usart0
 ; LIBS:  isr_stub  vectors_table
-.include "m2560def.inc"
+#include <avr/io.h>
+#include <avr/interrupt.h>
 .extern usart0_setup
 .extern RX0_Read
 .extern TX0_Write
-
 
 .section .text
 nop	; ctors end and trampolines will be here, lets have RESET named
@@ -12,13 +12,13 @@ nop	; ctors end and trampolines will be here, lets have RESET named
 .global RESET
 RESET:
 	ldi r16, hi8(RAMEND)
-	out SPH, r16
+	out _SFR_IO_ADDR(SPH), r16
 	ldi r16, lo8(RAMEND)
-	out SPL, r16
+	out _SFR_IO_ADDR(SPL), r16
 	clr r1
-	out SREG,r1
-	out EIND,r1
-	out RAMPZ,r1
+	out _SFR_IO_ADDR(SREG),r1
+	out _SFR_IO_ADDR(EIND),r1
+	out _SFR_IO_ADDR(RAMPZ),r1
 	rjmp main
 
 
@@ -28,18 +28,18 @@ setup:
 	sei ; povolit přerušení
 	ret
 
-MAIN_LOOP:
+loop:
 	rcall RX0_Read
 	tst r25
-	breq MAIN_LOOP_EXIT ; pokud nic nepřišlo, nedelej nic
+	breq 1f ; pokud nic nepřišlo, nedelej nic
 	rcall TX0_Write ; blokuje dokud není volno
-MAIN_LOOP_EXIT:
+1:
 	ret
 ;=========================
 .global main
 main: 
 	call setup
 main_loop:
-	call MAIN_LOOP
+	call loop
 	rjmp main_loop
 

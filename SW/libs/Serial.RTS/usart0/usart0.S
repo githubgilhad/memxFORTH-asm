@@ -5,6 +5,9 @@
 ; === Konstanta pro baud rate 115200 při 16 MHz a U2Xn = 0: UBRR = 8
 .equ BAUD_UBRR,8
 
+; === RTS / CTS PINY
+.equ RTS_PIN,PD2
+.equ CTS_PIN,PD3
 
 
 .macro IRQ_push_entry	; {{{
@@ -118,7 +121,23 @@ usart0_setup:
 	sts UCSR0C, r16
 		; Asynchronous USART, Parity Mode disabled, Stop Bit(s) 1, Character Size = 8bit, Clock Polarity =0
 
+	; RTS pin jako výstup
+	sbi _SFR_IO_ADDR(DDRD), RTS_PIN
+	cbi _SFR_IO_ADDR(PORTD), RTS_PIN	   ; výchozí: RTS = 0 (můžeme přijímat)
 
+	; CTS pin jako vstup
+	cbi _SFR_IO_ADDR(DDRD), CTS_PIN
+	sbi _SFR_IO_ADDR(PORTD), CTS_PIN	   ; pull-up
+
+	; CTS pin jako zdroj interruptu
+	lds r16, EICRA		; EICRA pg.110
+	andi r16, 0b00111111
+	ori r16,  0b00100000  ; ISC21:20 = 10 → falling edge
+	sts EICRA, r16		; OVERIT PIN
+
+	sbi _SFR_IO_ADDR(EIMSK), INT3      ; povolit INT3
+	sbis _SFR_IO_ADDR(PIND), CTS_PIN	; CTS check – if is low, we can send so no need for INT
+	cbi _SFR_IO_ADDR(EIMSK), INT3      ; zakazat INT3
 
 	ret
 
@@ -149,6 +168,12 @@ USART0_RX_ISR:
 RX__skip_overflow:
 	sts RX_Head, r19	; normal way
 
+	cpi r18, RX_BUFFER_SIZE - RX_BUFFER_THRESHOLD	; RTS: is nearly full?
+	brlt RTS_CLEAR
+	sbi _SFR_IO_ADDR(PORTD), RTS_PIN	; if yes set RTS 
+	rjmp RX_EXIT
+RTS_CLEAR:
+	cbi _SFR_IO_ADDR(PORTD), RTS_PIN	;if not, clear RTS
 
 RX_EXIT:
 RX_FULL:
@@ -184,6 +209,7 @@ RX__skip_overflow_read:
 ;	ldi r25, 1
 	ret
 RX_EMPTY_FUNC:
+	cbi _SFR_IO_ADDR(PORTD), RTS_PIN	; clear RTS
 	clr r24
 ;	clr r25
 	ret
@@ -197,6 +223,24 @@ RX_EMPTY_FUNC:
 .global USART0_UDRE_ISR
 USART0_UDRE_ISR:
 	IRQ_push_entry
+	
+	sbis _SFR_IO_ADDR(PIND), CTS_PIN	; CTS check – if is low, we can send
+	NOP ; FIXME suppose we can send anytime
+	rjmp TX_send		; yes, we can
+				; no we cannot - disable USART0_UDRE_ISR, enable CTS_PIN INTR
+	
+	sbi _SFR_IO_ADDR(EIMSK), INT3      ; povolit INT3
+; USART0_UDRE_ISR_disable:
+	push r16
+	lds r16, UCSR0B		; disable us
+	andi r16, ~(1 << UDRIE0)
+	sts UCSR0B, r16
+
+	pop r16
+	IRQ_pop_entry
+	reti
+
+TX_send:
 	IRQ_push_16_20_Z
 
 	lds r18, TX_Count
@@ -230,6 +274,18 @@ TX__exit:
 	IRQ_pop_entry
 	reti
 
+.global INT3_ISR
+INT3_ISR:	; called when CTS is low and send is still blocked
+	IRQ_push_entry
+	cbi _SFR_IO_ADDR(EIMSK), INT3      ; zakazat INT3
+	push r16
+	lds r16, UCSR0B		; enable TX
+	ori r16, (1 << UDRIE0)
+	sts UCSR0B, r16
+
+	pop r16
+	IRQ_pop_entry
+	reti
 
 
 

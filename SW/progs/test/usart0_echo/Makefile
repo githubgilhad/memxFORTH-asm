@@ -46,7 +46,7 @@ $(BUILD)/$(TARGET).o: $(SRC) | $(BUILD)/
 # #	$(CC) $(CFLAGS) -I$(dir $<) -c $< -o $@
 
 define LIB_RULE_template
-$(LIB_PREFIX)/$(1)/$(BUILD)/$(notdir $(1)).o:
+$(LIB_PREFIX)/$(1)/$(BUILD)/$(notdir $(1)).o: $(LIB_PREFIX)/$(1)/*
 	$(MAKE) -C $(LIB_PREFIX)/$(1) MCU=$(MCU) BUILD=$(BUILD) $(BUILD)/$(notdir $(1)).o
 endef
 
