@@ -6,28 +6,25 @@ OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 
 LIB_PREFIX = ../../../libs
+Ilibs = -I$(LIB_PREFIX)
 
-CFLAGS = -mmcu=$(MCU) -Wall -Os -nostartfiles
-SRC ?=  $(notdir $(CURDIR)).S
+CFLAGS = -Os -mmcu=$(MCU) -std=gnu99 -ffreestanding -fno-exceptions -fno-unwind-tables $(Ilibs)
+ASFLAGS = -mmcu=$(MCU)
+LDFLAGS = -Wl,-Ttext=0
+
+SRC ?=  $(notdir $(CURDIR)).c
 TARGET := $(notdir $(CURDIR))
 
 # ========== Automatická detekce knihoven ==========
-# Vyhledá řádky jako: ; LIBS: serial file
+# Vyhledá řádky jako: .* LIBS: serial file
 
-# LIB_LINES := $(shell grep -i '^; *LIBS:' $(SRC)|sed "s/; *LIBS://")
-# $(info $(foreach line,$(LIB_LINES),### $(line) ###))
-# LIBS := $(patsubst %,$(LIB_DIR)/$(BUILD)/%, $(LIB_LINES))
-# LIBS_DIRS := $(patsubst %,$(LIB_DIR)/%, $(LIB_LINES))
-# LIB_OBJS := $(addsuffix .o, $(LIBS))
-
-
-LIB_NAMES := $(shell grep -o '^;\s*LIBS:.*' $(SRC) | sed 's/^;\s*LIBS: //' | tr ' ' '\n' | sort -u)
+LIB_NAMES := $(shell grep -o '\<LIBS:.*' $(SRC) | sed 's/^.*\<LIBS: //' | tr ' ' '\n' | sort -u)
 LIB_OBJS := $(foreach lib,$(LIB_NAMES),$(LIB_PREFIX)/$(lib)/$(BUILD)/$(notdir $(lib)).o)
 
 OBJS = $(BUILD)/$(TARGET).o $(LIB_OBJS)
-
-# $(info $(LIB_LINES) ## $(LIBS) ## $(LIB_OBJS) )
-
+# OBJS=\
+	$(LIB_PREFIX)/Serial/usart0/$(BUILD)/usart0.o \
+	$(BUILD)/$(TARGET).o
 # ========== Build pravidla ==========
 
 all: $(BUILD)/$(TARGET).hex $(TARGET).dis | $(BUILD)/
@@ -36,34 +33,28 @@ all: $(BUILD)/$(TARGET).hex $(TARGET).dis | $(BUILD)/
 	mkdir -p $@
 
 $(BUILD)/$(TARGET).elf: $(OBJS) | $(BUILD)/
-	$(CC) $(CFLAGS) -o $@ $^
-
-$(BUILD)/$(TARGET).o: $(SRC) | $(BUILD)/
-	$(CC) $(CFLAGS) -I$(dir $<)  -c $< -o $@
-
-# %.o: %.S
-# 	$(MAKE) MCU=$(MCU) BUILD=$(BUILD) -C $(dir $<) $(BUILD)/$(notdir $@)
-# #	$(CC) $(CFLAGS) -I$(dir $<) -c $< -o $@
-
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJS)
 define LIB_RULE_template
 $(LIB_PREFIX)/$(1)/$(BUILD)/$(notdir $(1)).o: $(LIB_PREFIX)/$(1)/*
 	$(MAKE) -C $(LIB_PREFIX)/$(1) MCU=$(MCU) BUILD=$(BUILD) $(BUILD)/$(notdir $(1)).o
 endef
 
+$(BUILD)/%.o: %.c  | $(BUILD)/
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(BUILD)/%.o: %.S  | $(BUILD)/
+	$(CC) $(ASFLAGS) -c $< -o $@
 
 $(foreach lib,$(LIB_NAMES),$(eval $(call LIB_RULE_template,$(lib))))
 
 $(BUILD)/$(TARGET).hex: $(BUILD)/$(TARGET).elf
-	$(OBJCOPY) -O ihex $< $@
+	$(OBJCOPY) -O ihex -R .eeprom $< $@
 
 $(TARGET).dis: $(BUILD)/$(TARGET).elf Makefile
 	$(OBJDUMP) --disassemble --source --line-numbers --demangle -z --section=.text  --section=.data --section=.bss $< > $@
 
 upload: $(BUILD)/$(TARGET).hex
-	/usr/bin/avrdude -v -V -p $(MCU) -D -c wiring -b 115200 -P /dev/ttyACM0 -U flash:w:$<:i
-
-ispload: $(BUILD)/$(TARGET).hex
-	/usr/bin/avrdude -v -V -p $(MCU) -c usbasp -b 115200 -U flash:w:$<:i
+	/usr/bin/avrdude -v -V -p atmega2560 -D -c wiring -b 115200 -P /dev/ttyACM0 -U flash:w:$<:i
 
 monitor:
 	picocom -b 115200 --flow n --noreset --quiet /dev/ttyACM0

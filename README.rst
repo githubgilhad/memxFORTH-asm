@@ -49,6 +49,19 @@ This project builds memxFORTH directly from assembler and try to be memory-effec
 	__attribute__((naked, noreturn)) void function_A(void) { ... ;EIJMP; }
 
 
+.. code::
+
+	__attribute__((naked, noreturn))
+	void jump_to(uint32_t addr) {
+		__asm__ __volatile__ (
+			"mov r30, r22\n\t"
+			"mov r31, r23\n\t"
+			"out %[_RAMPZ], r24\n\t"
+			"eijmp\n\t"
+			:
+			: [_RAMPZ] "I" (_SFR_IO_ADDR(RAMPZ))
+		);
+	}
 
 
 License
