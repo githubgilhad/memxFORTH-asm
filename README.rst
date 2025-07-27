@@ -18,6 +18,8 @@ memxFORTH-asm
 
 This project builds memxFORTH directly from assembler and try to be memory-effective
 
+Target is ATmega2560 at MegaHomeFORTH board
+
 * All pointers should be 3-bytes/24-bits long, also CELL size is 3-bytes, so there is no size mismatch between address and value
 	* Extra-byte (bits 16..23) is 0x80 for RAM, 00..04 for FLASH (and maybe something else for paged RAM and Shared Ram)
 	* all memory acceess should be via system calls: THIS and THAT
