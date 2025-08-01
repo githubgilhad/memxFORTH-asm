@@ -22,9 +22,9 @@ LIB_NAMES := $(shell grep -o '\<LIBS:.*' $(SRC) | sed 's/^.*\<LIBS: //' | tr ' '
 LIB_OBJS := $(foreach lib,$(LIB_NAMES),$(LIB_PREFIX)/$(lib)/$(BUILD)/$(notdir $(lib)).o)
 
 OBJS = $(BUILD)/$(TARGET).o $(LIB_OBJS)
-# OBJS=\
-	$(LIB_PREFIX)/Serial/usart0/$(BUILD)/usart0.o \
-	$(BUILD)/$(TARGET).o
+
+# $(info $(LIB_LINES) ## $(LIBS) ## $(LIB_OBJS) )
+
 # ========== Build pravidla ==========
 
 all: $(BUILD)/$(TARGET).hex $(TARGET).dis | $(BUILD)/
@@ -33,7 +33,7 @@ all: $(BUILD)/$(TARGET).hex $(TARGET).dis | $(BUILD)/
 	mkdir -p $@
 
 $(BUILD)/$(TARGET).elf: $(OBJS) | $(BUILD)/
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 define LIB_RULE_template
 $(LIB_PREFIX)/$(1)/$(BUILD)/$(notdir $(1)).o: $(LIB_PREFIX)/$(1)/*
 	$(MAKE) -C $(LIB_PREFIX)/$(1) MCU=$(MCU) BUILD=$(BUILD) $(BUILD)/$(notdir $(1)).o
@@ -54,7 +54,16 @@ $(TARGET).dis: $(BUILD)/$(TARGET).elf Makefile
 	$(OBJDUMP) --disassemble --source --line-numbers --demangle -z --section=.text  --section=.data --section=.bss $< > $@
 
 upload: $(BUILD)/$(TARGET).hex
-	/usr/bin/avrdude -v -V -p atmega2560 -D -c wiring -b 115200 -P /dev/ttyACM0 -U flash:w:$<:i
+	/usr/bin/avrdude -v -V -p $(MCU) -D -c wiring -b 115200 -P /dev/ttyACM0 -U flash:w:$<:i
+
+ispload: $(BUILD)/$(TARGET).hex
+	/usr/bin/avrdude -v -p atmega2560 -c usbasp -b 115200 -e -U lock:w:0x3F:m -U efuse:w:0xFD:m -U hfuse:w:0xD9:m -U lfuse:w:0xFF:m
+	/usr/bin/avrdude -v -p $(MCU) -D -c usbasp -b 115200                 -U flash:w:$<:i
+
+bootloader:
+	/usr/bin/avrdude -v -p atmega2560 -c usbasp -b 115200 -e -U lock:w:0x3F:m -U efuse:w:0xFD:m -U hfuse:w:0xD8:m -U lfuse:w:0xFF:m
+	/usr/bin/avrdude -v -p atmega2560 -c usbasp -b 115200 -U flash:w:/usr/share/arduino/hardware/arduino/avr/bootloaders//stk500v2/stk500boot_v2_mega2560.hex:i
+
 
 monitor:
 	picocom -b 115200 --flow n --noreset --quiet /dev/ttyACM0

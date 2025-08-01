@@ -6,8 +6,12 @@ OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 
 LIB_PREFIX = ../../../libs
+Ilibs = -I$(LIB_PREFIX)
 
-CFLAGS = -mmcu=$(MCU) -Wall -Os -nostartfiles
+CFLAGS = -Os -mmcu=$(MCU) -std=gnu99 -Wall -nostartfiles $(Ilibs)
+ASFLAGS = -mmcu=$(MCU)
+LDFLAGS = -Wl,-Ttext=0
+
 SRC ?=  $(notdir $(CURDIR)).S
 TARGET := $(notdir $(CURDIR))
 
@@ -36,31 +40,37 @@ all: $(BUILD)/$(TARGET).hex $(TARGET).dis | $(BUILD)/
 	mkdir -p $@
 
 $(BUILD)/$(TARGET).elf: $(OBJS) | $(BUILD)/
-	$(CC) $(CFLAGS) -o $@ $^
-
-$(BUILD)/$(TARGET).o: $(SRC) | $(BUILD)/
-	$(CC) $(CFLAGS) -I$(dir $<)  -c $< -o $@
-
-# %.o: %.S
-# 	$(MAKE) MCU=$(MCU) BUILD=$(BUILD) -C $(dir $<) $(BUILD)/$(notdir $@)
-# #	$(CC) $(CFLAGS) -I$(dir $<) -c $< -o $@
-
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 define LIB_RULE_template
 $(LIB_PREFIX)/$(1)/$(BUILD)/$(notdir $(1)).o: $(LIB_PREFIX)/$(1)/*
 	$(MAKE) -C $(LIB_PREFIX)/$(1) MCU=$(MCU) BUILD=$(BUILD) $(BUILD)/$(notdir $(1)).o
 endef
 
+$(BUILD)/%.o: %.c  | $(BUILD)/
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(BUILD)/%.o: %.S  | $(BUILD)/
+	$(CC) $(ASFLAGS) -c $< -o $@
 
 $(foreach lib,$(LIB_NAMES),$(eval $(call LIB_RULE_template,$(lib))))
 
 $(BUILD)/$(TARGET).hex: $(BUILD)/$(TARGET).elf
-	$(OBJCOPY) -O ihex $< $@
+	$(OBJCOPY) -O ihex -R .eeprom $< $@
 
 $(TARGET).dis: $(BUILD)/$(TARGET).elf Makefile
 	$(OBJDUMP) --disassemble --source --line-numbers --demangle -z --section=.text  --section=.data --section=.bss $< > $@
 
 upload: $(BUILD)/$(TARGET).hex
-	/usr/bin/avrdude -v -V -p atmega2560 -D -c wiring -b 115200 -P /dev/ttyACM0 -U flash:w:$<:i
+	/usr/bin/avrdude -v -V -p $(MCU) -D -c wiring -b 115200 -P /dev/ttyACM0 -U flash:w:$<:i
+
+ispload: $(BUILD)/$(TARGET).hex
+	/usr/bin/avrdude -v -p atmega2560 -c usbasp -b 115200 -e -U lock:w:0x3F:m -U efuse:w:0xFD:m -U hfuse:w:0xD9:m -U lfuse:w:0xFF:m
+	/usr/bin/avrdude -v -p $(MCU) -D -c usbasp -b 115200                 -U flash:w:$<:i
+
+bootloader:
+	/usr/bin/avrdude -v -p atmega2560 -c usbasp -b 115200 -e -U lock:w:0x3F:m -U efuse:w:0xFD:m -U hfuse:w:0xD8:m -U lfuse:w:0xFF:m
+	/usr/bin/avrdude -v -p atmega2560 -c usbasp -b 115200 -U flash:w:/usr/share/arduino/hardware/arduino/avr/bootloaders//stk500v2/stk500boot_v2_mega2560.hex:i
+
 
 monitor:
 	picocom -b 115200 --flow n --noreset --quiet /dev/ttyACM0
