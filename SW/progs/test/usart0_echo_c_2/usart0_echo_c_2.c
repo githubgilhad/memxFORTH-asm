@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "Serial/usart0/usart0.h"
+// LIBS: Serial/usart0
 
 
 void setup(void) {

@@ -8,7 +8,7 @@ OBJDUMP = avr-objdump
 LIB_PREFIX = ../../../libs
 Ilibs = -I$(LIB_PREFIX)
 
-CFLAGS = -Os -mmcu=$(MCU) -std=gnu99 -Wall -nostartfiles $(Ilibs)
+CFLAGS = -Os -mmcu=$(MCU) -std=gnu99 -Wall -ffreestanding -fno-exceptions -fno-unwind-tables $(Ilibs)
 #	-nostartfiles	Bez standardního vstupního kódu (crt0.o)
 #	-ffreestanding	Nepředpokládat přítomnost libc, vlastní prostředí
 #	-fno-exceptions	Zakáže C++ výjimky
