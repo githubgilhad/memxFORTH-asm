@@ -19,6 +19,7 @@ $(BUILD)/:
 
 $(BUILD)/%.o: %.S  | $(BUILD)/
 	$(CC) $(CFLAGS) -c $< -o $@
+	-$(OBJCOPY) -O binary $@ $@.bin
 
 clean:
 	rm -f *.o *.elf *.hex *.dis 

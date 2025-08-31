@@ -30,8 +30,7 @@ PORT ?=  $(firstword $(wildcard /dev/ttyA-* /dev/ttyAr* /dev/ttyTot* /dev/ttyUSB
 # LIBS_DIRS := $(patsubst %,$(LIB_DIR)/%, $(LIB_LINES))
 # LIB_OBJS := $(addsuffix .o, $(LIBS))
 
-
-LIB_NAMES := $(shell grep -o '\s*LIBS:.*' $(SRC) | sed 's/.*\s*LIBS:\s*//' | tr ' ' '\n' | sort -u)
+LIB_NAMES := $(shell grep -o '\<LIBS:.*' $(SRC) | sed 's/^.*\<LIBS:\s*//' | tr ' ' '\n' | sort -u)
 LIB_OBJS := $(foreach lib,$(LIB_NAMES),$(LIB_PREFIX)/$(lib)/$(BUILD)/$(notdir $(lib)).o)
 
 OBJS = $(BUILD)/$(TARGET).o $(LIB_OBJS)
@@ -54,9 +53,11 @@ endef
 
 $(BUILD)/%.o: %.c  | $(BUILD)/
 	$(CC) $(CFLAGS) -c $< -o $@
+	-$(OBJCOPY) -O binary $@ $@.bin
 
 $(BUILD)/%.o: %.S  | $(BUILD)/
 	$(CC) $(ASFLAGS) -c $< -o $@
+	-$(OBJCOPY) -O binary $@ $@.bin
 
 $(foreach lib,$(LIB_NAMES),$(eval $(call LIB_RULE_template,$(lib))))
 

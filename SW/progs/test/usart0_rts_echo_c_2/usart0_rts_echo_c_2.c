@@ -1,9 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
-// LIBS: Serial/usart0 FORTH/FORTH-Engine
-
-#include "Serial/usart0/usart0.h"
-#include "FORTH/FORTH-Engine/FORTH-Engine.h"
+#include "Serial.RTS/usart0/usart0.h"
+// LIBS: Serial.RTS/usart0
 
 
 void setup(void) {
@@ -23,9 +21,9 @@ void loop(void) {
 	uint16_t ch = RX0_Read();
 	if (ch >> 8) { // Pokud r25 != 0
 		TX0_Write((char)(ch & 0xFF)); // Blokuje dokud není volno
+		if ((ch & 0xFF)==10)
+			TX0_Write(13); // Blokuje dokud není volno
 	}
-//	__asm__ __volatile__ ("jmp NEXT \n\t");
-//	NEXT();
 }
 
 int main(void) {
