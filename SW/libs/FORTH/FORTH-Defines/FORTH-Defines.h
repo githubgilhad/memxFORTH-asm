@@ -28,15 +28,13 @@
 #define 	RS_hi	r9
 //	#define 	RS_hlo	0	// immediate
 
+.macro XAA16_0x8x reg
 #ifdef USE_XAA16_0x8x
 //	XAA16_0x8x - if used, set XAA16 to bit 0 of given register to bank extended RAM
-	#define	XAA16_0x8x(reg) \
-		cbi PORTG,3 \
-		sbrc \reg,0 \
-		sbi PORTG,3
-#else
-	#define	XAA16_0x8x(reg) 
+	cbi _SFR_IO_ADDR(PORTG),3
+	sbrc \reg,0
+	sbi _SFR_IO_ADDR(PORTG),3
 #endif
-
+.endm
 
 #endif
