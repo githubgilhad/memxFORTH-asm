@@ -1,34 +1,32 @@
 #include <avr/io.h>
 #include "../FORTH-Defines/FORTH-Defines.h"
+#include "../FORTH-Macros/FORTH-Macros.h"
 ; r2+Y = IP
-
-
+; .section .rodata.FORTH
+; .db <prev,len,"name",docol,data> ....
+ .section .text.FORTH.aa_start
+ .section .text.FORTH.main
+ .section .text.FORTH.zz_end
+ .section .text.FORTH.zz_end
+ .global FORTH_END
+ FORTH_END: nop
+ .section .text.FORTH.aa_start
+ .global FORTH_START
+ FORTH_START: nop
+ .section .text.FORTH.main
 ; === DOCOL enter composed word
 .global DOCOL
-DOCOL:		// pushR(IP);IP=DT;NEXT	{{{
-	// pushR(IP)
-	movw ZL,  RS_lo
-	st -Z,   IP_hlo
-	st -Z,   IP_hi
-	st -Z,   IP_lo
-	movw RS_lo,ZL
-	
-	// IP=DT
-	movw IP_lo, DT_lo
-	mov IP_hlo, DT_hlo
-	
-	// NEXT
+
+DOCOL:	; pushR(IP);IP=DT;NEXT	{{{
+	PushR IP
+	Set3 IP, DT
 	rjmp NEXT
 ; ===  === 		}}}
 
 ; === EXIT returns from word (fall thru NEXT)
 .global EXIT
-EXIT:		// IP=popR();NEXT	{{{
-	movw ZL, RS_lo
-	ld IP_lo,Z+
-	ld IP_hi,Z+
-	ld IP_hlo,Z+
-	movw RS_lo,ZL
+EXIT:		;  IP=popR();NEXT	{{{
+	PopR IP
 ;	rjmp NEXT
 ; === fall thru NEXT === 		}}}
 
@@ -36,6 +34,7 @@ EXIT:		// IP=popR();NEXT	{{{
 ; use: X,Y,Z r0,r2, r23,r24,r25
 ; in:  IP=r2+Y
 ; out: IP=r2+Y, DT=r0+X, eijmp(Z) 
+
 .global NEXT
 NEXT: // DT=*IP++; jmp **DT++		{{{
 	
@@ -52,7 +51,7 @@ NEXT: // DT=*IP++; jmp **DT++		{{{
 	rjmp 2f
 
 1:
-	XAA16_0x8x IP_hlo		; if using RAM banks, select RAM bank (ignored by non-baked basic RAM)
+	LINE_16 IP_hlo		; if using RAM banks, select RAM bank (ignored by non-baked basic RAM)
 	ld DT_lo,  Y+
 	ld DT_hi,  Y+
 	ld DT_hlo, Y+	; IP is Y, x80 -> x81 (overrun to next bank) is not supported/checked
@@ -73,7 +72,7 @@ NEXT: // DT=*IP++; jmp **DT++		{{{
 	out _SFR_IO_ADDR(EIND),    r23
 	eijmp
 1:
-	XAA16_0x8x DT_hlo
+	LINE_16 DT_hlo
 	ldd r24,     Z+
 	ldd r25,     Z+
 	ldd r23,     Z+	// hlo

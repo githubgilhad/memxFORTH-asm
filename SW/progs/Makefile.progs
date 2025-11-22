@@ -65,7 +65,9 @@ $(BUILD)/$(TARGET).hex: $(BUILD)/$(TARGET).elf
 	$(OBJCOPY) -O ihex -R .eeprom $< $@
 
 $(TARGET).dis: $(BUILD)/$(TARGET).elf Makefile
-	$(OBJDUMP) --disassemble --source --line-numbers --demangle -z --section=.text  --section=.data --section=.bss $< > $@
+	$(OBJDUMP) --disassemble --source --line-numbers --demangle -z --section=.text  --section=.data --section=.bss  --section=.rodata $< > $@
+	Elf.rb $(BUILD)/$(TARGET).elf $(BUILD)/$(TARGET).bin2 $(BUILD)/$(TARGET).xref2
+	AVRemu -d -m $(MCU)  -x $(BUILD)/$(TARGET).xref2 $(BUILD)/$(TARGET).bin2 >$(BUILD)/$(TARGET).dis2 || true
 
 upload: $(BUILD)/$(TARGET).hex
 	/usr/bin/avrdude -v -V -p $(MCU) -D -c wiring -b 115200 -P $(PORT) -U flash:w:$<:i
