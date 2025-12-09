@@ -1,19 +1,31 @@
 #include <avr/io.h>
 #include "../FORTH-Defines/FORTH-Defines.h"
 #include "../FORTH-Macros/FORTH-Macros.h"
+#include "../FORTH-Memory/FORTH-Memory.h"
 ; r2+Y = IP
 ; .section .rodata.FORTH
 ; .db <prev,len,"name",docol,data> ....
- .section .text.FORTH.aa_start
- .section .text.FORTH.main
- .section .text.FORTH.zz_end
- .section .text.FORTH.zz_end
- .global FORTH_END
- FORTH_END: nop
- .section .text.FORTH.aa_start
- .global FORTH_START
- FORTH_START: nop
- .section .text.FORTH.main
+; {{{ sections
+.section .text.LIBS.zz_end
+.global LIBS_END
+LIBS_END: nop
+.section .text.LIBS.aa_start
+.global LIBS_START
+LIBS_START: nop
+.section .text.FORTH.zz_end
+.global FORTH_END
+FORTH_END: nop
+.section .text.FORTH.aa_start
+.global FORTH_START
+FORTH_START: nop
+; }}}
+.section .bss.FORTH
+.global FORTH_IRQ
+FORTH_IRQ: .byte 0		; bit 0 = IRQ, rest ignored
+.global FORTH_IRQ_addr
+FORTH_IRQ_addr: .byte 0,0,0	; xt of handler
+
+.section .text.FORTH.main
 ; === DOCOL enter composed word
 .global DOCOL
 
@@ -37,7 +49,26 @@ EXIT:		;  IP=popR();NEXT	{{{
 
 .global NEXT
 NEXT: // DT=*IP++; jmp **DT++		{{{
-	
+	lds Parsx_hlo, FORTH_IRQ
+	sbrc Parsx_hlo,0
+	rjmp NEXT.IRQ		; if FORTH_IRQ jmp NEXT.IRQ
+	Set3 Zx, IP
+	call B3at
+	Set3 IP, Zx		; DT=*IP; IP +=3
+	Set3 Zx, Parsx
+	call B3at
+	Set3 DT, Zx		; Parsx=*DT; DT+=3
+	Set3 Zx, Parsx
+	out _SFR_IO_ADDR(EIND), Z_hlo
+	eijmp			; jmp *Parsx (not call, it is FORTH function with NEXT)
+NEXT.IRQ:
+	Lds3 Zx, FORTH_IRQ_addr
+	call B3at
+	Set3 DT, Zx
+	Set3 Zx, Parsx
+	out _SFR_IO_ADDR(EIND), Z_hlo
+	eijmp
+; //////////////////////////////////////////
 	//  DT=*IP++
 	sbrc IP_hlo,7	; skip if 0x80 not set (=FLASH)
 	rjmp 1f

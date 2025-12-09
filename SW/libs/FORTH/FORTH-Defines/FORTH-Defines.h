@@ -6,6 +6,16 @@
 
 ; ////////////////////////////////////////////////////////////////////////////////
 
+;	Z + r25 is temp, usualy for memory access
+#define 	Z_hlo r25
+#define 	Zx ZL, ZH, Z_hlo
+
+;	Parsx for functions
+#define 	Parsx_lo r22
+#define 	Parsx_hi r23
+#define 	Parsx_hlo r24
+#define 	Parsx Parsx_lo, Parsx_hi, Parsx_hlo
+
 ;	Y + r2 are calee protected - will not change over calls
 #define 	IP_lo	YL	
 				; r28
@@ -17,9 +27,9 @@
 ;	C calls destroy X, but it is restored in NEXT and needed in DOCOL just after the NEXT
 ;	X + r0 - temporary, cannot use Z, as we need it for EIJMP in NEXT
 #define 	DT_lo	XL	
-				; r30
+				; r26
 #define 	DT_hi	XH	
-				; r31
+				; r27
 #define 	DT_hlo	r0
 #define 	DT	DT_lo, DT_hi, DT_hlo
 

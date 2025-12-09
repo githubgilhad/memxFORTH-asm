@@ -40,9 +40,10 @@ Target is ATmega2560 at MegaHomeFORTH board
 		* 44..45 - Extended memory (128kB) last 56kB is top of System RAM too (&46=44)
 		* 46..47 - Shared memory (128kB) (&46=46)
 
-	* all memory acceess should be via system calls: THIS and THAT (and maintain Normal state)
-		* the access MAY fail if given bad pointer, then it returns (**FLAG**) and data are (**UNDEFINED**) (or it jumps to Bad Memory Handler ???)
+	* all memory acceess should be via system calls: B1at, B3at, W1at, W3at, THIS and THAT (and maintain Normal state)
+		* the access MAY fail if given bad pointer, then it returns (**FLAG T**) and data are (**UNDEFINED**) (or it jumps to Bad Memory Handler ???)
 			* namely it immediatelly fails when Shared Memory is asked and not allowed by GLUE
+			* SET/CLT to set/clear T, BRTS/BRTC branch if T is set/clear
 		* extra memory access is via other system calls
 * reserved/assigned registers are this, every primitive is requered to protect and update them responsibly (just idea):
 	* X+r0 - contain DT after NEXT, discartable
@@ -59,7 +60,9 @@ Target is ATmega2560 at MegaHomeFORTH board
 	* r18..r27 Free to use (discartable) (including X=r26..27)
 	* r26..27 X - filled with DT in NEXT, discartable
 	* r28..29 Y - IP (preserved by C, used by FORTH)
-	* r30..31 Z - discartable
+	* r30..31 Z - discartable (used with r25 as Z_hlo)
+	* r22..24 temp registers, arguments in and out ...
+	* r18..r21 scratch registers for everything and nothing - destroyed over calls
 * special registers:
 	* Z - EIJMP, ELPM, Z+displacement
 	* Y - Y+displacement
