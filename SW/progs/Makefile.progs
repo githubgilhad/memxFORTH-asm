@@ -14,7 +14,20 @@ CFLAGS = -Os -mmcu=$(MCU) -std=gnu99 -Wall -ffreestanding -fno-exceptions -fno-u
 #	-fno-exceptions	Zakáže C++ výjimky
 #	-fno-unwind-tables	Zakáže metadata pro stack trace (např. s výjimkami, laděním)
 ASFLAGS = -mmcu=$(MCU)
-LDFLAGS = -Wl,-Ttext=0
+# LDFLAGS = -Wl,-Ttext=0
+
+
+LD_SCRIPT := $(wildcard linker.ld)
+
+# Common flags
+LDFLAGS_COMMON = 
+#
+# If linker.ld exists → add -T linker.ld
+ifneq ($(LD_SCRIPT),)
+    LDFLAGS += $(LDFLAGS_COMMON) -Wl,-T$(LD_SCRIPT)
+else
+    LDFLAGS += $(LDFLAGS_COMMON)
+endif
 
 TARGET := $(notdir $(CURDIR))
 SRC ?=  $(firstword $(wildcard $(TARGET).S $(TARGET).c ))
@@ -39,8 +52,10 @@ OBJS = $(BUILD)/$(TARGET).o $(LIB_OBJS)
 
 # ========== Build pravidla ==========
 
+
 all: $(BUILD)/$(TARGET).hex $(TARGET).dis | $(BUILD)/
 
+.PHONY: all upload ispload bootloader reset monitor upload_monitor clean
 %/:
 	mkdir -p $@
 
@@ -69,7 +84,7 @@ $(TARGET).dis: $(BUILD)/$(TARGET).elf Makefile
 	Elf.rb $(BUILD)/$(TARGET).elf $(BUILD)/$(TARGET).bin2 $(BUILD)/$(TARGET).xref2
 	AVRemu -d -m $(MCU)  -x $(BUILD)/$(TARGET).xref2 $(BUILD)/$(TARGET).bin2 >$(BUILD)/$(TARGET).dis2 || true
 
-upload: $(BUILD)/$(TARGET).hex
+upload: $(BUILD)/$(TARGET).hex reset
 	/usr/bin/avrdude -v -V -p $(MCU) -D -c wiring -b 115200 -P $(PORT) -U flash:w:$<:i
 
 ispload: $(BUILD)/$(TARGET).hex
@@ -79,6 +94,9 @@ ispload: $(BUILD)/$(TARGET).hex
 bootloader:
 	/usr/bin/avrdude -v -p atmega2560 -c usbasp -b 115200 -e -U lock:w:0x3F:m -U efuse:w:0xFD:m -U hfuse:w:0xD0:m -U lfuse:w:0xBF:m
 	/usr/bin/avrdude -v -p atmega2560 -c usbasp -b 115200 -U flash:w:/usr/share/arduino/hardware/arduino/avr/bootloaders//stk500v2/stk500boot_v2_mega2560.hex:i
+
+reset:
+	if [ -x $(dir $(realpath $(lastword $(MAKEFILE_LIST))))ard-reset-arduino ] ; then $(dir $(realpath $(lastword $(MAKEFILE_LIST))))ard-reset-arduino  $(PORT); fi
 
 
 monitor:

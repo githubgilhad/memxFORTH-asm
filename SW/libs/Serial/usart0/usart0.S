@@ -5,6 +5,11 @@
 ; === Konstanta pro baud rate 115200 při 16 MHz a U2Xn = 0: UBRR = 8
 .equ BAUD_UBRR,8
 
+; === RTS / CTS PINY B5/B4
+.equ RTS_PIN,5
+#define RTS_PORT(name) name##B
+.equ CTS_PIN,4
+#define CTS_PORT(name) name##B
 
 
 .macro IRQ_push_entry	; {{{
@@ -45,11 +50,11 @@
 
 ; === RX/TX buffer velikosti
 .equ RX0_BUFFER_SIZE,64
-.equ RX0_BUFFER_THRESHOLD,8
+.equ RX0_BUFFER_THRESHOLD,16
 .equ TX0_BUFFER_SIZE,32
 
 ; === Sekce dat
-.section .bss
+.section .bss.LIBS
 ignoreme_1: .byte 0
 RX0_Count:		.byte 0	; if zero, head==tail means empty, if RX0_BUFFER_SIZE,  head==tail means full
 RX0_Head:		.byte 0	; new character will came here
@@ -62,13 +67,13 @@ TX0_Tail:		.byte 0
 TX0_Buffer:		.skip TX0_BUFFER_SIZE
 ignoreme_2: .byte 0
 
-.section .text
+.section .text.LIBS.main
 
-nop	; ctors end and trampolines will be here, lets have RESET named
+; nop	; ctors end and trampolines will be here, lets have RESET named
 
 ; === setup()
 .global usart0_setup
-usart0_setup:
+usart0_setup:		; destroy r24
 	sts RX0_Count, r1
 	sts RX0_Head,  r1
 	sts RX0_Tail,  r1
@@ -77,14 +82,14 @@ usart0_setup:
 	sts TX0_Tail,  r1
 ;
 	; USART0 init: 8N1, RX+TX enable, RX interrupt, UDRE interrupt enable (TX)
-	ldi r16, hi8(BAUD_UBRR)
-	sts UBRR0H, r16
-	ldi r16, lo8(BAUD_UBRR)
-	sts UBRR0L, r16
+	ldi r24, hi8(BAUD_UBRR)
+	sts UBRR0H, r24
+	ldi r24, lo8(BAUD_UBRR)
+	sts UBRR0L, r24
 
-;	ldi r16, 0	; U2Xn = 0
-	ldi r16, (0 << RXC0) | (0 << TXC0) | (0 << UDRE0) | (0 << FE0) | (0 << DOR0) | (0 << UPE0) | (0 << U2X0) | (0 << MPCM0) 
-	sts UCSR0A, r16
+;	ldi r24, 0	; U2Xn = 0
+	ldi r24, (0 << RXC0) | (0 << TXC0) | (0 << UDRE0) | (0 << FE0) | (0 << DOR0) | (0 << UPE0) | (0 << U2X0) | (0 << MPCM0) 
+	sts UCSR0A, r24		; pg 219; Status registr
 		;	Bit 1 – U2Xn: Double the USART Transmission Speed
 		;	This bit only has effect for the asynchronous operation. Write this bit to zero when using synchronous operation.
 		;	Writing this bit to one will reduce the divisor of the baud rate divider from 16 to 8 effectively doubling the transfer rate for asynchronous communication.
@@ -92,8 +97,8 @@ usart0_setup:
 		;	This bit enables the Multi-processor Communication mode. When the MPCMn bit is written to one, all the incoming frames received by the USART Receiver that do not contain address information will be ignored. The Transmitter is unaffected by the MPCMn setting.
 
 
-	ldi r16, (1 << RXEN0) | (1 << TXEN0) | (1 << RXCIE0) | (1 << TXCIE0) | (1 << UDRIE0)
-	sts UCSR0B, r16
+	ldi r24, (1 << RXEN0) | (1 << TXEN0) | (1 << RXCIE0) | (0 << TXCIE0) | (1 << UDRIE0)
+	sts UCSR0B, r24 ; pg 220, Enable registr
 		; enable Receiver, Transmitter,  RX Complete, USART Data Register Empty , TX Complete (with reti only)
 		;	UCSRnB
 		;	• Bit 7 – RXCIEn: RX Complete Interrupt Enable n
@@ -102,6 +107,7 @@ usart0_setup:
 		;	Writing this bit to one enables interrupt on the TXCn Flag. A USART Transmit Complete interrupt will be generated only if the TXCIEn bit is written to one, the Global Interrupt Flag in _SFR_IO_ADDR(SREG) is written to one and the TXCn bit in UCSRnA is set.
 		;	• Bit 5 – UDRIEn: USART Data Register Empty Interrupt Enable n
 		;	Writing this bit to one enables interrupt on the UDREn Flag. A Data Register Empty interrupt will be generated only if the UDRIEn bit is written to one, the Global Interrupt Flag in _SFR_IO_ADDR(SREG) is written to one and the UDREn bit in UCSRnA is set.
+		;  we need UDRIEn, but not TXCIEn
 		;	• Bit 4 – RXENn: Receiver Enable n
 		;	Writing this bit to one enables the USART Receiver. The Receiver will override normal port operation for the RxDn pin when enabled. Disabling the Receiver will flush the receive buffer invalidating the FEn, DORn, and UPEn Flags.
 		;	• Bit 3 – TXENn: Transmitter Enable n
@@ -114,8 +120,8 @@ usart0_setup:
 		;	TXB8n is the ninth data bit in the character to be transmitted when operating with serial frames with nine data bits.  Must be written before writing the low bits to UDRn.
 
 
-	ldi r16, (1 << UCSZ01) | (1 << UCSZ00)
-	sts UCSR0C, r16
+	ldi r24, (1 << UCSZ01) | (1 << UCSZ00)
+	sts UCSR0C, r24
 		; Asynchronous USART, Parity Mode disabled, Stop Bit(s) 1, Character Size = 8bit, Clock Polarity =0
 
 
@@ -134,7 +140,7 @@ USART0_RX_ISR:
 
 	; count ok?
 	lds r18, RX0_Count
-	cpi r18, RX0_BUFFER_SIZE	; is buffer full?
+	cpi r18, RX0_BUFFER_SIZE-1	; is buffer full?
 	breq .L_RX0_exit ; if yes, exit and ignore this char
 
 	lds r19, RX0_Head	; not full, add char
@@ -158,7 +164,7 @@ USART0_RX_ISR:
 	IRQ_pop_entry
 	reti
 
-; === RX0_Read: Výstup r24 = znak, r25 = delka bufferu PRED ctenim (1..RX0_BUFFER_SIZE) pokud data, jinak 0
+; === RX0_Read: Výstup r24 = znak, r25 = delka bufferu PRED ctenim (1..RX0_BUFFER_SIZE) pokud data, jinak 0; uses r18,r19,r20,Z
 .global RX0_Read
 RX0_Read:
 	lds r18, RX0_Count
@@ -239,11 +245,11 @@ USART0_UDRE_ISR:
 
 
 
-; === TX0_Write: vstup r24 = znak, blokuje při plném bufferu, vystup r24 - aktualni delka bufferu
+; === TX0_Write: vstup r24 = znak, blokuje při plném bufferu, vystup r24 - aktualni delka bufferu; uses r18, r19, r20
 .global TX0_Write
 TX0_Write:
 	lds r18, TX0_Count
-	cpi r18, TX0_BUFFER_SIZE
+	cpi r18, TX0_BUFFER_SIZE-1
 	breq TX0_Write
 	lds r19, TX0_Head
 	ldi ZL, lo8(TX0_Buffer)
@@ -251,12 +257,12 @@ TX0_Write:
 	add ZL, r19
 	adc ZH, r1
 	st Z, r24
-	in r25,_SFR_IO_ADDR(SREG)
+	in r20,_SFR_IO_ADDR(SREG)
 	cli			; ==== no interrupts here
 	lds r18, TX0_Count	; TX0_Count ++
 	inc r18
 	sts TX0_Count, r18
-	out _SFR_IO_ADDR(SREG),r25		; ==== ok
+	out _SFR_IO_ADDR(SREG),r20		; ==== ok
 	lds r19, TX0_Head
 	inc r19
 	cpi r19, TX0_BUFFER_SIZE
@@ -266,9 +272,9 @@ TX0_Write:
 	sts TX0_Head, r19
 
 	; povolit UDRE interrupt
-	lds r16, UCSR0B
-	ori r16, (1 << UDRIE0)
-	sts UCSR0B, r16
+	lds r20, UCSR0B
+	ori r20, (1 << UDRIE0)
+	sts UCSR0B, r20
 	mov r24,r18
 	ret
 
