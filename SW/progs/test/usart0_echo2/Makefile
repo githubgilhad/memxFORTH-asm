@@ -14,6 +14,7 @@ LDFLAGS = -Wl,-Ttext=0
 
 SRC ?=  $(notdir $(CURDIR)).S
 TARGET := $(notdir $(CURDIR))
+PORT ?=  $(firstword $(wildcard /dev/ttyA-* /dev/ttyAr* /dev/ttyTot* /dev/ttyUSB* /dev/ttyACM* /dev/null) )
 
 # ========== Automatická detekce knihoven ==========
 # Vyhledá řádky jako: ; LIBS: serial file
@@ -61,7 +62,7 @@ $(TARGET).dis: $(BUILD)/$(TARGET).elf Makefile
 	$(OBJDUMP) --disassemble --source --line-numbers --demangle -z --section=.text  --section=.data --section=.bss $< > $@
 
 upload: $(BUILD)/$(TARGET).hex
-	/usr/bin/avrdude -v -V -p $(MCU) -D -c wiring -b 115200 -P /dev/ttyACM0 -U flash:w:$<:i
+	/usr/bin/avrdude -v -V -p $(MCU) -D -c wiring -b 115200 -P $(PORT) -U flash:w:$<:i
 
 ispload: $(BUILD)/$(TARGET).hex
 	/usr/bin/avrdude -v -p atmega2560 -c usbasp -b 115200 -e -U lock:w:0x3F:m -U efuse:w:0xFD:m -U hfuse:w:0xD9:m -U lfuse:w:0xFF:m
@@ -73,7 +74,7 @@ bootloader:
 
 
 monitor:
-	picocom -b 115200 --flow n --noreset --quiet /dev/ttyACM0
+	picocom -b 115200 --flow n --noreset --quiet $(PORT)
 
 upload_monitor: upload monitor
 

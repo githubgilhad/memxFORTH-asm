@@ -13,6 +13,7 @@ LDFLAGS=-Wl,-Ttext=0
 
 SRC ?=  $(notdir $(CURDIR)).S
 TARGET := $(notdir $(CURDIR))
+PORT ?=  $(firstword $(wildcard /dev/ttyA-* /dev/ttyAr* /dev/ttyTot* /dev/ttyUSB* /dev/ttyACM* /dev/null) )
 
 OBJS=\
 	$(LIB_PREFIX)/Serial/usart0/$(BUILD)/usart0.o \
@@ -42,10 +43,10 @@ $(TARGET).dis: $(BUILD)/$(TARGET).elf Makefile
 	$(OBJDUMP) --disassemble --source --line-numbers --demangle -z --section=.text  --section=.data --section=.bss $< > $@
 
 upload: $(BUILD)/$(TARGET).hex
-	/usr/bin/avrdude -v -V -p atmega2560 -D -c wiring -b 115200 -P /dev/ttyACM0 -U flash:w:$<:i
+	/usr/bin/avrdude -v -V -p atmega2560 -D -c wiring -b 115200 -P $(PORT) -U flash:w:$<:i
 
 monitor:
-	picocom -b 115200 --flow n --noreset --quiet /dev/ttyACM0
+	picocom -b 115200 --flow n --noreset --quiet $(PORT)
 
 upload_monitor: upload monitor
 

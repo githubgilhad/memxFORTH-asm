@@ -29,6 +29,12 @@ loop:
 	rcall RX0_Read
 	tst r25
 	breq 1f ; pokud nic nepřišlo, nedelej nic
+	push r24
+	rcall TX0_Write ; blokuje dokud není volno
+	pop r24
+	cpi r24, 13
+	brne 1f ; neni enter
+	ldi r24, 10
 	rcall TX0_Write ; blokuje dokud není volno
 1:
 	ret

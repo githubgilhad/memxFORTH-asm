@@ -9,6 +9,9 @@ void setup(void) {
 	DDRF = 0xFF;
 	DDRK = 0xFF;
 	sei();
+	TX0_Write('#');
+	TX0_Write('#');
+	TX0_Write('#');
 }
 
 void loop(void) {
@@ -21,6 +24,8 @@ void loop(void) {
 	uint16_t ch = RX0_Read();
 	if (ch >> 8) { // Pokud r25 != 0
 		TX0_Write((char)(ch & 0xFF)); // Blokuje dokud není volno
+		if ((ch & 0xFF)==13)
+			TX0_Write(10); // Blokuje dokud není volno
 	}
 }
 
