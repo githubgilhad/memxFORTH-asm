@@ -51,11 +51,11 @@
 .endm			; }}}
 
 ; === RX/TX buffer velikosti
-.equ RX0_BUFFER_SIZE,64
-.equ RX0_BUFFER_THRESHOLD,16
-.equ TX0_BUFFER_SIZE,32
+.equ RX0_BUFFER_SIZE,32
+.equ RX0_BUFFER_THRESHOLD,8
+.equ TX0_BUFFER_SIZE,64
 
-; === Sekce dat
+; === data {{{
 .section .bss.LIBS
 ignoreme_1: .byte 0
 RX0_Count:		.byte 0	; if zero, head==tail means empty, if RX0_BUFFER_SIZE,  head==tail means full
@@ -67,15 +67,16 @@ TX0_Count:		.byte 0
 TX0_Head:		.byte 0
 TX0_Tail:		.byte 0
 TX0_Buffer:		.skip TX0_BUFFER_SIZE
+Hex_Buffer:		.skip 9	; 32bit string + \0
 ignoreme_2: .byte 0
-
+; === }}}
 .section .text.LIBS.main
 
 ; nop	; ctors end and trampolines will be here, lets have RESET named
 
 ; === setup()
 .global usart0_setup
-usart0_setup:		; destroy r24
+usart0_setup:		; destroy r24 {{{
 	sts RX0_Count, r1
 	sts RX0_Head,  r1
 	sts RX0_Tail,  r1
@@ -145,8 +146,9 @@ usart0_setup:		; destroy r24
 ;	cbi _SFR_IO_ADDR(EIMSK), INT3      ; zakazat INT3
 
 	ret
+; === }}}
 
-; === USART0 RX ISR
+; === USART0 RX ISR {{{
 
 .global __vector_25
 __vector_25:
@@ -181,14 +183,14 @@ USART0_RX_ISR:
 	sbi _SFR_IO_ADDR(RTS_PORT(PORT)), RTS_PIN	; if yes set RTS 
 	rjmp .L_RX0_exit
 RTS_CLEAR:
-	cbi _SFR_IO_ADDR(RTS_PORT(PORT)), RTS_PIN	;if not, clear RTS
+;	cbi _SFR_IO_ADDR(RTS_PORT(PORT)), RTS_PIN	;if not, clear RTS - do not clear, until buffer empty and RX0_Read occure
 
 .L_RX0_exit:
 	IRQ_pop_16_20_Z
 	IRQ_pop_entry
 	reti
-
-; === RX0_Read: Výstup r24 = znak, r25 = delka bufferu PRED ctenim (1..RX0_BUFFER_SIZE) pokud data, jinak 0; uses r18,r19,r20,Z
+; === }}}
+; === RX0_Read: Výstup r24 = znak, r25 = delka bufferu PRED ctenim (1..RX0_BUFFER_SIZE) pokud data, jinak 0; uses r18,r19,r20,Z {{{
 .global RX0_Read
 RX0_Read:
 	lds r18, RX0_Count
@@ -220,14 +222,14 @@ RX0_Read:
 	clr r24
 ;	clr r25
 	ret
-
-; === RX0_Available: r24 = RX0_Count (# of waiting chars)
+; === }}}
+; === RX0_Available: r24 = RX0_Count (# of waiting chars) {{{
 .global RX0_Available
 RX0_Available:
 	lds r24,RX0_Count
 	ret
-
-; === USART0 UDRE ISR	 - is output register empty?
+; === }}}
+; === USART0 UDRE ISR	 - is output register empty? {{{
 
 .global __vector_26
 __vector_26:
@@ -284,7 +286,8 @@ TX_send:
 	IRQ_pop_16_20_Z
 	IRQ_pop_entry
 	reti
-
+; === }}}
+; === INT0_ISR - reti now, FIXME {{{
 .global INT0_ISR
 INT0_ISR:	; called when CTS is low and send is still blocked
 reti
@@ -300,8 +303,8 @@ reti
 	reti
 
 
-
-; === TX0_Write: vstup r24 = znak, blokuje při plném bufferu, vystup r24 - aktualni delka bufferu; uses r18, r19, r20
+; === }}}
+; === TX0_Write: vstup r24 = znak, blokuje při plném bufferu, vystup r24 - aktualni delka bufferu; uses r18, r19, r20, Z {{{
 .global TX0_Write
 TX0_Write:
 	lds r18, TX0_Count
@@ -333,17 +336,100 @@ TX0_Write:
 	sts UCSR0B, r20
 	mov r24,r18
 	ret
-
-; === TX0_Used: output: r24 used space in TX buffer
+; === }}}
+; === TX0_Used: output: r24 used space in TX buffer {{{
 .global TX0_Used
 TX0_Used:
 	lds r24, TX0_Count
 	ret
-
-; === TX0_Free: output: r24 available space in TX buffer
+; === }}}
+; === TX0_Free: output: r24 available space in TX buffer {{{
 .global TX0_Free
 TX0_Free:
 	ldi r24, TX0_BUFFER_SIZE
 	lds r25, TX0_Count
 	sub r24,r25
 	ret
+; === }}}
+; === uint8_t TX0_WriteStr(char *c);	// Cstring, r24,r25 in, out r24=buf_used. BLOCKS if buffer full uses r24, r25, r22,r23 + TX0_Write (r18,r19,r20,Z) {{{ 
+.global TX0_WriteStr
+TX0_WriteStr:
+	movw r22, r24
+1:
+	movw r30, r22
+	ld r24,Z+
+	movw r22,r30
+	tst r24
+	breq 2f
+	rcall TX0_Write
+	rjmp 1b
+2:
+	rcall TX0_Used
+	ret
+; === }}}
+; === uint8_t TX0_WriteBin8(uint8_t h);	//  101010101010, r24=buf_used. BLOCKS if buffer full {{{
+.global TX0_WriteBin8
+TX0_WriteBin8:
+	mov r23, r24
+	ldi r21, 8
+1:
+	ldi r24, '0
+	lsl r23
+	adc r24, r1
+	rcall TX0_Write
+	dec r21
+	brne 1b
+	ret
+; === }}}
+; === uint8_t TX0_WriteHex8(uint8_t h);	//       0A, r24=buf_used. BLOCKS if buffer full {{{
+.global TX0_WriteHex8
+TX0_WriteHex8:
+	mov r23, r24
+	swap r24
+	rcall Hex4
+	rcall TX0_Write
+	mov r24,r23
+	rcall Hex4
+	rcall TX0_Write
+	ret
+; === }}}
+; === uint8_t TX0_WriteHex16(uint16_t h);	//     0A0D , r24=buf_used. BLOCKS if buffer full {{{
+.global TX0_WriteHex16
+TX0_WriteHex16:
+	mov r21,r24
+	mov r24, r25
+	rcall TX0_WriteHex8
+	mov r24,r21
+	rjmp TX0_WriteHex8
+; === }}}
+; === uint8_t TX0_WriteHex24(uint32_t h);	//   0A0D0C , r24=buf_used. BLOCKS if buffer full {{{
+.global TX0_WriteHex24
+TX0_WriteHex24:
+	mov r21,r23
+	rcall TX0_WriteHex8
+	mov r24, r21
+	rcall TX0_WriteHex8
+	mov r24,r22
+	rjmp TX0_WriteHex8
+; === }}}
+; === uint8_t TX0_WriteHex32(uint32_t h);	// 0A0D0C0D , r24=buf_used. BLOCKS if buffer full {{{
+.global TX0_WriteHex32
+TX0_WriteHex32:
+	push r22
+	push r23
+	rcall TX0_WriteHex16
+	pop r25
+	pop r24
+	rjmp TX0_WriteHex16
+; === }}}
+; === char Hex4(uint8_t h);	// '0'..'F', h & 0x0F {{{
+.global Hex4
+Hex4:
+	andi r24, 0xF
+	cpi r24, 10
+	brlo 1f
+	subi r24, - ('A - '0 -10)
+1:
+	subi r24, - '0
+ret
+; === }}}
