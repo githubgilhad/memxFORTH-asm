@@ -88,8 +88,7 @@ uint16_t mr,mt;
 uint16_t zz;
 uint16_t count=0;
 uint8_t res;
-#define loops 512
-#define diff 5
+#define loops 0xffff
 void setup(void) {
 	read_shared(0,0); //init
 	usart0_setup();
@@ -104,24 +103,40 @@ void setup(void) {
 	TX0_Write('#');
 	TX0_Write('#');
 	TX0_Write('#');
-	for (uint16_t i=0; i<=loops;i++ ) {
-		write_shared(0,i,(i+diff) &0xff);
-	};
-	for (uint16_t i=0; i<=loops;i++ ) {
-		res=read_shared(0,i);
-		if (((i+diff) & 0xff) != (res &0xff) ) {
-			TX0_WriteStr("\r\n mismatch at ");
-			TX0_WriteHex16(i);
-			TX0_WriteStr(" was ");
-			TX0_WriteHex8(i+diff);
-			TX0_WriteStr(" ( ");
-			TX0_WriteBin8(i+diff);
-			TX0_WriteStr(") is ");
-			TX0_WriteHex8(res);
-			TX0_WriteStr(" ( ");
-			TX0_WriteBin8(res);
-			TX0_WriteStr(" ) ");
-			TX0_WriteBin8(res ^ (i+diff));
+	DDRA=0xff;
+	for (uint8_t diff=0; diff<0xFF;diff ++) {
+		TX0_WriteStr("\r\n DIFF: ");
+		TX0_WriteHex8(diff);
+		for (uint8_t s16=0;s16<2;s16++) {
+			if (s16) TX0_Write('H'); else TX0_Write('L');
+			for (uint32_t i=0; i<=loops;i++ ) {
+				write_shared(s16,i,(i+diff) &0xff);
+				PORTA=i>>8;
+			};
+			for (uint32_t i=0; i<=loops;i++ ) {
+				PORTA=i>>8;
+				res=read_shared(s16,i);
+				if (((i+diff) & 0xff) != (res &0xff) ) {
+					TX0_WriteStr("\r\n mismatch at ");
+					if (s16) TX0_Write('H'); else TX0_Write('L');
+					TX0_WriteHex16(i);
+					TX0_WriteStr(" ( ");
+					TX0_WriteBin8(i >>8);
+					TX0_WriteBin8(i &0xff);
+					TX0_WriteStr(" ) was ");
+					TX0_WriteHex8(i+diff);
+					TX0_WriteStr(" ( ");
+					TX0_WriteBin8(i+diff);
+					TX0_WriteStr(") is ");
+					TX0_WriteHex8(res);
+					TX0_WriteStr(" ( ");
+					TX0_WriteBin8(res);
+					TX0_WriteStr(" ) ");
+					TX0_WriteBin8(res ^ (i+diff));
+					TX0_WriteStr(" - ");
+					TX0_WriteBin8((res-diff) ^ (i));
+				};
+			};
 		};
 	};
 	TX0_WriteStr("\r\n Test end \r\n");
