@@ -103,7 +103,6 @@ void setup(void) {
 	TX0_Write('#');
 	TX0_Write('#');
 	TX0_Write('#');
-	DDRA=0xff;
 	for (uint8_t diff=0; diff<0xFF;diff ++) {
 		TX0_WriteStr("\r\n DIFF: ");
 		TX0_WriteHex8(diff);
@@ -111,10 +110,8 @@ void setup(void) {
 			if (s16) TX0_Write('H'); else TX0_Write('L');
 			for (uint32_t i=0; i<=loops;i++ ) {
 				write_shared(s16,i,(i+diff) &0xff);
-				PORTA=i>>8;
 			};
 			for (uint32_t i=0; i<=loops;i++ ) {
-				PORTA=i>>8;
 				res=read_shared(s16,i);
 				if (((i+diff) & 0xff) != (res &0xff) ) {
 					TX0_WriteStr("\r\n mismatch at ");

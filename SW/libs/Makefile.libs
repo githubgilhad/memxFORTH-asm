@@ -17,6 +17,14 @@ $(BUILD)/:
 	mkdir -p $(BUILD)/
 
 
+$(BUILD)/%.o: %.c  | $(BUILD)/
+	$(CC) $(CFLAGS) -c $< -o $@
+	-$(OBJCOPY) -O binary $@ $@.bin
+
+$(BUILD)/%.o: %.cpp  | $(BUILD)/
+	$(CC) $(CFLAGS) -c $< -o $@
+	-$(OBJCOPY) -O binary $@ $@.bin
+
 $(BUILD)/%.o: %.S  | $(BUILD)/
 	$(CC) $(CFLAGS) -c $< -o $@
 	-$(OBJCOPY) -O binary $@ $@.bin
