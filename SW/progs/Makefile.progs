@@ -5,6 +5,8 @@ CC = avr-gcc
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 
+MAKEFLAGS += --no-print-directory
+
 LIB_PREFIX = ../../../libs
 Ilibs = -I$(LIB_PREFIX)
 
@@ -53,18 +55,33 @@ OBJS = $(BUILD)/$(TARGET).o $(LIB_OBJS)
 # ========== Build pravidla ==========
 
 
-all: $(BUILD)/$(TARGET).hex $(TARGET).dis | $(BUILD)/
+all: $(BUILD)/$(TARGET).hex $(TARGET).dis sizecheck | $(BUILD)/
 
-.PHONY: all upload ispload bootloader reset monitor upload_monitor clean
+.PHONY: all upload ispload bootloader reset monitor upload_monitor clean sizecheck
 %/:
 	mkdir -p $@
 
 $(BUILD)/$(TARGET).elf: $(OBJS) | $(BUILD)/
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+
+sizecheck: $(BUILD)/$(TARGET).elf
+	@avr-size  -A $(BUILD)/$(TARGET).elf | awk '/text/ {if($$2 > 262144) { \
+		printf "Program too big: 256 kB FLASH <  %d bytes\n", $$2; \
+			exit 1 \
+		} else { \
+			printf "Program size OK: %d bytes\n", $$2 \
+		} \
+	}'
+
 define LIB_RULE_template
 $(LIB_PREFIX)/$(1)/$(BUILD)/$(notdir $(1)).o: $(LIB_PREFIX)/$(1)/*
-	$(MAKE) -C $(LIB_PREFIX)/$(1) MCU=$(MCU) BUILD=$(BUILD) $(BUILD)/$(notdir $(1)).o
+	@$(MAKE) -C $(LIB_PREFIX)/$(1) MCU=$(MCU) BUILD=$(BUILD) $(BUILD)/$(notdir $(1)).o
 endef
+
+ifeq ($(wildcard $(TARGET).def),$(TARGET).def)
+$(BUILD)/$(TARGET).o: $(TARGET).def
+endif
 
 $(BUILD)/%.o: %.c  | $(BUILD)/
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -84,10 +101,10 @@ $(TARGET).dis: $(BUILD)/$(TARGET).elf Makefile
 	Elf.rb $(BUILD)/$(TARGET).elf $(BUILD)/$(TARGET).bin2 $(BUILD)/$(TARGET).xref2
 	AVRemu -d -m $(MCU)  -x $(BUILD)/$(TARGET).xref2 $(BUILD)/$(TARGET).bin2 >$(BUILD)/$(TARGET).dis2 || true
 
-upload: $(BUILD)/$(TARGET).hex reset
+upload: $(BUILD)/$(TARGET).hex reset sizecheck
 	/usr/bin/avrdude -v -V -p $(MCU) -D -c wiring -b 115200 -P $(PORT) -U flash:w:$<:i
 
-ispload: $(BUILD)/$(TARGET).hex
+ispload: $(BUILD)/$(TARGET).hex sizecheck 
 	/usr/bin/avrdude -v -p atmega2560 -c usbasp -b 115200 -e -U lock:w:0x3F:m -U efuse:w:0xFD:m -U hfuse:w:0xD1:m -U lfuse:w:0xBF:m
 	/usr/bin/avrdude -v -p $(MCU) -D -c usbasp -b 115200                 -U flash:w:$<:i
 
@@ -107,3 +124,4 @@ upload_monitor: upload monitor
 clean:
 	rm -f *.o *.elf *.hex *.dis 
 	rm -rf $(BUILD)
+	$(foreach lib,$(LIB_NAMES), $(MAKE) -C $(LIB_PREFIX)/$(lib) clean; )

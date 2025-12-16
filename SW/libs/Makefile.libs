@@ -5,7 +5,10 @@ CC = avr-gcc
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 
-CFLAGS ?= -mmcu=$(MCU) -Wall -Os -nostartfiles
+LIB_PREFIX = ../../../libs
+Ilibs = -I$(LIB_PREFIX)
+
+CFLAGS ?= -mmcu=$(MCU) -Wall -Os -nostartfiles $(Ilibs)
 
 TARGET := $(notdir $(CURDIR))
 
@@ -16,6 +19,9 @@ all: $(BUILD)/$(TARGET).o | $(BUILD)/
 $(BUILD)/:
 	mkdir -p $(BUILD)/
 
+ifeq ($(wildcard $(TARGET).def),$(TARGET).def)
+$(BUILD)/$(TARGET).o: $(TARGET).def
+endif
 
 $(BUILD)/%.o: %.c  | $(BUILD)/
 	$(CC) $(CFLAGS) -c $< -o $@

@@ -1,0 +1,13 @@
+// vim: ft=cpp showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list: tabstop=8 linebreak
+// ,,g = gcc, exactly one space after "set"
+
+#pragma once
+
+#define TextVGA_LINES 56
+#define TextVGA_ROWS 35
+#define TextVGA_SUBLINES 8
+#define TextVGA_FIRST_SCAN_LINE 50
+#define TextVGA_ACTIVE_SCAN_LINES TextVGA_SUBLINES*TextVGA_LINES
+#define TextVGA_LAST_SCAN_LINE (TextVGA_FIRST_SCAN_LINE + TextVGA_ACTIVE_SCAN_LINES)
+
+

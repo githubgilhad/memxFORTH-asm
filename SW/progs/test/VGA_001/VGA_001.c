@@ -23,7 +23,25 @@ ISR(TIMER1_OVF_vect) {
 if (vline++ <200) return;
 if (vline >400) return;
 PORTF=0x5A;
+asm volatile(
+	"lds r20, 0x0084 \n\t"
+	"andi r20, 0x07 \n\t"
+	"cpi r20, 0x07 \n\t"
+	"brcs .+0 \n\t"
+	"cpi r20, 0x06 \n\t"
+	"brcs .+0 \n\t"
+	"cpi r20, 0x05 \n\t"
+	"brcs .+0 \n\t"
+	"cpi r20, 0x04 \n\t"
+	"brcs .+0 \n\t"
+	"cpi r20, 0x03 \n\t"
+	"brcs .+0 \n\t"
+	"cpi r20, 0x02 \n\t"
+	"brcs .+0 \n\t"
+	"cpi r20, 0x01 \n\t"
+	"brcs .+0 \n\t"
 
+);
 uint32_t x;
 for (uint32_t i=0;i<15;i++) x=PINH;
 		DDRD |= _BV(2);
