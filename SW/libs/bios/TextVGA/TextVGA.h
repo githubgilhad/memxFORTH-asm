@@ -19,9 +19,8 @@ extern P_TextVGA_CharDef TextVGA_CharDef;
 
 // 3. Then make sure this (normal C) functions are called from respective IRQ handlers
 
-void TextVGA_TIMER1_COMPA_vect_handler();
-void TextVGA_TIMER3_OVF_vect_handler();
 void TextVGA_TIMER1_OVF_vect_handler();
+void TextVGA_TIMER3_OVF_vect_handler();
 
 extern isr_handler TextVGA_VerticalBlank; // if not NULL called in ISR after last line is drawn and lot of free time is ahead
 	// it is still in IRQ, so best approach is to just set few flags and bussy wait for them in main program

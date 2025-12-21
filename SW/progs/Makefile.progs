@@ -32,7 +32,7 @@ else
 endif
 
 TARGET := $(notdir $(CURDIR))
-SRC ?=  $(firstword $(wildcard $(TARGET).S $(TARGET).c ))
+SRC ?=  $(firstword $(wildcard $(TARGET).S $(TARGET).c $(TARGET).cpp))
 
 PORT ?=  $(firstword $(wildcard /dev/ttyA-* /dev/ttyAr* /dev/ttyTot* /dev/ttyUSB* /dev/ttyACM* /dev/null) )
 
@@ -84,6 +84,10 @@ $(BUILD)/$(TARGET).o: $(TARGET).def
 endif
 
 $(BUILD)/%.o: %.c  | $(BUILD)/
+	$(CC) $(CFLAGS) -c $< -o $@
+	-$(OBJCOPY) -O binary $@ $@.bin
+
+$(BUILD)/%.o: %.cpp  | $(BUILD)/
 	$(CC) $(CFLAGS) -c $< -o $@
 	-$(OBJCOPY) -O binary $@ $@.bin
 
