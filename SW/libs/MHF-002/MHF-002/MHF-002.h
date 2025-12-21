@@ -46,6 +46,9 @@
 #define set_input_all(name, instr)	do_reg_port__ r24, 0x00, instr, XCAT(DDR, name##_PORT)
 
 
+#define RCA_SIGNAL_PORT D
+#define RCA_SIGNAL_PIN 3
+
 #define RCA_SYNC_PORT E
 #define RCA_SYNC_PIN 4
 
