@@ -85,6 +85,7 @@ ISR(INT6_vect)
    uint8_t key;
     key=PINF;
     key=PINF;
+    key=PINF;	// with 1k  resistors it seems, that we need 2clocks to stabilise and we can read in 3. clock stable value.
    PORTE |= _BV(2); //high
    DDRF=0xff;
    PORTF=~key;
