@@ -21,7 +21,7 @@ FORTH_START: nop
 ; }}}
 .section .bss.FORTH
 .global FORTH_IRQ
-FORTH_IRQ: .byte 0		; bit 0 = IRQ, rest ignored
+FORTH_IRQ: .byte 0		; bit.0 = IRQ, rest ignored
 .global FORTH_IRQ_addr
 FORTH_IRQ_addr: .byte 0,0,0	; xt of handler
 
@@ -43,13 +43,13 @@ EXIT:		;  IP=popR();NEXT	{{{
 ; === fall thru NEXT === 		}}}
 
 ; === NEXT uses EIJMP to move
-; use: X,Y,Z r0,r2, r23,r24,r25
-; in:  IP=r2+Y
-; out: IP=r2+Y, DT=r0+X, eijmp(Z) 
+; use: X,Z r0,r5,r6,r7, r23,r24,r25
+; in:  IP=r5,r6,r7
+; out: IP=r5,r6,r7, DT=r0+X, eijmp(Z)
 
 .global NEXT
 NEXT: // DT=*IP++; jmp **DT++		{{{
-	lds Parsx_hlo, FORTH_IRQ
+	lds Parsx_hlo, FORTH_IRQ	; Parsx_hlo = scratch
 	sbrc Parsx_hlo,0
 	rjmp NEXT.IRQ		; if FORTH_IRQ jmp NEXT.IRQ
 	Set3 Zx, IP
@@ -68,7 +68,10 @@ NEXT.IRQ:
 	Set3 Zx, Parsx
 	out _SFR_IO_ADDR(EIND), Z_hlo
 	eijmp
+; === ====				}}}
+
 ; //////////////////////////////////////////
+; {{{ some old junk to decode ram/rom/other banks
 	//  DT=*IP++
 	sbrc IP_hlo,7	; skip if 0x80 not set (=FLASH)
 	rjmp 1f

@@ -17,11 +17,9 @@
 #define 	Parsx Parsx_lo, Parsx_hi, Parsx_hlo
 
 ;	Y + r2 are calee protected - will not change over calls
-#define 	IP_lo	YL	
-				; r28
-#define 	IP_hi	YH	
-				; r29
-#define 	IP_hlo	r2
+#define 	IP_lo	r5	
+#define 	IP_hi	r6	
+#define 	IP_hlo	r7
 #define 	IP	IP_lo, IP_hi, IP_hlo
 
 ;	C calls destroy X, but it is restored in NEXT and needed in DOCOL just after the NEXT
@@ -34,14 +32,16 @@
 #define 	DT	DT_lo, DT_hi, DT_hlo
 
 ;	Top Of the Stack is 24bit (calee protected)
-#define 	TOS_lo	r3
-#define 	TOS_hi	r4
-#define 	TOS_hlo	r5
+#define 	TOS_lo	r2
+#define 	TOS_hi	r3
+#define 	TOS_hlo	r4
 #define 	TOS	TOS_lo, TOS_hi, TOS_hlo
 
 ;	Stack is in RAM 0 (calee protected)
-#define 	ST_lo	r6
-#define 	ST_hi	r7
+#define 	ST_lo	YL
+				; r28
+#define 	ST_hi	YH
+				; r29
 ;	#define 	ST_hlo	0	// immediate
 #define 	ST	ST_lo, ST_hi
 

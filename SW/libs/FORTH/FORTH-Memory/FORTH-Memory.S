@@ -9,7 +9,7 @@ Memory_failed:
 	ret
 
 B3at:	; Parsx = [Zx+++] 
-	; in: Zx, out: r22,r23,r24 (as 3 bytes at Zx), Zx += 3 
+	; in: Zx, out: Parsx=r22,r23,r24 (as 3 bytes at Zx), Zx += 3
 	; check for 80+40=80 for RAM:
 	mov r21, Z_hlo
 	andi r21, 0x80+0x40
@@ -19,9 +19,9 @@ B3at:	; Parsx = [Zx+++]
 	breq B3at.store
 	rjmp Memory_failed	; fail, no address at all
 B3at.RAM:
-	ld r22, Z+
-	ld r23, Z+
-	ld r24, Z+
+	ld Parsx_lo, Z+
+	ld Parsx_hi, Z+
+	ld Parsx_hlo, Z+
 	tst ZH
 	brne B3at.RAM.ok
 	cpi ZL,4
@@ -44,9 +44,9 @@ B3at.42:
 
 B3at.40:
 	out _SFR_IO_ADDR(RAMPZ), Z_hlo	; only &0x03 is used
-	elpm r22, Z+
-	elpm r23, Z+
-	elpm r24, Z+
+	elpm Parsx_lo, Z+
+	elpm Parsx_hi, Z+
+	elpm Parsx_hlo, Z+
 	in Z_hlo, _SFR_IO_ADDR(RAMPZ)
 	ori Z_hlo, 0x40
 	clT
