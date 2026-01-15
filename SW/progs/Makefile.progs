@@ -48,7 +48,10 @@ PORT ?=  $(firstword $(wildcard /dev/ttyA-* /dev/ttyAr* /dev/ttyTot* /dev/ttyUSB
 LIB_NAMES := $(shell grep -o '\<LIBS:.*' $(SRC) | sed 's/^.*\<LIBS:\s*//' | tr ' ' '\n' | sort -u)
 LIB_OBJS := $(foreach lib,$(LIB_NAMES),$(LIB_PREFIX)/$(lib)/$(BUILD)/$(notdir $(lib)).o)
 
-OBJS = $(BUILD)/$(TARGET).o $(LIB_OBJS)
+LOC_LIB_NAMES := $(shell grep -o '\<LOCLIBS:.*' $(SRC) | sed 's/^.*\<LOCLIBS:\s*//' | tr ' ' '\n' | sort -u)
+LOC_LIB_OBJS := $(foreach lib,$(LOC_LIB_NAMES),$(BUILD)/$(notdir $(lib)).o)
+
+OBJS = $(BUILD)/$(TARGET).o $(LIB_OBJS) $(LOC_LIB_OBJS)
 
 # $(info $(LIB_LINES) ## $(LIBS) ## $(LIB_OBJS) )
 
