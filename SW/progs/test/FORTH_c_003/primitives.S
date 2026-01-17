@@ -4,96 +4,83 @@
 #include "../../../libs/FORTH/FORTH-Memory/FORTH-Memory.h"
 ;	#include "../../../libs/FORTH/FORTH-Engine/FORTH-Engine.h"
 
+#include "flags.h"
+
 ; External memory functions
 .extern W1at
 .extern W3at
 
 .section .text.FORTH.primitives
 
-; === Stack manipulation macros ===
-; These macros push/pop 24-bit values to/from the data stack
-; Stack grows down (decrement before store, increment after load)
-
-.macro PushST a_lo, a_hi, a_hlo
-	movw ZL, ST_lo
-	st -Z, \a_hlo
-	st -Z, \a_hi
-	st -Z, \a_lo
-	movw ST_lo, ZL
-.endm
-
-.macro PopST a_lo, a_hi, a_hlo
-	movw ZL, ST_lo
-	ld \a_lo, Z+
-	ld \a_hi, Z+
-	ld \a_hlo, Z+
-	movw ST_lo, ZL
-.endm
-
+; grep global primitives.S |sed "s@.global f_\(.*\)@DEFWORD w_\1,\t\t0,\t\"\1\",\t\tf_\1\t// @">primitives.words.inc
 ; === Stack operations ===
 
 ; DUP - duplicate top of stack
 ; ( a -- a a )
 .global f_dup
-f_dup:
+f_dup:	; {{{ #
 	PushST TOS
 	rjmp NEXT
+	; }}}
 
 ; DROP - drop top of stack
 ; ( a -- )
 .global f_drop
-f_drop:
+f_drop:	; {{{ #
 	PopST TOS
 	rjmp NEXT
+	; }}}
 
 ; SWAP - swap top two stack items
 ; ( a b -- b a )
 .global f_swap
-f_swap:
-	PopST Parsx		; Pop second item to Parsx
-	PushST TOS		; Push TOS to stack
-	Set3 TOS, Parsx		; Move Parsx to TOS
+f_swap:	; {{{ #
+	Set3 Parsx, TOS ; TOS (b) -> Parsx
+	ReadST_N 0, TOS ; a-> TOS
+	WriteST_N 0, Parsx  ; b -> stack
 	rjmp NEXT
+	; }}}
 
 ; OVER - copy second stack item to top
 ; ( a b -- a b a )
 .global f_over
-f_over:
-	PopST Parsx		; Pop second item (a) to Parsx
+f_over:	; {{{ #
+	ReadST_N 0, Parsx   ; read (a)
 	PushST TOS		; Push TOS (b) to stack
-	PushST Parsx		; Push second item (a) back
-	PushST TOS		; Push TOS (b) again
 	Set3 TOS, Parsx		; Set TOS to (a)
 	rjmp NEXT
+	; }}}
 
 ; === Arithmetic operations ===
 
 ; + - add top two stack items
 ; ( a b -- a+b )
 .global f_plus
-f_plus:
+f_plus:	; {{{ #
 	PopST Parsx		; Pop second item to Parsx
 	add TOS_lo, Parsx_lo
 	adc TOS_hi, Parsx_hi
 	adc TOS_hlo, Parsx_hlo
 	rjmp NEXT
+	; }}}
 
 ; - - subtract top from second
 ; ( a b -- a-b )
 .global f_minus
-f_minus:
+f_minus:	; {{{ #
 	PopST Parsx		; Pop second item to Parsx
 	sub Parsx_lo, TOS_lo
 	sbc Parsx_hi, TOS_hi
 	sbc Parsx_hlo, TOS_hlo
 	Set3 TOS, Parsx
 	rjmp NEXT
+	; }}}
 
 ; * - multiply top two stack items (24-bit result, may overflow)
 ; ( a b -- a*b )
 ; Full 24-bit multiplication: Parsx * TOS -> TOS
 .global f_times
-f_times:
+f_times:	; {{{ #
 	PopST Parsx		; Pop second item (a) to Parsx
 	; 24-bit × 24-bit multiplication
 	; Result can be up to 48 bits, but we only keep 24 bits
@@ -153,12 +140,13 @@ f_times:
 	pop r17
 	pop r16
 	rjmp NEXT
+	; }}}
 
 ; / - divide second by top
 ; ( a b -- a/b )
 ; Full 24-bit unsigned division: Parsx / TOS -> TOS
 .global f_div
-f_div:
+f_div:	; {{{ #
 	PopST Parsx		; Pop dividend (a) to Parsx
 	
 	; Check for division by zero
@@ -242,22 +230,24 @@ f_div.skip:
 	pop r17
 	pop r16
 	rjmp NEXT
+	; }}}
 
 ; === Memory operations ===
 
 ; @ - fetch cell from address
 ; ( addr -- value )
 .global f_at
-f_at:
+f_at:	; {{{ #
 	Set3 Zx, TOS
 	call B3at
 	Set3 TOS, Parsx
 	rjmp NEXT
+	; }}}
 
 ; ! - store cell to address
 ; ( value addr -- )
 .global f_store
-f_store:
+f_store:	; {{{ #
 	PopST Parsx		; Pop address to Parsx
 	Set3 Zx, Parsx
 	; Store TOS to address using W3at
@@ -273,22 +263,24 @@ f_store:
 	pop Parsx_lo
 	PopST TOS		; Pop new TOS (was value, now get next item)
 	rjmp NEXT
+	; }}}
 
 ; C@ - fetch byte from address
 ; ( addr -- byte )
 .global f_char_at
-f_char_at:
+f_char_at:	; {{{ #
 	Set3 Zx, TOS
 	call B1at
-	mov TOS_lo, r24
+	mov TOS_lo, Parsx_lo
 	clr TOS_hi
 	clr TOS_hlo
 	rjmp NEXT
+	; }}}
 
 ; C! - store byte to address
 ; ( byte addr -- )
 .global f_char_store
-f_char_store:
+f_char_store:	; {{{ #
 	PopST Parsx		; Pop address to Parsx
 	Set3 Zx, Parsx
 	; W1at expects: Zx = address, Parsx_lo = byte to write
@@ -303,13 +295,14 @@ f_char_store:
 	pop Parsx_lo
 	PopST TOS		; Pop new TOS (was byte, now get next item)
 	rjmp NEXT
+	; }}}
 
 ; === I/O operations ===
 
 ; KEY - read character from serial
 ; ( -- char )
 .global f_key
-f_key:
+f_key:	; {{{ #
 	; Save TOS and call RX0_Read
 	PushST TOS		; Push old TOS (if any)
 	call RX0_Read
@@ -317,34 +310,38 @@ f_key:
 	mov TOS_hi, r25
 	clr TOS_hlo		; Clear high byte (24-bit value)
 	rjmp NEXT
+	; }}}
 
 ; EMIT - output character to serial
 ; ( char -- )
 .global f_emit
-f_emit:
+f_emit:	; {{{ #
 	mov r24, TOS_lo		; Move char to r24 for TX0_Write
 	call TX0_Write
 	PopST TOS		; Pop new TOS (was char, now get next item)
 	rjmp NEXT
+	; }}}
 
 ; === Control flow ===
 
 ; EXIT - exit from word
 .global f_exit
-f_exit:
+f_exit:	; {{{ #
 	rjmp EXIT
+	; }}}
 
 ; DOCOL - enter colon word
 .global f_docol
-f_docol:
+f_docol:	; {{{ #
 	rjmp DOCOL
+	; }}}
 
 ; === Literal operations ===
 
 ; LIT - push literal value
 ; ( -- value )
 .global f_lit
-f_lit:
+f_lit:	; {{{ #
 	; IP points to the literal value
 	Set3 Zx, IP
 	call B3at
@@ -352,3 +349,23 @@ f_lit:
 	PushST TOS		; Push old TOS
 	Set3 TOS, Parsx		; Set TOS to literal value
 	rjmp NEXT
+	; }}}
+
+.section .FORTH_data.words, "a", @progbits
+
+FORTH_WORDS_START:	; {{{ trick for STOP value for search: 0.header with none data
+.global FORTH_WORDS_START
+.type   FORTH_WORDS_START,@object
+	P24 0		// prev header none
+1:
+FORTH_WORDS_START.attr:
+.type   FORTH_WORDS_START.attr,@object
+	.byte FLG_HIDDEN
+	.byte 0 //len 0 + FLG_HIDDEN = impossible to find
+	// zero bytes of name here
+	P24 0		// emty codeword
+	; }}}
+
+	// ;;; word definitions
+#include "primitives.words.inc"
+.align 2

@@ -5,7 +5,8 @@
 .section .text.FORTH.main.libs
 .global B1at, B3at, W1at, W3at, Memory_failed
 
-B1at:	; Parsx = [Zx+++] 
+B1at:	; {{{ read 1 byte at; in: Zx, out: Parsx=r22,r23,r24 (as 1 byte at Zx), Zx += 1
+	; Parsx = [Zx+++] 
 	; in: Zx, out: Parsx=r22,r23,r24 (as 1 byte at Zx), Zx += 1
 	; check for 80+40=80 for RAM:
 	mov r21, Z_hlo
@@ -16,13 +17,13 @@ B1at:	; Parsx = [Zx+++]
 	breq B1at.store
 	rjmp Memory_failed	; fail, no address at all
 B1at.RAM:
-	ld Parsx_lo, Z+
+	ld Parsx_lo, Z+		; one byte may be read anywhere
 	clr Parsx_hi
 	clr Parsx_hlo
-	tst ZH
+	tst ZH			; but fail, if wrapped to 0000, continuing would be wrong 
 	brne B1at.RAM.ok
-	cpi ZL,1
-	brlo Memory_failed
+	tst ZL
+	breq Memory_failed
 				; fall thru
 B1at.RAM.ok:
 	clT
@@ -52,8 +53,8 @@ B1at.44:
 	rjmp Memory_failed	; now we cannot use Shared memory
 	; }}}
 
-
-B3at:	; Parsx = [Zx+++] 
+B3at:	; {{{ Read 3 bytes at; in: Zx, out: Parsx=r22,r23,r24 (as 3 bytes at Zx), Zx += 3
+	; Parsx = [Zx+++] 
 	; in: Zx, out: Parsx=r22,r23,r24 (as 3 bytes at Zx), Zx += 3
 	; check for 80+40=80 for RAM:
 	mov r21, Z_hlo
@@ -104,7 +105,8 @@ Memory_failed:
 	seT
 	ret
 
-W1at:	; [Zx++] = Parsx_lo (1 byte)
+W1at:	; {{{ Write 1 byte at; in: Zx, Parsx_lo=r22, out: Zx += 1
+	; [Zx++] = Parsx_lo (1 byte)
 	; in: Zx, Parsx_lo=r22, out: Zx += 1
 	; check for RAM (0x80) vs FLASH/other
 	mov r21, Z_hlo
@@ -113,16 +115,18 @@ W1at:	; [Zx++] = Parsx_lo (1 byte)
 	breq W1at.RAM
 	rjmp Memory_failed	; FLASH is read-only, fail
 W1at.RAM:
-	st Z+, Parsx_lo
-	tst ZH
+	st Z+, Parsx_lo		; one byte may be store anywhere
+	tst ZH			; but fail, if wrapped to 0000, continuing would be wrong
 	brne W1at.RAM.ok
-	cpi ZL, 1
-	brlo Memory_failed
+	tst ZL
+	breq Memory_failed
 W1at.RAM.ok:
 	clT
 	ret
+	; }}}
 
-W3at:	; [Zx+++] = Parsx (3 bytes)
+W3at:	; {{{ Write 3 bytes at; in: Zx, Parsx=r22,r23,r24, out: Zx += 3
+	; [Zx+++] = Parsx (3 bytes)
 	; in: Zx, Parsx=r22,r23,r24, out: Zx += 3
 	; check for RAM (0x80) vs FLASH/other
 	mov r21, Z_hlo
@@ -131,13 +135,16 @@ W3at:	; [Zx+++] = Parsx (3 bytes)
 	breq W3at.RAM
 	rjmp Memory_failed	; FLASH is read-only, fail
 W3at.RAM:
+	cpi ZH, 0xFF
+	brne 1f
+	cpi ZL, 0xFE
+	brlo 1f
+	rjmp Memory_failed	; owerflow over FFFF
+1:
 	st Z+, Parsx_lo
 	st Z+, Parsx_hi
 	st Z+, Parsx_hlo
-	tst ZH
-	brne W3at.RAM.ok
-	cpi ZL, 4
-	brlo Memory_failed
 W3at.RAM.ok:
 	clT
 	ret
+	; }}}

@@ -10,7 +10,7 @@
 #define DST_SIZE 30
 #define RST_SIZE 30
 
-struct P24 { uint8_t lo, hi, hlo; } P24;
+struct P24 { uint8_t lo, hi, hlo; };
 
 struct P24 DataStack[DST_SIZE];
 struct P24 *DataStackFirst = &DataStack[0];
@@ -110,7 +110,8 @@ TEXT int main(void) {
 	
 	// For now, just echo serial input
 	// Later, this will start FORTH interpreter
-	FORTH_start((uint32_t)&f_dup);
+	FORTH_start((uint32_t)(uintptr_t)&f_dup); // for now any address is fine, will be replaced by real FORTH interpreter later
+
 	while (1) {
 		loop();
 	}

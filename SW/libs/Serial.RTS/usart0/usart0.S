@@ -61,13 +61,25 @@ ignoreme_1: .byte 0
 RX0_Count:		.byte 0	; if zero, head==tail means empty, if RX0_BUFFER_SIZE,  head==tail means full
 RX0_Head:		.byte 0	; new character will came here
 RX0_Tail:		.byte 0	; outcoming character will came from here
-RX0_Buffer:		.skip RX0_BUFFER_SIZE	; data
+RX0_Buffer:		.zero RX0_BUFFER_SIZE	; data
 
 TX0_Count:		.byte 0
 TX0_Head:		.byte 0
 TX0_Tail:		.byte 0
 TX0_Buffer:		.skip TX0_BUFFER_SIZE
 Hex_Buffer:		.skip 9	; 32bit string + \0
+
+.type RX0_Count, @object
+.type RX0_Head, @object
+.type RX0_Tail, @object
+.type RX0_Buffer, @object
+
+.type TX0_Count, @object
+.type TX0_Head, @object
+.type TX0_Tail, @object
+.type TX0_Buffer, @object
+.type Hex_Buffer, @object
+
 ignoreme_2: .byte 0
 ; === }}}
 .section .text.LIBS.main

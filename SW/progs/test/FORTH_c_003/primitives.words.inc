@@ -1,0 +1,17 @@
+DEFWORD w_dup,		0,	"dup",		f_dup	// 
+DEFWORD w_drop,		0,	"drop",		f_drop	// 
+DEFWORD w_swap,		0,	"swap",		f_swap	// 
+DEFWORD w_over,		0,	"over",		f_over	// 
+DEFWORD w_plus,		0,	"plus",		f_plus	// 
+DEFWORD w_minus,		0,	"minus",		f_minus	// 
+DEFWORD w_times,		0,	"times",		f_times	// 
+DEFWORD w_div,		0,	"div",		f_div	// 
+DEFWORD w_at,		0,	"at",		f_at	// 
+DEFWORD w_store,		0,	"store",		f_store	// 
+DEFWORD w_char_at,		0,	"char_at",		f_char_at	// 
+DEFWORD w_char_store,		0,	"char_store",		f_char_store	// 
+DEFWORD w_key,		0,	"key",		f_key	// 
+DEFWORD w_emit,		0,	"emit",		f_emit	// 
+DEFWORD w_exit,		0,	"exit",		f_exit	// 
+DEFWORD w_docol,		0,	"docol",		f_docol	// 
+DEFWORD w_lit,		0,	"lit",		f_lit	// 
