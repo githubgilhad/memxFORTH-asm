@@ -139,6 +139,7 @@ f_times:	; {{{ #
 	pop r18
 	pop r17
 	pop r16
+	clr r1
 	rjmp NEXT
 	; }}}
 
