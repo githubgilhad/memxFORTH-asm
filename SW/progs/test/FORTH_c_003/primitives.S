@@ -248,19 +248,11 @@ f_at:	; {{{ #
 ; ( value addr -- )
 .global f_store
 f_store:	; {{{ #
-	PopST Parsx		; Pop address to Parsx
-	Set3 Zx, Parsx
-	; Store TOS to address using W3at
+	PopST Parsx		; Pop value to Parsx
+	Set3 Zx, TOS	; Set address to Zx
+	; Store NTOS to address in TOS using W3at
 	; W3at expects: Zx = address, Parsx = value to write
-	; We need to swap: save TOS to temp, move Parsx to Parsx, move TOS to Parsx
-	push Parsx_lo
-	push Parsx_hi
-	push Parsx_hlo
-	Set3 Parsx, TOS		; Move TOS (value) to Parsx for W3at
 	call W3at		; Write 3 bytes: [Zx] = Parsx, Zx += 3
-	pop Parsx_hlo
-	pop Parsx_hi
-	pop Parsx_lo
 	PopST TOS		; Pop new TOS (was value, now get next item)
 	rjmp NEXT
 	; }}}
@@ -281,18 +273,10 @@ f_char_at:	; {{{ #
 ; ( byte addr -- )
 .global f_char_store
 f_char_store:	; {{{ #
-	PopST Parsx		; Pop address to Parsx
-	Set3 Zx, Parsx
-	; W1at expects: Zx = address, Parsx_lo = byte to write
-	; Save original Parsx, move TOS_lo to Parsx_lo
-	push Parsx_lo
-	push Parsx_hi
-	push Parsx_hlo
-	mov Parsx_lo, TOS_lo	; Move byte to Parsx_lo for W1at
+	PopST Parsx		; Pop value to Parsx
+	Set3 Zx, TOS
+	; W1at expects: Zx = address, Parsx_lo = byte to write, ignores Parsx_hi,Parsx_hlo
 	call W1at		; Write 1 byte: [Zx] = Parsx_lo, Zx += 1
-	pop Parsx_hlo
-	pop Parsx_hi
-	pop Parsx_lo
 	PopST TOS		; Pop new TOS (was byte, now get next item)
 	rjmp NEXT
 	; }}}

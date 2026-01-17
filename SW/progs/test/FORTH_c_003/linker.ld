@@ -17,7 +17,7 @@ __USER_SIGNATURE_REGION_LENGTH__ = DEFINED(__USER_SIGNATURE_REGION_LENGTH__) ? _
 MEMORY
 {
   text   (rx)   : ORIGIN = __TEXT_REGION_ORIGIN__, LENGTH = __TEXT_REGION_LENGTH__
-  flashdata (r) : ORIGIN = __TEXT_REGION_ORIGIN__, LENGTH = __TEXT_REGION_LENGTH__
+  flashdata (r) : ORIGIN = __TEXT_REGION_ORIGIN__, LENGTH = __TEXT_REGION_LENGTH__ /* flashdata is placed over text, but setion FORTH_data set its start to right place later */
   data   (rw!x) : ORIGIN = __DATA_REGION_ORIGIN__, LENGTH = __DATA_REGION_LENGTH__
   eeprom (rw!x) : ORIGIN = 0x810000, LENGTH = __EEPROM_REGION_LENGTH__
   fuse      (rw!x) : ORIGIN = 0x820000, LENGTH = __FUSE_REGION_LENGTH__
@@ -172,13 +172,6 @@ SECTIONS
     *(.jumptables*)
     _etext = . ;
   }  > text
-  .FORTH_data __data_load_end :
-  {
-      . = ALIGN(2);
-    *(.FORTH_data.*)
-      . = ALIGN(2);
-      _eforth = . ;
-  }  > flashdata
   .data          :
   {
      PROVIDE (__data_start = .) ;
@@ -202,6 +195,13 @@ SECTIONS
   }  > data
    __data_load_start = LOADADDR(.data);
    __data_load_end = __data_load_start + SIZEOF(.data);
+  .FORTH_data __data_load_end :
+  {
+      . = ALIGN(2);
+    *(.FORTH_data.*)
+      . = ALIGN(2);
+      _eforth = . ;
+  }  > flashdata
   /* Global data not cleared after reset.  */
   .noinit  ADDR(.bss) + SIZEOF (.bss)  :  AT (ADDR (.noinit))
   {
