@@ -5,7 +5,7 @@ CC = avr-gcc
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 
-MAKEFLAGS += --no-print-directory
+MAKEFLAGS += --no-print-directory --no-builtin-rules
 
 LIB_PREFIX = ../../../libs
 Ilibs = -I$(LIB_PREFIX)
@@ -59,6 +59,8 @@ OBJS = $(BUILD)/$(TARGET).o $(LIB_OBJS) $(LOC_LIB_OBJS)
 
 
 all: $(BUILD)/$(TARGET).hex $(TARGET).dis sizecheck | $(BUILD)/
+
+-include Makefile.local
 
 .PHONY: all upload ispload bootloader reset monitor upload_monitor clean sizecheck
 %/:

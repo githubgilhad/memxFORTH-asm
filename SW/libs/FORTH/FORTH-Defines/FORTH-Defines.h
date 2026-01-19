@@ -38,22 +38,22 @@
 #define 	TOS	TOS_lo, TOS_hi, TOS_hlo
 
 ;	Stack is in RAM 0 (calee protected)
-#define 	ST_lo	YL
+#define 	DST_lo	YL
 				; r28
-#define 	ST_hi	YH
+#define 	DST_hi	YH
 				; r29
-#define 	ST_hlo	r1
-				; ST_hlo is zero
-#define 	ST	ST_lo, ST_hi
-#define 	ST3	ST_lo, ST_hi, ST_hlo
+#define 	DST_hlo	r1
+				; DST_hlo is zero
+#define 	DST	DST_lo, DST_hi
+#define 	DST3	DST_lo, DST_hi, DST_hlo
 
 ;	Return Stack is in RAM 0 (calee protected)
-#define 	RS_lo	r2
-#define 	RS_hi	r3
-#define 	RS_hlo	r1
-				; RS_hlo is zero
-#define 	RS	RS_lo, RS_hi
-#define 	RS3	RS_lo, RS_hi, RS_hlo
+#define 	RST_lo	r2
+#define 	RST_hi	r3
+#define 	RST_hlo	r1
+				; RST_hlo is zero
+#define 	RST	RST_lo, RST_hi
+#define 	RST3	RST_lo, RST_hi, RST_hlo
 
 .macro LINE_16 reg
 #ifdef USE_LINE_16

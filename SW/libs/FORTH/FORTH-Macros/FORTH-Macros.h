@@ -8,25 +8,25 @@
 ; These macros push/pop 24-bit values to/from the data stack
 ; Stack grows down (decrement before store, increment after load)
 
-.macro PushST a_lo, a_hi, a_hlo	; {{{ # push "a"  to  ST, 3B (no TOS)
-	movw ZL, ST_lo
+.macro PushST a_lo, a_hi, a_hlo	; {{{ # push "a"  to  DST, 3B (no TOS)
+	movw ZL, DST_lo
 	st -Z, \a_hlo
 	st -Z, \a_hi
 	st -Z, \a_lo
-	movw ST_lo, ZL
+	movw DST_lo, ZL
 .endm
 	; }}}
-.macro PopST a_lo, a_hi, a_hlo	; {{{ #  pop  "a" from ST, 3B (no TOS)
-	movw ZL, ST_lo
+.macro PopST a_lo, a_hi, a_hlo	; {{{ #  pop  "a" from DST, 3B (no TOS)
+	movw ZL, DST_lo
 	ld \a_lo, Z+
 	ld \a_hi, Z+
 	ld \a_hlo, Z+
-	movw ST_lo, ZL
+	movw DST_lo, ZL
 .endm
 	; }}}
 
 .macro ReadST_N N,a_lo, a_hi, a_hlo	; {{{ # read N-th item from real Data Stack into registers (N=>0, no TOS) (a b -- a b ; N=0 => a fetched)
-	movw ZL, ST_lo
+	movw ZL, DST_lo
     .if \N != 0
         addiw ZL, (\N-1)*3
     .endif
@@ -36,7 +36,7 @@
 .endm
 	; }}}
 .macro WriteST_N N,a_lo, a_hi, a_hlo	; {{{ # write from registers into N-th item on real Data Stack (N=>0, no TOS) (a b -- c b ; c in registers, N=0 )
-	movw ZL, ST_lo
+	movw ZL, DST_lo
     .if \N != 0
         addiw ZL, (\N-1)*3
     .endif
@@ -46,20 +46,20 @@
 .endm
 	; }}}
 
-.macro PushR a_lo, a_hi, a_hlo	; {{{ # push "a" to RS, 3B
-	movw ZL, RS_lo
+.macro PushR a_lo, a_hi, a_hlo	; {{{ # push "a" to RST, 3B
+	movw ZL, RST_lo
 	st -Z, \a_hlo
 	st -Z, \a_hi
 	st -Z, \a_lo
-	movw RS_lo,ZL
+	movw RST_lo,ZL
 .endm	
 	; }}}
-.macro PopR a_lo, a_hi, a_hlo	; {{{ # pop "a" from RS, 3B
-	movw ZL, RS_lo
+.macro PopR a_lo, a_hi, a_hlo	; {{{ # pop "a" from RST, 3B
+	movw ZL, RST_lo
 	ld \a_lo,  Z+
 	ld \a_hi,  Z+
 	ld \a_hlo, Z+
-	movw RS_lo,ZL
+	movw RST_lo,ZL
 .endm			; }}}
 
 .macro Set2 a_lo, a_hi,  b_lo, b_hi ; {{{ #  "a" = "b", 2B
@@ -70,6 +70,31 @@
 	mov \a_hlo, \b_hlo
 .endm			; }}}
 
+; === Load immediate + Load immediate indirect ===
+.macro Ldi2 a_lo, a_hi,  address ; {{{ #  LDI "a", address, 2B
+	ldi \a_lo, lo8(\address)
+	ldi \a_hi, hi8(\address)
+.endm			; }}}
+.macro Ldi3 a_lo, a_hi, a_hlo,  address ; {{{ #  LDI "a", address, 3B
+	ldi \a_lo, lo8(\address)
+	ldi \a_hi, hi8(\address)
+	ldi \a_hlo, hlo8(\address)
+.endm			; }}}
+
+.macro Ldi2i a_lo, a_hi,  address ; {{{ #  LDI "a", address, 2B (via r18:r19)
+	ldi r18, lo8(\address)
+	ldi r19, hi8(\address)
+	movw \a_lo, r18
+.endm			; }}}
+.macro Ldi3i a_lo, a_hi, a_hlo,  address ; {{{ #  LDI "a", address, 3B (via r18:r19)
+	ldi r18, lo8(\address)
+	ldi r19, hi8(\address)
+	movw \a_lo, r18
+	ldi r18, hlo8(\address)
+	mov \a_hlo, r18
+.endm			; }}}
+
+; === Load direct + Store direct ===
 .macro Lds2 a_lo, a_hi,  address ; {{{ #  LDS "a", address, 2B
 	lds \a_lo, \address
 	lds \a_hi, \address+1
@@ -78,6 +103,37 @@
 	lds \a_lo, \address
 	lds \a_hi, \address+1
 	lds \a_hlo, \address+2
+.endm			; }}}
+
+.macro Sts2 address, a_lo, a_hi ; {{{ #  STS address, "a", 2B
+	sts \address,   \a_lo
+	sts \address+1, \a_hi
+.endm			; }}}
+.macro Sts3 address, a_lo, a_hi, a_hlo ; {{{ #  STS address, "a" 3B
+	sts \address,   \a_lo
+	sts \address+1, \a_hi
+	sts \address+2, \a_hlo
+.endm			; }}}
+
+; === Load via Z+ + Store via Z+ ===
+.macro Ld2Z a_lo, a_hi ; {{{ #  LD "a", Z++, 2B
+	ld \a_lo, Z+
+	ld \a_hi, Z+
+.endm			; }}}
+.macro Ld3Z a_lo, a_hi, a_hlo	 ; {{{ #  LD "a", Z+++, 3B
+	ld \a_lo,  Z+
+	ld \a_hi,  Z+
+	ld \a_hlo, Z+
+.endm			; }}}
+
+.macro St2Z a_lo, a_hi ; {{{ #  STS address, "a", 2B
+	st Z+, \a_lo
+	st Z+, \a_hi
+.endm			; }}}
+.macro St3Z a_lo, a_hi, a_hlo ; {{{ #  STS address, "a" 3B
+	st Z+, \a_lo
+	st Z+, \a_hi
+	st Z+, \a_hlo
 .endm			; }}}
 
 

@@ -10,15 +10,15 @@
 #define DST_SIZE 30
 #define RST_SIZE 30
 
-struct P24 { uint8_t lo, hi, hlo; };
+#include "user_offsets.c"
 
-struct P24 DataStack[DST_SIZE];
-struct P24 *DataStackFirst = &DataStack[0];
-struct P24 *DataStackLast = &DataStack[DST_SIZE - 1];
+P24 DataStack[DST_SIZE];
+P24 *DataStackFirst = &DataStack[0];
+P24 *DataStackLast = &DataStack[DST_SIZE - 1];
 
-struct P24 ReturnStack[RST_SIZE];
-struct P24 *ReturnStackFirst = &ReturnStack[0];
-struct P24 *ReturnStackLast = &ReturnStack[RST_SIZE - 1];
+P24 ReturnStack[RST_SIZE];
+P24 *ReturnStackFirst = &ReturnStack[0];
+P24 *ReturnStackLast = &ReturnStack[RST_SIZE - 1];
 
 // External FORTH primitives
 extern void f_dup(void);
@@ -104,14 +104,20 @@ TEXT void loop(void) {
 //	__asm__ __volatile__ ("jmp NEXT \n\t");
 //	NEXT();
 }
-
+User User_test;
 TEXT int main(void) {
 	setup();
 	
 	// For now, just echo serial input
 	// Later, this will start FORTH interpreter
-	FORTH_start((uint32_t)(uintptr_t)&f_dup); // for now any address is fine, will be replaced by real FORTH interpreter later
-
+//	FORTH_start((uint32_t)(uintptr_t)&f_dup); // for now any address is fine, will be replaced by real FORTH interpreter later
+	User_test.IP=(uint32_t)(uintptr_t)&w_test_cw;
+	User_test.DST=&DataStack[DST_SIZE];
+	User_test.RST=&ReturnStack[RST_SIZE];
+	User_test.TOS=0xCACAA7;
+	User_test.DT=0xCACAA7;
+	C2FORTH(&User_test, (uint32_t)(uintptr_t)&run_in_FORTH_xt_in_IP);
+	TX0_WriteHex24(User_test.TOS);
 	while (1) {
 		loop();
 	}

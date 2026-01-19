@@ -5,6 +5,7 @@
 ;	#include "../../../libs/FORTH/FORTH-Engine/FORTH-Engine.h"
 
 #include "flags.h"
+#include "user_offsets.inc"
 
 ; External memory functions
 .extern W1at
@@ -353,4 +354,10 @@ FORTH_WORDS_START.attr:
 
 	// ;;; word definitions
 #include "primitives.words.inc"
+DEFWORD w_test,		0,	"test",		f_docol		// just test
+	P24 w_lit
+	.byte 0x21,0,0
+	P24 w_dup_cw
+	P24 w_plus_cw
+	P24 w_exit_cw
 .align 2

@@ -1,0 +1,8 @@
+
+OBJS += $(BUILD)/C2forth.o
+$(BUILD)/FORTH_c_003.o: user_offsets.c
+$(BUILD)/primitives.o: user_offsets.inc
+user_offsets.inc: user_offsets.s
+	grep "\.equ" $< >$@
+user_offsets.s: user_offsets.c
+	avr-gcc -mmcu=atmega2560 -S user_offsets.c
