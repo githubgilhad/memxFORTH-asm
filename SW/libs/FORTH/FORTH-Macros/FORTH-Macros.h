@@ -126,21 +126,32 @@
 	ld \a_hlo, Z+
 .endm			; }}}
 
-.macro St2Z a_lo, a_hi ; {{{ #  STS address, "a", 2B
+.macro St2Z a_lo, a_hi ; {{{ #  ST Z++, "a", 2B
 	st Z+, \a_lo
 	st Z+, \a_hi
 .endm			; }}}
-.macro St3Z a_lo, a_hi, a_hlo ; {{{ #  STS address, "a" 3B
+.macro St3Z a_lo, a_hi, a_hlo ; {{{ #  ST Z+++, "a" 3B
 	st Z+, \a_lo
 	st Z+, \a_hi
 	st Z+, \a_hlo
 .endm			; }}}
 
+; === convert byte address to word address ===
+.macro Div2 a_lo, a_hi, a_hlo ; {{{ #  SHR "a" 3B
+	asr \a_hlo
+	ror \a_hi
+	ror \a_lo
+.endm			; }}}
 
 .macro P24 addr	; {{{ store 3B address
 	.byte lo8(\addr)
 	.byte hi8(\addr)
 	.byte hlo8(\addr)
+.endm		; }}}
+.macro P24f addr	; {{{ store 3B address - cannot do for data
+	.byte lo8(\addr / 2 )
+	.byte hi8(\addr / 2 )
+	.byte hlo8(\addr / 2)
 .endm		; }}}
 .macro DEFWORD lbl, attr, name, codeword, final_data_label="none"	// {{{ final_data_label = optional data label
 	.global \lbl

@@ -102,6 +102,7 @@ run_in_FORTH_xt_in_IP:	; {{{ run_in_FORTH_xt_in_IP(User *data); run xt stored in
 	call B3at
 	Set3 DT, Zx		; Parsx=*DT; DT+=3
 	Set3 Zx, Parsx
+	Div2 Zx
 	out _SFR_IO_ADDR(EIND), Z_hlo
 	eicall			; call, so we return *Parsx (it is FORTH function with NEXT)
 	ret

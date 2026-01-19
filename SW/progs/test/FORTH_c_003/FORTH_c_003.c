@@ -1,16 +1,17 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 // LIBS: Serial.RTS/usart0 FORTH/FORTH-Engine FORTH/FORTH-Memory
-// LOCLIBS: primitives
+// LOCLIBS: primitives C2forth
 
 #include "Serial.RTS/usart0/usart0.h"
 #include "FORTH/FORTH-Engine/FORTH-Engine.h"
+#include "user_offsets.c"
+#include "C2forth.h"
 
 #define TEXT __attribute__((section(".text")))
 #define DST_SIZE 30
 #define RST_SIZE 30
 
-#include "user_offsets.c"
 
 P24 DataStack[DST_SIZE];
 P24 *DataStackFirst = &DataStack[0];
@@ -38,6 +39,8 @@ extern void f_emit(void);
 extern void f_exit(void);
 extern void f_docol(void);
 extern void f_lit(void);
+extern void run_in_FORTH_xt_in_IP(void);
+extern uint8_t w_test_cw;
 
 // FORTH start function - initializes registers and executes a word
 // word_addr: 24-bit address of codeword to execute
@@ -105,19 +108,45 @@ TEXT void loop(void) {
 //	NEXT();
 }
 User User_test;
+static inline P24 u32_to_p24(uint32_t v)
+{
+    P24 p;
+    p.lo  = (uint8_t)(v & 0xFF);
+    p.hi  = (uint8_t)((v >> 8) & 0xFF);
+    p.hlo = (uint8_t)((v >> 16) & 0xFF);
+    return p;
+}
+static inline uint32_t p24_to_u32(P24 p)
+{
+    return  ((uint32_t)p.lo) |
+            ((uint32_t)p.hi  << 8) |
+            ((uint32_t)p.hlo << 16);
+}
+static inline P16 u16_to_p16(uint16_t v)
+{
+    P16 p;
+    p.lo  = (uint8_t)(v & 0xFF);
+    p.hi  = (uint8_t)((v >> 8) & 0xFF);
+    return p;
+}
+static inline uint16_t p16_to_u16(P16 p)
+{
+    return  ((uint16_t)p.lo) |
+            ((uint16_t)p.hi  << 8);
+}
 TEXT int main(void) {
 	setup();
 	
 	// For now, just echo serial input
 	// Later, this will start FORTH interpreter
 //	FORTH_start((uint32_t)(uintptr_t)&f_dup); // for now any address is fine, will be replaced by real FORTH interpreter later
-	User_test.IP=(uint32_t)(uintptr_t)&w_test_cw;
-	User_test.DST=&DataStack[DST_SIZE];
-	User_test.RST=&ReturnStack[RST_SIZE];
-	User_test.TOS=0xCACAA7;
-	User_test.DT=0xCACAA7;
+	User_test.IP=u32_to_p24((uint32_t)(uintptr_t)&w_test_cw);
+	User_test.DST=u16_to_p16((uint16_t)(uintptr_t)&(DataStack[DST_SIZE]));
+	User_test.RST=u16_to_p16((uint16_t)(uintptr_t)&(ReturnStack[RST_SIZE]));
+	User_test.TOS=u32_to_p24(0xCACAA7);
+	User_test.DT=u32_to_p24(0xCACAA7);
 	C2FORTH(&User_test, (uint32_t)(uintptr_t)&run_in_FORTH_xt_in_IP);
-	TX0_WriteHex24(User_test.TOS);
+	TX0_WriteHex24(p24_to_u32(User_test.TOS));
 	while (1) {
 		loop();
 	}

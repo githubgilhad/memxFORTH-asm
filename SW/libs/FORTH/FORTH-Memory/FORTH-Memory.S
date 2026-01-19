@@ -13,6 +13,8 @@ B1at:	; {{{ read 1 byte at; in: Zx, out: Parsx=r22,r23,r24 (as 1 byte at Zx), Zx
 	andi r21, 0x80+0x40
 	cpi r21, 0x80
 	breq B1at.RAM
+	ori r21,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
+	ori Z_hlo,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
 	cpi r21, 0x40
 	breq B1at.store
 	rjmp Memory_failed	; fail, no address at all
@@ -61,6 +63,8 @@ B3at:	; {{{ Read 3 bytes at; in: Zx, out: Parsx=r22,r23,r24 (as 3 bytes at Zx), 
 	andi r21, 0x80+0x40
 	cpi r21, 0x80
 	breq B3at.RAM
+	ori r21,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
+	ori Z_hlo,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
 	cpi r21, 0x40
 	breq B3at.store
 	rjmp Memory_failed	; fail, no address at all

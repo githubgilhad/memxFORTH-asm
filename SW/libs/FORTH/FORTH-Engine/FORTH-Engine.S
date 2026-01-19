@@ -59,6 +59,7 @@ NEXT: // DT=*IP++; jmp **DT++		{{{
 	call B3at
 	Set3 DT, Zx		; Parsx=*DT; DT+=3
 	Set3 Zx, Parsx
+	Div2 Zx
 	out _SFR_IO_ADDR(EIND), Z_hlo
 	eijmp			; jmp *Parsx (not call, it is FORTH function with NEXT)
 NEXT.IRQ:
