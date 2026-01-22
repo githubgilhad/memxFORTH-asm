@@ -1,7 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 // LIBS: Serial.RTS/usart0 FORTH/FORTH-Engine FORTH/FORTH-Memory
-// LOCLIBS: primitives C2forth
+// LOCLIBS: 003_fill_RAM primitives C2forth
 
 #include "Serial.RTS/usart0/usart0.h"
 #include "FORTH/FORTH-Engine/FORTH-Engine.h"
