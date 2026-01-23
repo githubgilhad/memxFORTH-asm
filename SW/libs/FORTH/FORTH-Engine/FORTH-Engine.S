@@ -26,6 +26,7 @@ FORTH_IRQ: .byte 0		; bit.0 = IRQ, rest ignored
 FORTH_IRQ_addr: .byte 0,0,0	; xt of handler
 
 .section .text.FORTH.main
+.balign 2
 ; === DOCOL enter composed word
 .global DOCOL
 

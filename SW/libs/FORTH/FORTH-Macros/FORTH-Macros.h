@@ -153,34 +153,52 @@
 	.byte hi8(\addr / 2 )
 	.byte hlo8(\addr / 2)
 .endm		; }}}
-.macro DEFWORD lbl, attr, name, codeword, final_data_label="none"	// {{{ final_data_label = optional data label
+.macro func lbl 	; {{{ label for function
+\lbl:
+	.type \lbl, @function
+.endm		; }}}
+.macro gfunc lbl 	; {{{ label for global function
+\lbl:
 	.global \lbl
-;	.global \lbl\()_head
-\lbl\():
-;\lbl\()_head:
-	P24 1b-3
+	.type \lbl, @function
+.endm		; }}}
+.macro obj lbl		; {{{ label for object
+\lbl:
+	.type \lbl, @object
+.endm		; }}}
+.macro gobj lbl		; {{{ label for global object
+\lbl:
+	.global \lbl
+	.type \lbl, @object
+.endm		; }}}
+
+#define CELL_SIZE 3
+#define CELL_PLUS_TWO_BYTES 5
+#define CURRENT_TEXT_SECTION .text.FORTH.words
+#define CURRENT_DATA_SECTION .FORTH_data.headers
+.macro DEFWORD lbl, attr, name, codeword, final_data_label="none"	// {{{ final_data_label = optional data label
+.section CURRENT_DATA_SECTION,"a"
+gobj \lbl
+	P24 1b-3	; link to previous head
 1:
-\lbl\()_attr:
+obj \lbl\()_attr
 	.byte  \attr	// attributes
-	.byte len\@ 	// name len
-2:
+	.byte ( (\lbl\()_cw - \lbl) - CELL_PLUS_TWO_BYTES )	; name len
+;	.byte len\@ 	// name len
+;2:
 	.ascii "\name"				// name without \0
-	.equ len\@,(. - 2b)
+;	.equ len\@,(. - 2b)
 	
-	.global \lbl\()_cw
-\lbl\()_cw:
+;	.global \lbl\()_cw
+gobj \lbl\()_cw
 	.extern \codeword
 	P24 \codeword				// 3B address of function in FLASH
 .ifnc "\final_data_label","none"
 ;		.global \lbl\()_data
 ;		.type   \lbl\()_data, @object
-;	\lbl\()_data:
+gobj \lbl\()_data
 ;	.ascii "==\final_data_label"
 .endif
-.type   \lbl\()_attr,@object
-.type   \lbl\(), @object
-;.type   \lbl\()_head, @object
-.type   \lbl\()_cw, @object
 	// more payload may be outside macro
 .endm	// }}}
 .macro DEFVAR name	// {{{
