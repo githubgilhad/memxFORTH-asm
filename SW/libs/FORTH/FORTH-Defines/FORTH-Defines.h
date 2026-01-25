@@ -1,10 +1,12 @@
-; vim: filetype=asm noexpandtab fileencoding=utf-8 nomodified nowrap textwidth=270 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list: 
+; // vim: filetype=asm noexpandtab fileencoding=utf-8 nomodified nowrap textwidth=270 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list: 
 
 #pragma once
 
 #define USE_LINE_16
+#define P24_Canary 0xCACAA7
 
-; ////////////////////////////////////////////////////////////////////////////////
+#ifdef __ASSEMBLER__
+;//////////////////////////////////////////////////////////////////////////////
 
 ;	Z + r25 is temp, usualy for memory access
 #define 	Z_hlo r25
@@ -55,12 +57,17 @@
 #define 	RST	RST_lo, RST_hi
 #define 	RST3	RST_lo, RST_hi, RST_hlo
 
-.macro LINE_16 reg
-#ifdef USE_LINE_16
-;	LINE_16 - if used, set LINE_16 (XAA16) to bit 0 of given register to bank extended RAM
-	cbi _SFR_IO_ADDR(PORTG),3
-	sbrc \reg,0
-	sbi _SFR_IO_ADDR(PORTG),3
-#endif
-.endm
+;	Thread_Conroll_Block is in RAM 0 (calee protected)
+#define 	TCB_lo	r12
+#define 	TCB_hi	r13
+#define 	TCB_hlo	r1
+				; TCB_hlo is zero
+#define 	TCB	TCB_lo, TCB_hi
+#define 	TCB3	TCB_lo, TCB_hi, TCB_hlo
 
+#endif
+
+#define DST_SIZE 30
+#define RST_SIZE 30
+#define TIB_SIZE 80
+#define AIB_SIZE 80

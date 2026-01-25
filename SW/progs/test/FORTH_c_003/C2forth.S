@@ -3,13 +3,13 @@
 #include "../../../libs/FORTH/FORTH-Macros/FORTH-Macros.h"
 #include "../../../libs/FORTH/FORTH-Memory/FORTH-Memory.h"
 ;	#include "../../../libs/FORTH/FORTH-Engine/FORTH-Engine.h"
-.macro USER_2_Z member	; {{{
+.macro TCB_2_Z member	; {{{
 	movw r30, r24   ; Z = user*
 	ldi r18, \member
 	add ZL, r18
 	adc ZH, r1
 .endm	; }}}
-#include "user_offsets.inc"
+#include "TCB_offsets.inc"
 
 C2FORTH:	; {{{ C2FORTH(User *data, void (*fn)(void));
 .global C2FORTH
@@ -41,15 +41,15 @@ C2FORTH:	; {{{ C2FORTH(User *data, void (*fn)(void));
 	push r25
 	
 	; read user data
-	USER_2_Z USER_IP
+	TCB_2_Z TCB_IP
 	Ld3Z IP
-	USER_2_Z USER_DST
+	TCB_2_Z TCB_DST
 	Ld2Z DST
-	USER_2_Z USER_RST
+	TCB_2_Z TCB_RST
 	Ld2Z RST
-	USER_2_Z USER_TOS
+	TCB_2_Z TCB_TOS
 	Ld3Z TOS
-	USER_2_Z USER_DT
+	TCB_2_Z TCB_DT
 	Ld3Z DT
 	
 	movw r30, r22	; Z = *fn; r24:r25 = user*
@@ -59,15 +59,15 @@ C2FORTH:	; {{{ C2FORTH(User *data, void (*fn)(void));
 	pop r24
 	; write  user data
 	
-	USER_2_Z USER_IP
+	TCB_2_Z TCB_IP
 	St3Z IP
-	USER_2_Z USER_DST
+	TCB_2_Z TCB_DST
 	St2Z DST
-	USER_2_Z USER_RST
+	TCB_2_Z TCB_RST
 	St2Z RST
-	USER_2_Z USER_TOS
+	TCB_2_Z TCB_TOS
 	St3Z TOS
-	USER_2_Z USER_DT
+	TCB_2_Z TCB_DT
 	St3Z DT
 	
 	pop r29

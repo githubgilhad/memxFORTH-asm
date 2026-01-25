@@ -148,7 +148,7 @@
 	.byte hi8(\addr)
 	.byte hlo8(\addr)
 .endm		; }}}
-.macro P24f addr	; {{{ store 3B address - cannot do for data
+.macro P24f addr	; {{{ store 3B address - cannot do for data - THIS MACRO FAILS
 	.byte lo8(\addr / 2 )
 	.byte hi8(\addr / 2 )
 	.byte hlo8(\addr / 2)
@@ -211,3 +211,13 @@ gobj \lbl\()_data
 	DEFWORD const_\name,0,"\name",f_doconst, "data", true
 	P24 \value
 .endm	// }}}
+
+
+.macro LINE_16 reg
+#ifdef USE_LINE_16
+;	LINE_16 - if used, set LINE_16 (XAA16) to bit 0 of given register to bank extended RAM
+	cbi _SFR_IO_ADDR(PORTG),3
+	sbrc \reg,0
+	sbi _SFR_IO_ADDR(PORTG),3
+#endif
+.endm

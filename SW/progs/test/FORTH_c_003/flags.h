@@ -4,6 +4,7 @@
 
 #define FLG_IMMEDIATE	0x80		// run in st_executing STATE
 #define FLG_HIDDEN	0x40		// do not show this
+#define FLG_FOG		0x20		// stop here in WORDS and FIND
 #define FLG_ARG		0x01		// if next PTR_t is argument, not next entry
 #define FLG_PSTRING	0x02		// PSTRING follows (LITSTRING)
 // #define FLG_NOFLAG	~(FLG_IMMEDIATE | FLG_HIDDEN)

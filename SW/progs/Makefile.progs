@@ -78,6 +78,8 @@ sizecheck: $(BUILD)/$(TARGET).elf
 			printf "Program size OK: %d bytes\n", $$2 \
 		} \
 	}'
+	@avr-size $(BUILD)/$(TARGET).elf $(BUILD)/$(TARGET).hex |myavrsize.py 
+
 
 define LIB_RULE_template
 $(LIB_PREFIX)/$(1)/$(BUILD)/$(notdir $(1)).o: $(LIB_PREFIX)/$(1)/*
