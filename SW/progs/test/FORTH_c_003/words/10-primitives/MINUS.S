@@ -1,4 +1,4 @@
-DEFWORD w_minus,		0,	"minus",		f_minus	// ( a b -- a-b ) subtract top from second
+DEFWORD w_minus,	0,	"minus",	f_minus	// ( a b -- a-b ) subtract top from second
 
 ; - - subtract top from second
 ; ( a b -- a-b )

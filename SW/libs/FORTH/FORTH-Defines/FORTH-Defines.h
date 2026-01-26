@@ -38,6 +38,7 @@
 #define 	TOS_hi	r5
 #define 	TOS_hlo	r6
 #define 	TOS	TOS_lo, TOS_hi, TOS_hlo
+#define 	TOS2	TOS_lo, TOS_hi
 
 ;	Stack is in RAM 0 (calee protected)
 #define 	DST_lo	YL

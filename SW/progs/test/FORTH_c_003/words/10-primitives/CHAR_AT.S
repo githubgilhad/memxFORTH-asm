@@ -1,4 +1,4 @@
-DEFWORD w_char_at,		0,	"char_at",		f_char_at	// ( addr -- byte ) fetch byte from address
+DEFWORD w_char_at,	0,	"char_at",	f_char_at	// ( addr -- byte ) fetch byte from address
 
 ; C@ - fetch byte from address
 ; ( addr -- byte )

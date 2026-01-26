@@ -1,4 +1,4 @@
-DEFWORD w_store,		0,	"store",		f_store	// ( value addr -- ) store cell to address
+DEFWORD w_store,	0,	"store",	f_store	// ( value addr -- ) store cell to address
 
 ; ! - store cell to address
 ; ( value addr -- )

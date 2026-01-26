@@ -212,6 +212,10 @@ gobj \lbl\()_data
 	P24 \value
 .endm	// }}}
 
+.macro DEF_TCB_VAR name, member	; {{{
+	DEFWORD var_\member,0,"\name",push_tcb_member
+	P24 \member
+.endm	; }}}
 
 .macro LINE_16 reg
 #ifdef USE_LINE_16

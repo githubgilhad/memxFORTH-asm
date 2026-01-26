@@ -1,4 +1,4 @@
-DEFWORD w_times,		0,	"times",		f_times	// ( a b -- a*b ) multiply top two stack items (24-bit result, may overflow)
+DEFWORD w_times,	0,	"times",	f_times	// ( a b -- a*b ) multiply top two stack items (24-bit result, may overflow)
 
 ; * - multiply top two stack items (24-bit result, may overflow)
 ; ( a b -- a*b )

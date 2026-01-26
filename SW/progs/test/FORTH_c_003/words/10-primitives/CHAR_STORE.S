@@ -1,4 +1,4 @@
-DEFWORD w_char_store,		0,	"char_store",		f_char_store	// ( byte addr -- ) store byte to address
+DEFWORD w_char_store,	0,	"char_store",	f_char_store	// ( byte addr -- ) store byte to address
 
 ; C! - store byte to address
 ; ( byte addr -- )
