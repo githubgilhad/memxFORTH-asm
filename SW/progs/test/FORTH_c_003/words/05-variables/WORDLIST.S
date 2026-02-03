@@ -1,12 +1,6 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
 ; Chci si naimplementovat vlastni FORTH a potrebuju si vymyslet, jak to udelat, aby mi nerozbilo (nebo zbytecne nezkomplikovalo) něco dalšího. Byl by nějaký problém, kdybych to udělal takhle:
-; VARIABLE TCB.WL.CURRENT \ magically created and initialised on FORTH starting as thread local/aware
-DEFTCBVAR "TCB.WL.CURRENT", TCB_WL_CURRENT
-; VARIABLE TCB.WL_ORDER \ magically created and initialised on FORTH starting as thread local/aware
-DEFTCBVAR "TCB.WL.ORDER", TCB_WL_ORDER
-; VARIABLE TCB.WL_ORDER.count \ magically created and initialised on FORTH starting as thread local/aware
-DEFTCBVAR "TCB.WL.ORDER.count", TCB_WL_ORDER_count
 ; \ wid is pointer to CELL, which points to last word in wordlist
 ; : WORDLIST ( -- wid ) HERE 0 , ; \ reserve CELL, store zeroes there, return its address
 DEFWORD w_WORDLIST,		0,		"WORDLIST",		f_docol, yes		; ( -- wid ) create wordlist : WORDLIST ( -- wid ) HERE 0 , ; \ reserve CELL, store zeroes there, return its address
@@ -25,10 +19,10 @@ DEFWORD w_GET_CURRENT,		0,		"GET-CURRENT",		f_docol, yes		; ( -- wid ) get curre
 	P24 w_at_cw
 	P24 w_exit_cw
 
-; : GET-ORDER ( -- wid_n .. wid_1 n ) TCB_WL_ORDER_count C@ 0 DO TCB_WL_ORDER I CELLS+ @ LOOP TCB_WL_ORDER_count C@ ;
-DEFWORD w_GET_ORDER,		0,		"GET-ORDER",		f_docol, yes		; ( -- wid_n .. wid_1 n ) get current search order : GET-ORDER ( -- wid_n .. wid_1 n ) TCB_WL_ORDER_count C@ 0 DO TCB_WL_ORDER I CELLS+ @ LOOP TCB_WL_ORDER_count C@ ;
+; : GET-ORDER ( -- wid_n .. wid_1 n ) TCB_WL_ORDER_len C@ 0 DO TCB_WL_ORDER I CELLS+ @ LOOP TCB_WL_ORDER_len C@ ;
+DEFWORD w_GET_ORDER,		0,		"GET-ORDER",		f_docol, yes		; ( -- wid_n .. wid_1 n ) get current search order : GET-ORDER ( -- wid_n .. wid_1 n ) TCB_WL_ORDER_len C@ 0 DO TCB_WL_ORDER I CELLS+ @ LOOP TCB_WL_ORDER_len C@ ;
 
-	P24 var_TCB_WL_ORDER_count_cw
+	P24 var_TCB_WL_ORDER_len_cw
 	P24 w_char_at_cw
 	P24 w_zero_cw
 ;	P24 w_DO_cw
@@ -40,7 +34,7 @@ DEFWORD w_GET_ORDER,		0,		"GET-ORDER",		f_docol, yes		; ( -- wid_n .. wid_1 n ) 
 	P24 w_at_cw
 	P24 w_LOOP_cw
 	P24 2b - .
-	P24 var_TCB_WL_ORDER_count_cw
+	P24 var_TCB_WL_ORDER_len_cw
 	P24 w_char_at_cw
 	P24 w_exit_cw
 
@@ -211,7 +205,7 @@ DEFWORD w_SEARCH_WORDLIST,	0,		"SEARCH_WORDLIST",	f_docol, yes		; ( c-addr u wid
 DEFWORD w_DEFINITIONS,		0,		"DEFINITIONS",		f_DEFINITIONS		; ( -- ) set CURRENT to first WL in ORDER
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_DEFINITIONS	; {{{ #
-	TCB_member TCB_WL_ORDER_count
+	TCB_member TCB_WL_ORDER_len
 	call B3at
 	Set3 DT, Parsx
 	Add3 Parsx,DT
@@ -243,7 +237,7 @@ DEFWORD w_wid_item,		0,		"wid[]",		f_wid_item		; ( i -- wid_i ) get i.th order w
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_wid_item	; {{{ # 
 	
-	TCB_member	TCB_WL_ORDER_count
+	TCB_member	TCB_WL_ORDER_len
 	call		B1at
 	sub		Parsx_lo, TOS_lo	; 1B - less than 85 orders
 	mov		TOS_lo, Parsx_lo	; 3 *
@@ -264,7 +258,7 @@ gfunc f_wid_item	; {{{ #
 ; FIND-NAME ( c-addr u -- c-addr u 0 | xt 1 | xt -1 ) if word not found, leave args on stack and return 0, else eat args and return xt with flag - see FIND https://forth-standard.org/standard/core/FIND 
 
 DEFWORD w_FIND_NAME,		0,		"FIND-NAME",		f_docol, yes		; FIND-NAME ( c-addr u -- c-addr u 0 | xt 1 | xt -1 ) if word not found, leave args on stack and return 0, else eat args and return xt with flag - see FIND https://forth-standard.org/standard/core/FIND [xxx] 
-	P24 var_TCB_WL_ORDER_count_cw
+	P24 var_TCB_WL_ORDER_len_cw
 	P24 w_char_at_cw
 	P24 w_zero_cw
 ;	P24 w_DO_cw

@@ -15,15 +15,16 @@ typedef struct __attribute__((packed)) {
 	P16 RST;
 	P24 TOS;
 	P24 DT; 	// probably not used, we will return to yield() before NEXT
-	P16 TCB_ptr;	// address of this variable
+	P16 TCB_cur;	// address of this variable
 	uint8_t STATE;	// 0 interpret, 1 compile
 	uint8_t BASE;	// 2..36
 	P16 HERE;	// place in RAM for next word
-	P16 TIB_count;	// #TIB - offset to last char in TIB now
-	P16 TIB_ptr;	// >IN - offset to first unread char in TIB
-	P16 AIB_count;	// #AIB - offset to last char in AIB now
-	P16 AIB_ptr;	// >AIN - offset to first unread char in AIB
-	uint8_t WL_ORDER_count;	// number of WLs in ORDER (255 is too much anyway)
+	P16 TIB_len;	// #TIB - offset to last char in TIB now
+	P16 TIB_cur;	// >IN - offset to first unread char in TIB
+	P16 AIB_len;	// #AIB - offset to last char in AIB now
+	P16 AIB_max;	// AIB.max - max allowed len for ACCEPT
+	P16 AIB_cur;	// >AIN - offset to first unread char in AIB
+	uint8_t WL_ORDER_len;	// number of WLs in ORDER (255 is too much anyway)
 	P24 WL_CURRENT;	// current wordlit
 	P16 DataStackFirst;
 	P16 DataStackLast;
@@ -54,15 +55,16 @@ void gen_offsets(void)		// this is envelope for our generated text, it will NOT 
 	GEN(TCB_RST,			offsetof(Thread_Controll_Block, RST));
 	GEN(TCB_TOS,			offsetof(Thread_Controll_Block, TOS));
 	GEN(TCB_DT,			offsetof(Thread_Controll_Block, DT));
-	GEN(TCB_TCB_ptr,		offsetof(Thread_Controll_Block, TCB_ptr));
+	GEN(TCB_TCB_cur,		offsetof(Thread_Controll_Block, TCB_cur));
 	GEN(TCB_STATE,			offsetof(Thread_Controll_Block, STATE));
 	GEN(TCB_BASE,			offsetof(Thread_Controll_Block, BASE));
 	GEN(TCB_HERE,			offsetof(Thread_Controll_Block, HERE));
-	GEN(TCB_TIB_count,		offsetof(Thread_Controll_Block, TIB_count));
-	GEN(TCB_TIB_ptr,		offsetof(Thread_Controll_Block, TIB_ptr));
-	GEN(TCB_AIB_count,		offsetof(Thread_Controll_Block, AIB_count));
-	GEN(TCB_AIB_ptr,		offsetof(Thread_Controll_Block, AIB_ptr));
-	GEN(TCB_WL_ORDER_count,		offsetof(Thread_Controll_Block, WL_ORDER_count));
+	GEN(TCB_TIB_len,		offsetof(Thread_Controll_Block, TIB_len));
+	GEN(TCB_TIB_cur,		offsetof(Thread_Controll_Block, TIB_cur));
+	GEN(TCB_AIB_len,		offsetof(Thread_Controll_Block, AIB_len));
+	GEN(TCB_AIB_max,		offsetof(Thread_Controll_Block, AIB_max));
+	GEN(TCB_AIB_cur,		offsetof(Thread_Controll_Block, AIB_cur));
+	GEN(TCB_WL_ORDER_len,		offsetof(Thread_Controll_Block, WL_ORDER_len));
 	GEN(TCB_WL_CURRENT,		offsetof(Thread_Controll_Block, WL_CURRENT));
 	GEN(TCB_DataStackFirst,		offsetof(Thread_Controll_Block, DataStackFirst));
 	GEN(TCB_DataStackLast,		offsetof(Thread_Controll_Block, DataStackLast));

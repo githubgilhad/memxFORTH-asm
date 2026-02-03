@@ -3,24 +3,25 @@
 	.equ TCB_RST, 5
 	.equ TCB_TOS, 7
 	.equ TCB_DT, 10
-	.equ TCB_TCB_ptr, 13
+	.equ TCB_TCB_cur, 13
 	.equ TCB_STATE, 15
 	.equ TCB_BASE, 16
 	.equ TCB_HERE, 17
-	.equ TCB_TIB_count, 19
-	.equ TCB_TIB_ptr, 21
-	.equ TCB_AIB_count, 23
-	.equ TCB_AIB_ptr, 25
-	.equ TCB_WL_ORDER_count, 27
-	.equ TCB_WL_CURRENT, 28
-	.equ TCB_DataStackFirst, 31
-	.equ TCB_DataStackLast, 33
-	.equ TCB_ReturnStackFirst, 35
-	.equ TCB_ReturnStackLast, 37
-	.equ TCB_DataStack, 39
-	.equ TCB_ReturnStack, 129
-	.equ TCB_TIB, 219
-	.equ TCB_AIB, 299
-	.equ TCB_WL_ORDER, 379
-	.equ TCB_something_else, 427
-	.equ TCB_SIZE, 431
+	.equ TCB_TIB_len, 19
+	.equ TCB_TIB_cur, 21
+	.equ TCB_AIB_len, 23
+	.equ TCB_AIB_max, 25
+	.equ TCB_AIB_cur, 27
+	.equ TCB_WL_ORDER_len, 29
+	.equ TCB_WL_CURRENT, 30
+	.equ TCB_DataStackFirst, 33
+	.equ TCB_DataStackLast, 35
+	.equ TCB_ReturnStackFirst, 37
+	.equ TCB_ReturnStackLast, 39
+	.equ TCB_DataStack, 41
+	.equ TCB_ReturnStack, 131
+	.equ TCB_TIB, 221
+	.equ TCB_AIB, 301
+	.equ TCB_WL_ORDER, 381
+	.equ TCB_something_else, 429
+	.equ TCB_SIZE, 433

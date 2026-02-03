@@ -20,25 +20,25 @@ FORTH_END: nop
 FORTH_START: nop
 ; }}}
 .section .bss.FORTH
-.global FORTH_IRQ
-FORTH_IRQ: .byte 0		; bit.0 = IRQ, rest ignored
-.global FORTH_IRQ_addr
-FORTH_IRQ_addr: .byte 0,0,0	; xt of handler
-
+gobj FORTH_IRQ
+	.byte 0		; bit.0 = IRQ, rest ignored
+gobj FORTH_IRQ_addr
+	.byte 0,0,0	; xt of handler
+#ifdef DoNEXTcounter
+gobj NEXTcounter
+	.byte 0,0,0, 0,0,0, 0	; 4us, 1ms, 262ms,   1m, 4:46h, 50d, 35.5 year (overflow if increased on 16 Mhz, more realistic are times ~ 50 longer)
+#endif
 .section .text.FORTH.main
 .balign 2
 ; === DOCOL enter composed word
-.global DOCOL
-
-DOCOL:	; pushR(IP);IP=DT;NEXT	{{{
+gfunc DOCOL	; pushR(IP);IP=DT;NEXT	{{{
 	PushR IP
 	Set3 IP, DT
 	rjmp NEXT
 ; ===  === 		}}}
 
 ; === EXIT returns from word (fall thru NEXT)
-.global EXIT
-EXIT:		;  IP=popR();NEXT	{{{
+gfunc EXIT		;  IP=popR();NEXT	{{{
 	PopR IP
 ;	rjmp NEXT
 ; === fall thru NEXT === 		}}}
@@ -46,10 +46,20 @@ EXIT:		;  IP=popR();NEXT	{{{
 ; === NEXT uses EIJMP to move
 ; use: X,Z r0,r5,r6,r7, r23,r24,r25
 ; in:  IP=r5,r6,r7
-; out: IP=r5,r6,r7, DT=r0+X, eijmp(Z)
+; out: IP=r5,r6,r7, DT=r0+X, eijmp(Z), r1=0
 
-.global NEXT
-NEXT: // DT=*IP++; jmp **DT++		{{{
+gfunc NEXT // DT=*IP++; jmp **DT++		{{{
+	clr r1
+#ifdef DoNEXTcounter
+	ldi ZL, lo8(NEXTcounter)
+	ldi ZH, hi8(NEXTcounter)
+	sec	; set Carry
+1:
+	ld r24, Z
+	adc r24,r1
+	st Z+,r24
+	brcs 1b	; branch on Carry Set
+#endif
 	lds Parsx_hlo, FORTH_IRQ	; Parsx_hlo = scratch
 	sbrc Parsx_hlo,0
 	rjmp NEXT.IRQ		; if FORTH_IRQ jmp NEXT.IRQ

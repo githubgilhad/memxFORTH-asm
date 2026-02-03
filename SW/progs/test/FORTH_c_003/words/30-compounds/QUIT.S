@@ -1,8 +1,19 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
-DEFWORD w_QUIT,			0,		"QUIT",			f_docol, yes		; Main loop,  : QUIT INIT BEGIN INTERPRET REPEAT ;  TODO
+DEFWORD w_QUIT,			0,		"QUIT",			f_docol, yes		; Main loop,  : QUIT INIT BEGIN BEGIN TIB TIB.max ACCEPT UNTIL INTERPRET REPEAT ;  
 	P24 w_INIT_cw
 2:
+	P24 var_TCB_TIB_cw
+	P24 const_TCB_TIB_max_cw
+	P24 w_ACCEPT_cw
+	P24 w_DUP_cw
+	P24 var_TCB_TIB_len_cw
+	P24 w_word_store_cw
+	P24 w_zero_cw
+	P24 var_TCB_TIB_cur_cw
+	P24 w_word_store_cw
+	P24 w_0BRANCH_cw
+	P24 2b - .
 	P24 w_INTERPRET_cw
 	P24 w_BRANCH_cw
 	P24 2b - .

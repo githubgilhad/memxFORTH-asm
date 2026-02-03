@@ -15,8 +15,9 @@ Changelog
 --------------------------------------------------------------------------------
 
 %START%
+* 2026.02.03 08:15:40 - NEXTcounter incereased on each NEXT
 
-FORTH 2012 as a base ====
+[FORTH_c_003 0f77598] FORTH 2012 as a base ====
 
 * 2026.02.03 01:49:11 - DEFWORD w_PARSE_NAME,		0,		"PARSE-NAME",		f_PARSE_NAME		; ( -- c-address u ) parse name from TIB [xxxx]
 * 2026.02.03 00:09:01 - DEFWORD w_one_equals,		0,		"1=",			f_one_equals		; ( x -- flag ) x == 0

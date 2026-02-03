@@ -4,6 +4,7 @@
 
 #define USE_LINE_16
 #define P24_Canary 0xCACAA7
+#define DoNEXTcounter	// if defined, NEXT increase NEXTcounter on each entry
 
 #ifdef __ASSEMBLER__
 ;//////////////////////////////////////////////////////////////////////////////

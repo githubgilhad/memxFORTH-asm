@@ -12,10 +12,10 @@ gfunc f_PARSE_NAME	; {{{ #
 	PushST	TOS
 	mov	r0,r1
 	inc	r0		; r0 = 1
-	TCB_member	TCB_TIB_count ; #TIB
+	TCB_member	TCB_TIB_len   ; #TIB
 		ld r20, Z+
 		ld r21, Z+
-	TCB_member	TCB_TIB_ptr   ; >IN 
+	TCB_member	TCB_TIB_cur   ; >IN 
 		ld r22, Z+
 		ld r23, Z+
 	TCB_member	TCB_TIB       ;  TIB
@@ -56,7 +56,7 @@ gfunc f_PARSE_NAME	; {{{ #
 		rjmp	.f_PARSE_NAME.loop2
 		
 .f_PARSE_NAME.end:
-	TCB_member	TCB_TIB_ptr
+	TCB_member	TCB_TIB_cur
 		st	Z+, r22
 		st	Z+, r23
 	rjmp NEXT

@@ -58,11 +58,11 @@ OBJS = $(BUILD)/$(TARGET).o $(LIB_OBJS) $(LOC_LIB_OBJS)
 # ========== Build pravidla ==========
 
 
-all: $(BUILD)/$(TARGET).hex $(TARGET).dis sizecheck TODO | $(BUILD)/
+all: $(BUILD)/$(TARGET).hex $(TARGET).dis sizecheck TODO WORDS | $(BUILD)/
 
 -include Makefile.local
 
-.PHONY: all upload ispload bootloader reset monitor upload_monitor clean sizecheck TODO
+.PHONY: all upload ispload bootloader reset monitor upload_monitor clean sizecheck TODO WORDS
 %/:
 	mkdir -p $@
 
@@ -133,6 +133,9 @@ reset:
 
 TODO:
 	@grep  --color=always -r "TODO\|FIXME"
+
+WORDS:
+	@grep -rh "^DEF"|sort>WORDS.list
 
 monitor:
 	picocom -b 115200 --flow n --noreset --quiet $(PORT)

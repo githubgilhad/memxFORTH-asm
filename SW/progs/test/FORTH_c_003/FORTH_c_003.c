@@ -11,8 +11,21 @@
 #include "C2forth.h"
 
 #define TEXT __attribute__((section(".text")))
-
-uint32_t c_to_number(char *buf, uint8_t base) {
+TEXT void write_char(char c){	// {{{
+	TX0_Write(c);
+}	// }}}
+TEXT void write_num8(uint8_t n) {	// {{{
+	if (n>99) {
+		write_char('0'+ n/100);
+		n=n % 100;
+		};
+	if (n>9) {
+		write_char('0'+ n/10);
+		n=n % 10;
+		};
+		write_char('0'+n);
+}	// }}}
+TEXT uint32_t c_to_number(char *buf, uint8_t base) {	// {{{
     char *end;
     int neg = 0;
     int32_t val;
@@ -55,12 +68,21 @@ uint32_t c_to_number(char *buf, uint8_t base) {
     /* truncate to CELL = 24 bit */
 
     return val | 0xFF000000;
-}
+}	// }}}
+TEXT void c_cursor_xy(uint8_t x, uint8_t y) {	// {{{
+	write_char('\e');
+	write_char('[');
+	write_num8(y+1);
+	write_char(';');
+	write_num8(x+1);
+	write_char('H');
+}	// }}}
 
 // External FORTH primitives
 extern void f_dup(void);
 extern void run_in_FORTH_xt_in_IP(void);
 extern uint8_t w_TEST_cw;
+extern uint8_t w_QUIT_cw;
 
 TEXT void setup(void) {
 	usart0_setup();
@@ -123,6 +145,10 @@ TEXT int main(void) {
 	TCB_test.DT=u32_to_p24(P24_Canary);
 	C2FORTH(&TCB_test, (uint32_t)(uintptr_t)&run_in_FORTH_xt_in_IP);
 	TX0_WriteHex24(p24_to_u32(TCB_test.TOS));
+	TX0_Write('\r');
+	TX0_Write('\n');
+	TCB_test.IP=u32_to_p24((uint32_t)(uintptr_t)&w_QUIT_cw);
+	C2FORTH(&TCB_test, (uint32_t)(uintptr_t)&run_in_FORTH_xt_in_IP);
 	while (1) {
 		loop();
 	}

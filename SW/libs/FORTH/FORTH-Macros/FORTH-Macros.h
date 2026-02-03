@@ -414,8 +414,16 @@ DEFWORD var_\Cname,FLG_ARG_3,"\name",f_dovar
 .macro DEFCONST name	// {{{
 	DEFWORD const_\name,0,"\name",push_const_\name
 .endm	// }}}
-.macro DEFCONSTI name, value	// {{{
-	DEFWORD const_\name,FLG_ARG_3,"\name",f_doconst, true
+.macro DEFCONSTI1 name, cname, value	// {{{
+	DEFWORD const_\cname,FLG_ARG_1,"\name",f_LIT1, true
+	.byte \value
+.endm	// }}}
+.macro DEFCONSTI2 name, cname, value	// {{{
+	DEFWORD const_\cname,FLG_ARG_2,"\name",f_LIT2, true
+	.word \value
+.endm	// }}}
+.macro DEFCONSTI3 name, cname, value	// {{{
+	DEFWORD const_\cname,FLG_ARG_3,"\name",f_LIT3, true
 	P24 \value
 .endm	// }}}
 
