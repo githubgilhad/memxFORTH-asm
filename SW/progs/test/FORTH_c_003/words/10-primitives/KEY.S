@@ -1,10 +1,9 @@
-DEFWORD w_key,		0,	"key",		f_key	// ( -- char ) read character from serial
+DEFWORD w_KEY,			0,		"KEY",			f_KEY			; ( -- char ) read character from serial
 
 ; KEY - read character from serial
 ; ( -- char )
 .section CURRENT_TEXT_SECTION,"ax",@progbits
-.global f_key
-f_key:	; {{{ #
+gfunc f_KEY	; {{{ #
 	; Save TOS and call RX0_Read
 	PushST TOS		; Push old TOS (if any)
 	call RX0_Read

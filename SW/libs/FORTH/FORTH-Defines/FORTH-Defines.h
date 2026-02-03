@@ -8,15 +8,20 @@
 #ifdef __ASSEMBLER__
 ;//////////////////////////////////////////////////////////////////////////////
 
+#define 	Temp r18
 ;	Z + r25 is temp, usualy for memory access
+#define 	Z_lo ZL
+#define 	Z_hi ZH
 #define 	Z_hlo r25
 #define 	Zx ZL, ZH, Z_hlo
+#define 	Zx2 ZL, ZH
 
 ;	Parsx for functions
 #define 	Parsx_lo r22
 #define 	Parsx_hi r23
 #define 	Parsx_hlo r24
 #define 	Parsx Parsx_lo, Parsx_hi, Parsx_hlo
+#define 	Parsx2 Parsx_lo, Parsx_hi
 
 ;	Y + r2 are calee protected - will not change over calls
 #define 	IP_lo	r8	
@@ -32,6 +37,7 @@
 				; r27
 #define 	DT_hlo	r7
 #define 	DT	DT_lo, DT_hi, DT_hlo
+#define 	DT2	DT_lo, DT_hi
 
 ;	Top Of the Stack is 24bit (calee protected)
 #define 	TOS_lo	r4
@@ -72,3 +78,4 @@
 #define RST_SIZE 30
 #define TIB_SIZE 80
 #define AIB_SIZE 80
+#define ORDER_SIZE 16

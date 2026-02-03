@@ -5,8 +5,8 @@
 ;	#include "../../../libs/FORTH/FORTH-Engine/FORTH-Engine.h"
 .macro TCB_2_Z member	; {{{
 	movw r30, r24   ; Z = user*
-	ldi r18, \member
-	add ZL, r18
+	ldi Temp, \member
+	add ZL, Temp
 	adc ZH, r1
 .endm	; }}}
 #include "TCB_offsets.inc"

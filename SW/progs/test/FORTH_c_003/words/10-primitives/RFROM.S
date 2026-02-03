@@ -1,0 +1,31 @@
+; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
+
+DEFWORD w_Rfrom,		0,		"R>",			f_Rfrom			; (  -- x ) ( R: x -- ) move CELL from return stack to data stack
+DEFWORD w_2Rfrom,		0,		"2R>",			f_2Rfrom		; (  -- x y ) ( R: x y -- ) move 2 CELLs from return stack to data stack (in order)
+
+.section CURRENT_TEXT_SECTION,"ax",@progbits
+gfunc f_Rfrom	; {{{ #
+	PushST TOS
+	PopR   TOS
+	rjmp   NEXT
+; }}}
+gfunc f_2Rfrom	; {{{ #
+	PushST     TOS
+	PopR       TOS
+	PopR       Parsx
+	PushST     Parsx
+	rjmp       NEXT
+; }}}
+
+
+
+; https://forth-standard.org/standard/core/Rfrom
+; 
+; 6.1.2060 R> r-from CORE
+; Interpretation:
+; Interpretation semantics for this word are undefined.
+; 
+; Execution:
+; ( -- x ) ( R: x -- )
+; 
+; Move x from the return stack to the data stack. 

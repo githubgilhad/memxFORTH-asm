@@ -1,11 +1,10 @@
-DEFWORD w_div,		0,	"div",		f_div	// ( a b -- a/b ) divide second by top
+DEFWORD w_div,			0,		"/",			f_div			// ( a b -- a/b ) divide second by top TODO
 
 ; / - divide second by top
 ; ( a b -- a/b )
 ; Full 24-bit unsigned division: Parsx / TOS -> TOS
 .section CURRENT_TEXT_SECTION,"ax",@progbits
-.global f_div
-f_div:	; {{{ #
+gfunc f_div	; {{{ #
 	PopST Parsx		; Pop dividend (a) to Parsx
 	
 	; Check for division by zero

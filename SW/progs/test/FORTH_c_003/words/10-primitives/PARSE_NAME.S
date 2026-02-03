@@ -1,0 +1,66 @@
+; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
+
+
+DEFWORD w_PARSE_NAME,		0,		"PARSE-NAME",		f_PARSE_NAME		; ( -- c-address u ) parse name from TIB [xxxx]
+
+#define t_max r20, r21
+#define t_in r22, r23
+
+
+.section CURRENT_TEXT_SECTION,"ax",@progbits
+gfunc f_PARSE_NAME	; {{{ #
+	PushST	TOS
+	mov	r0,r1
+	inc	r0		; r0 = 1
+	TCB_member	TCB_TIB_count ; #TIB
+		ld r20, Z+
+		ld r21, Z+
+	TCB_member	TCB_TIB_ptr   ; >IN 
+		ld r22, Z+
+		ld r23, Z+
+	TCB_member	TCB_TIB       ;  TIB
+		ld XL, Z+
+		ld XH, Z+
+		;
+		add XL, r22
+		adc XH, r23
+		;
+		ZERO	TOS
+		; search start of word
+.f_PARSE_NAME.loop1:
+		Cmp2	t_in, t_max
+		breq	.f_PARSE_NAME.loop1.end
+		Add21	t_in, r0	; >IN move, we consume the char
+;		Add31	TOS,r1
+		ld	Temp, X+
+		cpi	Temp, ' ' + 1
+		brsh	.f_PARSE_NAME.found_start       ; c > ' '
+		rjmp	.f_PARSE_NAME.loop1
+.f_PARSE_NAME.loop1.end:
+	PushST	TOS	; do not care
+	rjmp .f_PARSE_NAME.end
+.f_PARSE_NAME.found_start:
+		movw	r24, XL
+		Sub21	r24,r25, r0
+		ldi	r26, 0x80
+		PushST	r24,r25, r26
+		Add31	TOS,r1
+.f_PARSE_NAME.loop2:
+		Cmp2	t_in, t_max
+		breq	.f_PARSE_NAME.end
+		Add21	t_in, r0
+		Add31	TOS,r1
+		ld	Temp, X+
+		cpi	Temp, ' ' + 1
+		brlo	.f_PARSE_NAME.end       ; c <= ' '
+		rjmp	.f_PARSE_NAME.loop2
+		
+.f_PARSE_NAME.end:
+	TCB_member	TCB_TIB_ptr
+		st	Z+, r22
+		st	Z+, r23
+	rjmp NEXT
+; }}}
+
+
+

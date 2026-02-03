@@ -1,10 +1,11 @@
 #include <avr/io.h>
+#include "../../flags.h"
+
 #include "../../../../../libs/FORTH/FORTH-Defines/FORTH-Defines.h"
 #include "../../../../../libs/FORTH/FORTH-Macros/FORTH-Macros.h"
 #include "../../../../../libs/FORTH/FORTH-Memory/FORTH-Memory.h"
 ;	#include "../../../../../libs/FORTH/FORTH-Engine/FORTH-Engine.h"
 
-#include "../../flags.h"
 #include "../../TCB_offsets.inc"
 
 ; External memory functions

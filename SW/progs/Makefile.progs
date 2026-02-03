@@ -58,11 +58,11 @@ OBJS = $(BUILD)/$(TARGET).o $(LIB_OBJS) $(LOC_LIB_OBJS)
 # ========== Build pravidla ==========
 
 
-all: $(BUILD)/$(TARGET).hex $(TARGET).dis sizecheck | $(BUILD)/
+all: $(BUILD)/$(TARGET).hex $(TARGET).dis sizecheck TODO | $(BUILD)/
 
 -include Makefile.local
 
-.PHONY: all upload ispload bootloader reset monitor upload_monitor clean sizecheck
+.PHONY: all upload ispload bootloader reset monitor upload_monitor clean sizecheck TODO
 %/:
 	mkdir -p $@
 
@@ -131,6 +131,8 @@ bootloader:
 reset:
 	if [ -x $(dir $(realpath $(lastword $(MAKEFILE_LIST))))ard-reset-arduino ] ; then $(dir $(realpath $(lastword $(MAKEFILE_LIST))))ard-reset-arduino  $(PORT); fi
 
+TODO:
+	@grep  --color=always -r "TODO\|FIXME"
 
 monitor:
 	picocom -b 115200 --flow n --noreset --quiet $(PORT)

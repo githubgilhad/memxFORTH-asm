@@ -11,6 +11,8 @@
 
 %HEADER%
 
+ZAČÁTEK ÚVODU:
+
 Uvod
 --------------------------------------------------------------------------------
 
@@ -86,12 +88,12 @@ Software
 * NEXT mi vychází asi na 45 instrukcí (podle toho, co je v RAM a co ve FLASH), tak bych rád pouzival co nejvic "frazi"
 * Tedy to, co by se v systému s větší RAM načetlo a přeložilo pri startu, umísťuju do FLASH v přeložené podobě
 
-FORTH složená slova můžu zakompilovat do kódu takto (P24 je makro, ktere uloží 24bit adresu do 3 byte):
+FORTH složená slova můžu zakompilovat do kódu takto (P24 je makro, ktere uloží 24bit adresu do 3 byte, hexadecimální čísla začínají $, decimální # a binární %, jinak jsou dekódována podle BASE):
 
 
 .. code::
 
-	DEFWORD w_test,		0,	"test",		f_docol, yes		// hexa : test 21 DUP + ;
+	DEFWORD w_test,		0,	"test",		f_docol, yes		;  : test $21 DUP + ;
 		P24 w_lit_cw
 		.byte 0x21,0,0
 		P24 w_dup_cw
@@ -100,5 +102,13 @@ FORTH složená slova můžu zakompilovat do kódu takto (P24 je makro, ktere ul
 
 ale jakmile obsahuji definice nejake IMMEDIATE slovo (IF, smycky a podobne) tak do tech .byte to uz  rozpisuju ve tvaru po provedeni toho slova. Neni na to nejaky lepsi postup?
 	TL;DR; napsat vlastni interpret, ktery bude emitovat assembler source, nebo dumpnout definici z RAM a rucne ji upravit (~export)
+	
+
+.. code::
+
+	grep -r -P ";.*\K: .*;"
 
 Rozhodnul jsem se cílit na FORTH 2012 co se jmen a vlastností týče, ale nejspíš nenaimplementuju ani základní CORE v plném rozsahu.
+
+KONEC ÚVODU: 
+
