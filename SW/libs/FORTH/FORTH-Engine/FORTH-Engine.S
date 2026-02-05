@@ -69,6 +69,7 @@ gfunc NEXT // DT=*IP++; jmp **DT++		{{{
 	Set3 Zx, Parsx
 	call B3at
 	Set3 DT, Zx		; Parsx=*DT; DT+=3
+; call Tracer
 	Set3 Zx, Parsx
 	Div2 Zx
 	out _SFR_IO_ADDR(EIND), Z_hlo

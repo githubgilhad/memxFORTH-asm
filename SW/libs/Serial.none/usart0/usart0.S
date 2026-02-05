@@ -1,9 +1,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-;    PCMSK0 |= (1 << PCINT4); // Enable interrupt for PCINT4     
-;    PCICR |= _BV(PCIE0);     // Enable Pin Change Interrupt for PCINT0
-
 #define DEBUG
 #ifdef DEBUG
 ; === DEBUG {{{
@@ -17,9 +14,9 @@
 .global TX0_Head
 .global TX0_Tail
 .global TX0_Buffer
-.global Hex_Buffer
 #endif
 ; }}}
+
 
 ; === Konstanta pro baud rate 115200 při 16 MHz a U2Xn = 0: UBRR = 8
 .equ BAUD_UBRR,8
@@ -68,9 +65,9 @@
 .endm			; }}}
 
 ; === RX/TX buffer velikosti
-.equ RX0_BUFFER_SIZE,32
-.equ RX0_BUFFER_THRESHOLD,8
-.equ TX0_BUFFER_SIZE,64
+.equ RX0_BUFFER_SIZE,64
+.equ RX0_BUFFER_THRESHOLD,16
+.equ TX0_BUFFER_SIZE,120
 
 ; === data {{{
 .section .bss.LIBS
@@ -84,7 +81,6 @@ TX0_Count:		.byte 0
 TX0_Head:		.byte 0
 TX0_Tail:		.byte 0
 TX0_Buffer:		.skip TX0_BUFFER_SIZE
-Hex_Buffer:		.skip 9	; 32bit string + \0
 
 .type RX0_Count, @object
 .type RX0_Head, @object
@@ -95,8 +91,6 @@ Hex_Buffer:		.skip 9	; 32bit string + \0
 .type TX0_Head, @object
 .type TX0_Tail, @object
 .type TX0_Buffer, @object
-.type Hex_Buffer, @object
-
 ignoreme_2: .byte 0
 ; === }}}
 .section .text.LIBS.main
@@ -156,23 +150,7 @@ usart0_setup:		; destroy r24 {{{
 	sts UCSR0C, r24
 		; Asynchronous USART, Parity Mode disabled, Stop Bit(s) 1, Character Size = 8bit, Clock Polarity =0
 
-	; RTS pin jako výstup
-	sbi _SFR_IO_ADDR(RTS_PORT(DDR)), RTS_PIN
-	cbi _SFR_IO_ADDR(RTS_PORT(PORT)), RTS_PIN	   ; výchozí: RTS = 0 (můžeme přijímat)
 
-	; CTS pin jako vstup
-	cbi _SFR_IO_ADDR(CTS_PORT(DDR)), CTS_PIN
-	sbi _SFR_IO_ADDR(CTS_PORT(PORT)), CTS_PIN	   ; pull-up
-
-	; CTS pin jako zdroj interruptu
-;	lds r24, EICRA		; EICRA pg.110
-;	andi r24, 0b00111111
-;	ori r24,  0b00100000  ; ISC21:20 = 10 → falling edge
-;	sts EICRA, r24		; OVERIT PIN
-
-;	sbi _SFR_IO_ADDR(EIMSK), INT3      ; povolit INT3
-;	sbis _SFR_IO_ADDR(CTS_PORT(PIN)), CTS_PIN	; CTS check – if is low, we can send so no need for INT
-;	cbi _SFR_IO_ADDR(EIMSK), INT3      ; zakazat INT3
 
 	ret
 ; === }}}
@@ -207,12 +185,6 @@ USART0_RX_ISR:
 1:
 	sts RX0_Head, r19	; normal way
 
-	cpi r18, RX0_BUFFER_SIZE - RX0_BUFFER_THRESHOLD	; RTS: is nearly full?
-	brlt RTS_CLEAR
-	sbi _SFR_IO_ADDR(RTS_PORT(PORT)), RTS_PIN	; if yes set RTS 
-	rjmp .L_RX0_exit
-RTS_CLEAR:
-;	cbi _SFR_IO_ADDR(RTS_PORT(PORT)), RTS_PIN	;if not, clear RTS - do not clear, until buffer empty and RX0_Read occure
 
 .L_RX0_exit:
 	IRQ_pop_16_20_Z
@@ -247,7 +219,6 @@ RX0_Read:
 ;	ldi r25, 1
 	ret
 .L_RX0_empty:
-	cbi _SFR_IO_ADDR(RTS_PORT(PORT)), RTS_PIN	; clear RTS
 	clr r24
 ;	clr r25
 	ret
@@ -265,24 +236,6 @@ __vector_26:
 .global USART0_UDRE_ISR
 USART0_UDRE_ISR:
 	IRQ_push_entry
-	
-	sbis _SFR_IO_ADDR(CTS_PORT(PIN)), CTS_PIN	; CTS check – if is low, we can send
-;	NOP ; FIXME suppose we can send anytime
-	rjmp TX_send		; yes, we can
-				; no we cannot - disable USART0_UDRE_ISR, enable CTS_PIN INTR
-	
-;	sbi _SFR_IO_ADDR(EIMSK), INT3      ; povolit INT3
-; USART0_UDRE_ISR_disable:
-	push r16
-	lds r16, UCSR0B		; disable us
-	andi r16, ~(1 << UDRIE0)
-	sts UCSR0B, r16
-
-	pop r16
-	IRQ_pop_entry
-	reti
-
-TX_send:
 	IRQ_push_16_20_Z
 
 	lds r18, TX0_Count
@@ -315,30 +268,17 @@ TX_send:
 	IRQ_pop_16_20_Z
 	IRQ_pop_entry
 	reti
-; === }}}
-; === INT0_ISR - reti now, FIXME {{{
-.global INT0_ISR
-INT0_ISR:	; called when CTS is low and send is still blocked
-reti
-	IRQ_push_entry
-	cbi _SFR_IO_ADDR(EIMSK), INT3      ; zakazat INT3
-	push r16
-	lds r16, UCSR0B		; enable TX
-	ori r16, (1 << UDRIE0)
-	sts UCSR0B, r16
 
-	pop r16
-	IRQ_pop_entry
-	reti
 
 
 ; === }}}
-; === TX0_Write: vstup r24 = znak, blokuje při plném bufferu, vystup r24 - aktualni delka bufferu; uses r18, r19, r20, Z {{{
+; === TX0_Write: vstup r24 = znak, neblokuje při plném bufferu, ztraci znaky, vystup r24 - aktualni delka bufferu; uses r18, r19, r20, Z {{{
 .global TX0_Write
 TX0_Write:
+ret
 	lds r18, TX0_Count
 	cpi r18, TX0_BUFFER_SIZE-1
-	breq TX0_Write
+	breq TX0_Write.end
 	lds r19, TX0_Head
 	ldi ZL, lo8(TX0_Buffer)
 	ldi ZH, hi8(TX0_Buffer)
@@ -364,6 +304,7 @@ TX0_Write:
 	ori r20, (1 << UDRIE0)
 	sts UCSR0B, r20
 	mov r24,r18
+TX0_Write.end:
 	ret
 ; === }}}
 ; === TX0_Used: output: r24 used space in TX buffer {{{

@@ -1,6 +1,8 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 DEFWORD w_UNLOOP,		0,		"UNLOOP",		f_docol, yes		; ( -- ) remove one level of DO..LOOP to eventually enable EXIT
+	P24 w_Rfrom_cw
 	P24 w_2RDROP_cw
+	P24 w_toR_cw
 	P24 w_exit_cw
 
 ; https://forth-standard.org/standard/core/UNLOOP

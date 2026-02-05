@@ -82,7 +82,7 @@
 .macro ReadR_N N, a_lo, a_hi, a_hlo	; {{{ # read N-th item from Return Stack into registers (N=>0) (R: a b -- a b ; N=0 => b fetched)
 	movw ZL, RST_lo
 	.if \N != 0
-		adiw ZL, (\N-1)*3
+		adiw ZL, \N*3
 	.endif
 	ld \a_lo, Z+
 	ld \a_hi, Z+
@@ -169,7 +169,7 @@
 
 .macro TRUE a_lo, a_hi, a_hlo	; {{{ #  a = TRUE, 3B
 	mov r0,r1
-	inc r0
+	dec r0
 	mov \a_lo, r0
 	mov \a_hi, r0
 	mov \a_hlo, r0
@@ -374,6 +374,75 @@
 	pop r3 
 	pop r2
 .endm	; }}}
+
+.macro PUSH_R0_R31	; {{{
+	push r0 
+	push r1 
+	push r2 
+	push r3 
+	push r4 
+	push r5 
+	push r6 
+	push r7 
+	push r8 
+	push r9 
+	push r10
+	push r11
+	push r12
+	push r13
+	push r14
+	push r15
+	push r16
+	push r17
+	push r18
+	push r19
+	push r20
+	push r21
+	push r22
+	push r23
+	push r24
+	push r25
+	push r26
+	push r27
+	push r28
+	push r29
+	push r30
+	push r31
+.endm	; }}}
+.macro POP_R0_R31	; {{{
+	pop r31
+	pop r30
+	pop r29
+	pop r28
+	pop r27
+	pop r26
+	pop r25
+	pop r24
+	pop r23
+	pop r22
+	pop r21
+	pop r20
+	pop r19
+	pop r18
+	pop r17
+	pop r16
+	pop r15
+	pop r14
+	pop r13
+	pop r12
+	pop r11
+	pop r10
+	pop r9 
+	pop r8 
+	pop r7 
+	pop r6 
+	pop r5 
+	pop r4 
+	pop r3 
+	pop r2 
+	pop r1
+	pop r0
+.endm	; }}}
 #define CELL_SIZE 3
 #define CELL_PLUS_TWO_BYTES 5
 #define CURRENT_TEXT_SECTION .text.FORTH.words
@@ -415,15 +484,15 @@ DEFWORD var_\Cname,FLG_ARG_3,"\name",f_dovar
 	DEFWORD const_\name,0,"\name",push_const_\name
 .endm	// }}}
 .macro DEFCONSTI1 name, cname, value	// {{{
-	DEFWORD const_\cname,FLG_ARG_1,"\name",f_LIT1, true
+	DEFWORD const_\cname,FLG_ARG_1,"\name",f_CONST1, true
 	.byte \value
 .endm	// }}}
 .macro DEFCONSTI2 name, cname, value	// {{{
-	DEFWORD const_\cname,FLG_ARG_2,"\name",f_LIT2, true
+	DEFWORD const_\cname,FLG_ARG_2,"\name",f_CONST2, true
 	.word \value
 .endm	// }}}
 .macro DEFCONSTI3 name, cname, value	// {{{
-	DEFWORD const_\cname,FLG_ARG_3,"\name",f_LIT3, true
+	DEFWORD const_\cname,FLG_ARG_3,"\name",f_CONST3, true
 	P24 \value
 .endm	// }}}
 

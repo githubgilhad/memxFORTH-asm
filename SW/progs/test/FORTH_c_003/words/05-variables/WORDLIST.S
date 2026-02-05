@@ -62,37 +62,31 @@ DEFWORD w_GET_ORDER,		0,		"GET-ORDER",		f_docol, yes		; ( -- wid_n .. wid_1 n ) 
 
 
 
-DEFWORD w_head2flags,		0,		"H>FLAGS",		f_head2flags		;  ( h -- flags )  : H>FLAGS  ( h -- flags )     3 + C@ ;
+DEFWORD w_head2flags,		0,		"H>FLAGS",		f_head2flags		;  ( h -- flags )  : H>FLAGS  ( h -- flags )     3 +  ;
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_head2flags	; {{{ #
-	Set3 Zx, TOS
 	ldi r24, 3
-	Add31 Zx, r24
-	call B1at
-	Set3 TOS, Parsx_lo, r1, r1
-	rjmp NEXT
+	Add31 TOS, r24
+	jmp NEXT
 	; }}}
 
-DEFWORD w_head2len,		0,		"H>LEN",		f_head2len		;  ( h -- x )  : H>LEN  ( h -- x )     4 + C@ ;
+DEFWORD w_head2len,		0,		"H>LEN",		f_head2len		;  ( h -- x )  : H>LEN  ( h -- x )     4 +  ;
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_head2len	; {{{ #
-	Set3 Zx, TOS
 	ldi r24, 4
-	Add31 Zx, r24
-	call B1at
-	Set3 TOS, Parsx_lo, r1, r1
-	rjmp NEXT
+	Add31 TOS, r24
+	jmp NEXT
 	; }}}
 
-DEFWORD w_head2name,		0,		"H>NAME",		f_head2name		;  ( h -- c-addr )  : H>NAME  ( h -- c-addr )     5 +  ;
+DEFWORD w_head2name,		0,		"H>NAME",		f_head2name		;  ( h -- c-addr )  : H>NAME  ( h -- c-addr )     4 +  ;
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_head2name	; {{{ #
-	ldi r24, 5
+	ldi r24, 4
 	Add31 TOS, r24
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 
-DEFWORD w_head2xt,		0,		"H>XT",			f_head2xt		;  ( h -- xt )  : H>XT  ( h -- xt )    DUP H>LEN 5 + + @ ;
+DEFWORD w_head2xt,		0,		"H>XT",			f_head2xt		;  ( h -- xt )  : H>XT  ( h -- xt ) 4 + DUP C@  + 1+  ;
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_head2xt	; {{{ #
 	Set3 Zx, TOS
@@ -100,9 +94,8 @@ gfunc f_head2xt	; {{{ #
 	Add31 Zx, r24
 	call B1at
 	Add31 Zx, Parsx_lo
-	call B3at
-	Set3 TOS, Parsx
-	rjmp NEXT
+	Set3 TOS, Zx
+	jmp NEXT
 	; }}}
 
 
@@ -128,6 +121,7 @@ DEFWORD w_SEARCH_WORDLIST,	0,		"SEARCH_WORDLIST",	f_docol, yes		; ( c-addr u wid
 	P24 w_head2xt_cw
 	P24 w_R_at_cw
 	P24 w_head2flags_cw
+	P24 w_char_at_cw
 	P24 w_LIT1_cw
 	.byte FLG_IMMEDIATE
 	P24 w_AND_cw
@@ -143,6 +137,7 @@ DEFWORD w_SEARCH_WORDLIST,	0,		"SEARCH_WORDLIST",	f_docol, yes		; ( c-addr u wid
 4: ; IF name
 	P24 w_R_at_cw
 	P24 w_head2flags_cw
+	P24 w_char_at_cw
 	P24 w_LIT1_cw
 	.byte FLG_FOG
 	P24 w_AND_cw
@@ -157,6 +152,7 @@ DEFWORD w_SEARCH_WORDLIST,	0,		"SEARCH_WORDLIST",	f_docol, yes		; ( c-addr u wid
 	P24 w_BRANCH_cw
 	P24 2b - .
 3: ; BEGIN .. WHILE .. REPEAT
+	P24 w_DROP_cw
 	P24 w_2DROP_cw
 	P24 w_zero_cw
 	P24 w_exit_cw
@@ -169,18 +165,19 @@ DEFWORD w_SEARCH_WORDLIST,	0,		"SEARCH_WORDLIST",	f_docol, yes		; ( c-addr u wid
 ; 		>R				\ save header
 ; 		2DUP R@ H>NAME COUNT STR<> IF
 ; 			R@ H>XT			\ xt
-; 			R@ H>FLAGS
+; 			R@ H>FLAGS C@		\ flags value
 ; 			FLG_IMMEDIATE AND IF
 ; 				RDROP 1 EXIT
 ; 			ELSE
 ; 				RDROP -1 EXIT
 ; 			THEN
 ; 		THEN
-; 		R@ H>FLAGS FLG_FOG AND IF
+; 		R@ H>FLAGS C@ FLG_FOG AND IF
 ; 			RDROP 0 EXIT
 ; 		THEN
 ; 		R> @				\ move to previous
 ; 	REPEAT
+;	DROP
 ; 	2DROP 0 ;
 ; }}}
 
@@ -215,7 +212,7 @@ gfunc f_DEFINITIONS	; {{{ #
 	call B3at
 	TCB_member TCB_WL_CURRENT
 	call W3at
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 
 ; https://forth-standard.org/standard/search/DEFINITIONS
@@ -247,7 +244,7 @@ gfunc f_wid_item	; {{{ #
 	Add31		Zx, TOS_lo
 	call		B3at
 	Set3		TOS, Parsx
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 
@@ -282,7 +279,6 @@ DEFWORD w_FIND_NAME,		0,		"FIND-NAME",		f_docol, yes		; FIND-NAME ( c-addr u -- 
 3:
 	P24 w_LOOP_cw
 	P24 2b - .
-	P24 w_2DROP_cw
 	P24 w_zero_cw
 	P24 w_exit_cw
 
@@ -294,6 +290,6 @@ DEFWORD w_FIND_NAME,		0,		"FIND-NAME",		f_docol, yes		; FIND-NAME ( c-addr u -- 
 ; 			2>R 2DROP 2R> UNLOOP EXIT 
 ; 		THEN
 ; 	LOOP
-; 	2DROP 0
+; 	0
 ; 	;
 

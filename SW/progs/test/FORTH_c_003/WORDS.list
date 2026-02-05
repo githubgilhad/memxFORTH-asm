@@ -1,10 +1,17 @@
 DEFCONSTI1 "BL",		BL,		' '
+DEFCONSTI1 "BL",		BL,		'~'
 DEFCONSTI1 "K_BACKSPACE",	K_BACKSPACE,	'\b'
+DEFCONSTI1 "K_BACKSPACE",	K_BACKSPACE,	0x7f
 DEFCONSTI1 "K_DEL",		K_DEL,		'.'+0x80
+DEFCONSTI1 "K_DEL",		K_DEL,		'}'
 DEFCONSTI1 "K_ENTER",		K_ENTER,	'\n'
+DEFCONSTI1 "K_ENTER",		K_ENTER,	0x0d
 DEFCONSTI1 "K_ESC",		K_ESC,		'\e'
+DEFCONSTI1 "K_ESC",		K_ESC,		0x1b
 DEFCONSTI1 "K_LEFT",		K_LEFT,		'4'+0x80
+DEFCONSTI1 "K_LEFT",		K_LEFT,		'['
 DEFCONSTI1 "K_RIGHT",		K_RIGHT,	'6'+0x80
+DEFCONSTI1 "K_RIGHT",		K_RIGHT,	']'
 DEFCONSTI2 "TCB.TIB.max", TCB_TIB_max, TIB_SIZE
 DEFTCBVAR "HERE",TCB_HERE		; first free byte in RAM
 DEFTCBVAR "TCB.AIB", TCB_AIB
@@ -29,7 +36,7 @@ DEFWORD w_2Rfrom,		0,		"2R>",			f_2Rfrom		; (  -- x y ) ( R: x y -- ) move 2 CEL
 DEFWORD w_2toR,			0,		"2>R",			f_2toR			; ( x y  --  )( R: -- x y ) move 2 CELLs from data stack to return stack (in order)
 DEFWORD w_ACCEPT,		0,		"ACCEPT",		f_docol, yes	; ( c-addr max -- n ) (  --  ) move INPUT to addr, limited to max chars, return actual number TODO [0695]
 DEFWORD w_AIB_BACKSPACE,	0,		"AIB_BACKSPACE",	f_docol, yes	; (  -- ) backspace
-DEFWORD w_AIB_CLEAR,		0,		"AIB_CLEAR",		f_docol, yes	; ( c -- ) insert char
+DEFWORD w_AIB_CLEAR,		0,		"AIB_CLEAR",		f_docol, yes	; (  -- ) clear buffer
 DEFWORD w_AIB_DELETE,		0,		"AIB_DELETE",		f_docol, yes	; (  -- ) delete char
 DEFWORD w_AIB_INSERT,		0,		"AIB_INSERT",		f_docol, yes	; ( c -- ) insert char
 DEFWORD w_AND,			0,		"AND",			f_AND			; ( a b -- a&b ) bitwise AND of two stack items
@@ -38,6 +45,7 @@ DEFWORD w_BRANCH,		FLG_ARG_3,	"BRANCH",		f_BRANCH		; ( -- ) add following P24 to
 DEFWORD w_CELLS,		0,		"CELLS",		f_CELLS			; ( a -- b ) b = a * CELL_size
 DEFWORD w_CELLS_plus,		0,		"CELLS+",		f_CELLS_plus		; ( a b -- c ) c = a + b * CELL_size (Usage: ARRAY_A index CELLS+ @ = value at  ARRAY_A[index] )
 DEFWORD w_CERROR,		0,		"CERROR",		f_docol, yes	; ( c-address u  -- ) reports error with string [xxxx]
+DEFWORD w_CLS,		0,		"CLS",		f_docol, yes	; (  --  ) do something TODO [----]
 DEFWORD w_COMPARE,		0,		"COMPARE",		f_COMPARE		; ( c-addr1 u1 c-addr2 u2 -- n ) compare 2 strings  n=0 identical, n= -1 string1 is LESS than string2
 DEFWORD w_COMPILEcomma,		0,		"COMPILE,",		f_comma			; ( x --  ) compile x at HERE
 DEFWORD w_COUNT,		0,		"COUNT",		f_COUNT			; ( c-addr1  -- c-addr2 u2 ) counted string to string
@@ -80,10 +88,11 @@ DEFWORD w_Rfrom,		0,		"R>",			f_Rfrom			; (  -- x ) ( R: x -- ) move CELL from r
 DEFWORD w_SEARCH_WORDLIST,	0,		"SEARCH_WORDLIST",	f_docol, yes		; ( c-addr u wid -- 0 | xt 1 | xt -1 ) search name, return xt 
 DEFWORD w_SET_CURRENT,		0,		"SET-CURRENT",		f_docol, yes		; ( wid -- ) set current wordlist : SET-CURRENT ( wid -- ) TCB_WL_CURRENT ! ;
 DEFWORD w_SWAP,			0,		"SWAP",			f_SWAP			; ( a b -- b a ) SWAP top two stack items
-DEFWORD w_TEST,			0,		"TEST",			f_docol, yes		; ( -- 0x42 ) // just test
+DEFWORD w_TEST,			0,		"TEST",			f_docol, yes		; ( -- ) // just test
 DEFWORD w_TYPE,			0,		"TYPE",			f_TYPE			; ( c-addr u --  ) EMITs string [2310]
 DEFWORD w_UNLOOP,		0,		"UNLOOP",		f_docol, yes		; ( -- ) remove one level of DO..LOOP to eventually enable EXIT
 DEFWORD w_WORDLIST,		0,		"WORDLIST",		f_docol, yes		; ( -- wid ) create wordlist : WORDLIST ( -- wid ) HERE 0 , ; \ reserve CELL, store zeroes there, return its address
+DEFWORD w_WORDS,			0,		"WORDS",			f_WORDS			; (  --  ) print all words [xxxx]
 DEFWORD w_at,			0,		"@",			f_at			; ( addr -- value ) fetch cell from address
 DEFWORD w_char_at,		0,		"C@",			f_char_at		; ( addr -- byte ) fetch byte from address
 DEFWORD w_char_store,		0,		"C!",			f_char_store		; ( byte addr -- )  store byte to address
@@ -93,10 +102,12 @@ DEFWORD w_docol,		0,		"docol",		f_docol			; ( XX )  enter colon word
 DEFWORD w_dot_hex,		0,		".h",			f_dot_hex			; ( x  --  ) print hexa value and space [xxxx]
 DEFWORD w_equals,		0,		"=",			f_equals		; ( x y -- flag ) x == y
 DEFWORD w_exit,			0,		"exit",			f_exit			; ( XX ) exit from word
-DEFWORD w_head2flags,		0,		"H>FLAGS",		f_head2flags		;  ( h -- flags )  : H>FLAGS  ( h -- flags )     3 + C@ ;
-DEFWORD w_head2len,		0,		"H>LEN",		f_head2len		;  ( h -- x )  : H>LEN  ( h -- x )     4 + C@ ;
-DEFWORD w_head2name,		0,		"H>NAME",		f_head2name		;  ( h -- c-addr )  : H>NAME  ( h -- c-addr )     5 +  ;
-DEFWORD w_head2xt,		0,		"H>XT",			f_head2xt		;  ( h -- xt )  : H>XT  ( h -- xt )    DUP H>LEN 5 + + @ ;
+DEFWORD w_greater,		0,		">",			f_greater		; ( x y -- flag ) x > y
+DEFWORD w_head2flags,		0,		"H>FLAGS",		f_head2flags		;  ( h -- flags )  : H>FLAGS  ( h -- flags )     3 +  ;
+DEFWORD w_head2len,		0,		"H>LEN",		f_head2len		;  ( h -- x )  : H>LEN  ( h -- x )     4 +  ;
+DEFWORD w_head2name,		0,		"H>NAME",		f_head2name		;  ( h -- c-addr )  : H>NAME  ( h -- c-addr )     4 +  ;
+DEFWORD w_head2xt,		0,		"H>XT",			f_head2xt		;  ( h -- xt )  : H>XT  ( h -- xt ) 4 + DUP C@  + 1+  ;
+DEFWORD w_less,			0,		"<",			f_less			; ( x y -- flag ) x < y
 DEFWORD w_minus,		0,		"-",			f_minus			; ( a b -- a-b ) subtract top from second
 DEFWORD w_minus_char_store,	0,		"-C!",			f_minus_char_store	; ( byte addr -- )  sub byte from address
 DEFWORD w_minus_one,		0,		"-1",			f_minus_one		; (  -- 0 ) push minus one on stack : -1 -1 ;
@@ -125,3 +136,4 @@ DEFWORD w_word_store,		0,		"W!",			f_word_store		; ( word addr -- )  store word 
 DEFWORD w_zero,			0,		"0",			f_zero			; (  -- 0 ) push zero on stack : 0 0 ;
 DEFWORD w_zero_equals,		0,		"0=",			f_zero_equals		; ( x -- flag ) x == 0
 DEFWORD w_zero_non_equals,	0,		"0<>",			f_zero_non_equals	; ( x -- flag ) x <> 0
+DEFWORD w_zzz_last_word,			0,		"zzz_last_word",			f_zzz_last_word			; (  -- h ) return its head [----]

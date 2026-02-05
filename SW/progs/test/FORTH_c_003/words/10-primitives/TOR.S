@@ -8,14 +8,14 @@ DEFWORD w_2toR,			0,		"2>R",			f_2toR			; ( x y  --  )( R: -- x y ) move 2 CELLs
 gfunc f_toR	; {{{ #
 	PushR TOS
 	PopST TOS
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 gfunc f_2toR	; {{{ #
 	PopST Parsx
 	PushR Parsx
 	PushR TOS
 	PopST TOS
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 ; https://forth-standard.org/standard/core/toR

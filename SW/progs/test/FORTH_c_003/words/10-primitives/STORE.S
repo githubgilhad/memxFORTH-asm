@@ -65,6 +65,7 @@ gfunc f_plus_word_store	; {{{ #
 	Set3 Zx, TOS
 	call B2at
 	Add3 Parsx,DT	; hlo not care
+	Set3 Zx, TOS
 	; W1at expects: Zx = address, Parsx_lo = byte to write, ignores Parsx_hi,Parsx_hlo
 	call W2at		; Write 2 byte: [Zx] = Parsx_lo,Parsx_hi, Zx += 2
 	PopST TOS		; Pop new TOS (was byte, now get next item)
@@ -99,6 +100,7 @@ gfunc f_minus_word_store	; {{{ #
 	Set3 Zx, TOS
 	call B2at
 	Sub3 Parsx,DT	; hlo not care
+	Set3 Zx, TOS
 	; W1at expects: Zx = address, Parsx_lo = byte to write, ignores Parsx_hi,Parsx_hlo
 	call W2at		; Write 2 byte: [Zx] = Parsx_lo,Parsx_hi, Zx += 2
 	PopST TOS		; Pop new TOS (was byte, now get next item)

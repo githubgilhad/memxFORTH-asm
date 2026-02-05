@@ -51,6 +51,8 @@ C2FORTH:	; {{{ C2FORTH(User *data, void (*fn)(void));
 	Ld3Z TOS
 	TCB_2_Z TCB_DT
 	Ld3Z DT
+	TCB_2_Z TCB_TCB_cur
+	Ld2Z TCB
 	
 	movw r30, r22	; Z = *fn; r24:r25 = user*
 	icall

@@ -1,24 +1,29 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "../../../libs/FORTH/FORTH-Defines/FORTH-Defines.h"
-typedef struct __attribute__((packed)) { uint8_t lo, hi, hlo; } P24;
+typedef struct __attribute__((packed)) { uint8_t lo, hi, hlo; } P24s;
 // typedef struct __attribute__((packed)) { uint8_t lo, hi; } P16;
+// typedef union { struct { uint8_t lo; uint8_t hi; uint8_t hlo; };
+typedef union { 	P24s dta;
+			uint16_t u16;
+			__memx const void  *ptr;
+		} P24;
 typedef union { struct { uint8_t lo; uint8_t hi; };
 			uint16_t u16;
-			uint8_t *ptr;
+			void *ptr;
 			P24 *ptr_P24;
 		} P16;
 typedef struct __attribute__((packed)) {
 	// FORTH state
 	P24 IP;
-	P16 DST;	//  probably not used, generated in NEXT
+	P16 DST;
 	P16 RST;
 	P24 TOS;
-	P24 DT; 	// probably not used, we will return to yield() before NEXT
+	P24 DT; 	// probably not used, we will return to yield() before NEXT	//  probably not used, generated in NEXT
 	P16 TCB_cur;	// address of this variable
 	uint8_t STATE;	// 0 interpret, 1 compile
 	uint8_t BASE;	// 2..36
-	P16 HERE;	// place in RAM for next word
+	P24 HERE;	// place in RAM for next word (or external RAM)
 	P16 TIB_len;	// #TIB - offset to last char in TIB now
 	P16 TIB_cur;	// >IN - offset to first unread char in TIB
 	P16 AIB_len;	// #AIB - offset to last char in AIB now

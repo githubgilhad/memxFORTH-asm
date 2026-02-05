@@ -6,16 +6,21 @@ DEFWORD w_TYPE,			0,		"TYPE",			f_TYPE			; ( c-addr u --  ) EMITs string [2310]
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_TYPE	; {{{ # 
 	PopST_Zx
-	ldi	Temp,1
 	breq3 TOS, .f_TYPE.end
 .f_TYPE.loop:
 	call	B1at
+	mov	r24,Parsx_lo
+	push r30
+	push r31
 	call	TX0_Write
+	pop r31
+	pop r30
+	ldi	Temp,1
 	Sub31	TOS, Temp
 	brne	.f_TYPE.loop
 .f_TYPE.end:
 	PopST	TOS
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 

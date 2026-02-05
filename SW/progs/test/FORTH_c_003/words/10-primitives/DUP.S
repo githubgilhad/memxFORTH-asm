@@ -16,9 +16,9 @@ gfunc f_2DUP	; {{{ #
 	rjmp NEXT
 	; }}}
 gfunc f_qDUP	; {{{ #
-	breq3	TOS, 1f
+	breq3	TOS, 2f
 	PushST	TOS
-1:
+2:
 	rjmp NEXT
 	; }}}
 

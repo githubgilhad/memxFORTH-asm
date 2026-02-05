@@ -6,8 +6,9 @@ DEFWORD w_NUMBER,		0,		"NUMBER",		f_NUMBER		; ( c-addr u -- 0 | x -1 ) convert s
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_NUMBER	; {{{ # 
 	tcb_member	TCB_AIB
-	movw		XL,ZL
+	movw		r18,ZL
 	PopST_Zx
+	movw	XL,r18
 	or	TOS_hi,TOS_hlo
 	brne	.f_NUMBER.fail
 	ldi	Temp, 27	; %- +24 digit +1
@@ -23,7 +24,7 @@ gfunc f_NUMBER	; {{{ #
 .f_NUMBER.endl:
 	st		X+, r1
 	tcb_member	TCB_BASE
-	ld		r18, Z
+	ld		r22, Z
 	tcb_member	TCB_AIB
 	movw		r24, ZL
 	call		c_to_number

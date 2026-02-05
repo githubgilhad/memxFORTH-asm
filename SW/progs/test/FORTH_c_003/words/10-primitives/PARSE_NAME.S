@@ -19,8 +19,7 @@ gfunc f_PARSE_NAME	; {{{ #
 		ld r22, Z+
 		ld r23, Z+
 	TCB_member	TCB_TIB       ;  TIB
-		ld XL, Z+
-		ld XH, Z+
+		movw XL, ZL
 		;
 		add XL, r22
 		adc XH, r23
@@ -31,7 +30,7 @@ gfunc f_PARSE_NAME	; {{{ #
 		Cmp2	t_in, t_max
 		breq	.f_PARSE_NAME.loop1.end
 		Add21	t_in, r0	; >IN move, we consume the char
-;		Add31	TOS,r1
+;		Add31	TOS,r0
 		ld	Temp, X+
 		cpi	Temp, ' ' + 1
 		brsh	.f_PARSE_NAME.found_start       ; c > ' '
@@ -42,17 +41,17 @@ gfunc f_PARSE_NAME	; {{{ #
 .f_PARSE_NAME.found_start:
 		movw	r24, XL
 		Sub21	r24,r25, r0
-		ldi	r26, 0x80
-		PushST	r24,r25, r26
-		Add31	TOS,r1
+		ldi	Temp, 0x80
+		PushST	r24,r25, Temp
+		Add31	TOS,r0
 .f_PARSE_NAME.loop2:
 		Cmp2	t_in, t_max
 		breq	.f_PARSE_NAME.end
 		Add21	t_in, r0
-		Add31	TOS,r1
 		ld	Temp, X+
 		cpi	Temp, ' ' + 1
 		brlo	.f_PARSE_NAME.end       ; c <= ' '
+		Add31	TOS,r0
 		rjmp	.f_PARSE_NAME.loop2
 		
 .f_PARSE_NAME.end:

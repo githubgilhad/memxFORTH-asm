@@ -8,6 +8,10 @@ gfunc f_EXECUTE	; {{{ #
 	Set3	Parsx, TOS
 	PopST	TOS
 	Set3	Zx, Parsx
+	call	B3at
+	Set3	DT,Zx
+	Set3	Zx, Parsx
+	Div2	Zx
 	out	_SFR_IO_ADDR(EIND), Z_hlo
 	eijmp
 ; }}}

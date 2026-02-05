@@ -4,13 +4,15 @@ DEFWORD w_RAM_MOVE,		0,		"RAM-MOVE",		f_RAM_MOVE		; ( addr1 addr2 u -- ) in RAM 
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_RAM_MOVE	; {{{ #
-	PopST_Zx	; addr2 -> Z dst
+	PopST Parsx	; addr2 -> Pars -> Z dst
 	PopST DT	; addr1 -> X src
+	Set3 Zx, Parsx
 	
 	; len == 0 ?
 	mov	Temp, TOS_lo
 	or	Temp, TOS_hi
 	breq	.f_RAM_MOVE.done
+	ldi	Temp, 1
 
 	; porovnat dst a src
 	; pokud dst < src -> kopírovat dopředu
@@ -32,7 +34,7 @@ gfunc f_RAM_MOVE	; {{{ #
 .f_RAM_MOVE.bwd_loop:
 	ld	r19, -X
 	st	-Z, r19
-	sbiw	DT_lo, 1
+	Sub31	TOS, Temp
 	brne	.f_RAM_MOVE.bwd_loop
 	rjmp	.f_RAM_MOVE.done
 
@@ -40,7 +42,7 @@ gfunc f_RAM_MOVE	; {{{ #
 .f_RAM_MOVE.fwd_loop:
 	ld	r19, X+
 	st	Z+, r19
-	sbiw	DT_lo, 1
+	Sub31	TOS, Temp
 	brne	.f_RAM_MOVE.fwd_loop
 
 .f_RAM_MOVE.done:

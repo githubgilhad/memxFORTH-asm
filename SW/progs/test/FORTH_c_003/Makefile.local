@@ -11,6 +11,7 @@ R_need_target_update = \
 	fi
 # }}}
 
+CFLAGS += -g
 INC_FILES := $(wildcard words/*/*)
 OBJS += $(BUILD)/C2forth.o
 $(BUILD)/FORTH_c_003.o: TCB_offsets.c

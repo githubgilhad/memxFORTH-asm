@@ -8,8 +8,18 @@ gfunc f_KEY	; {{{ #
 	PushST TOS		; Push old TOS (if any)
 	call RX0_Read
 	mov TOS_lo, r24
-	mov TOS_hi, r25
+;	mov TOS_hi, r25
+	clr TOS_hi
 	clr TOS_hlo		; Clear high byte (24-bit value)
+;;	tst TOS_lo
+;; 	breq 2f
+;; 	ldi r24, 10
+;; 	call TX0_Write
+;; 	mov r24, TOS_lo
+;; 	call TX0_Write
+;; 	ldi r24,32
+;; 	call TX0_Write
+;; 2:
 	rjmp NEXT
 	; }}}
 

@@ -10,7 +10,7 @@ gfunc f_LITERAL	; {{{ #
 	TCB_member	TCB_HERE
 			RB3at
 		Set3	Zx, Parsx
-		Ldi3i	Parsx, f_LIT3
+		Ldi3i	Parsx, w_LIT3_cw
 			RW3at
 		Set3	Parsx, TOS
 			RW3at
@@ -67,6 +67,29 @@ gfunc f_LIT3	; {{{ #
 	call B3at
 	Set3 IP, Zx		; IP += 3
 	PushST TOS		; Push old TOS
+	Set3 TOS, Parsx		; Set TOS to literal value
+	rjmp NEXT
+	; }}}
+
+
+gfunc f_CONST1	; {{{  ( -- x ) use DT 1B as value
+	PushST TOS
+	Set3 Zx,DT
+	call B1at
+	Set3 TOS, Parsx_lo, r1, r1	; Set TOS to literal value
+	rjmp NEXT
+	; }}}
+gfunc f_CONST2	; {{{  ( -- x ) use DT 2B as value
+	PushST TOS
+	Set3 Zx,DT
+	call B2at
+	Set3 TOS, Parsx_lo, Parsx_hi, r1	; Set TOS to literal value
+	rjmp NEXT
+	; }}}
+gfunc f_CONST3	; {{{  ( -- x ) use DT 3B as value
+	PushST TOS
+	Set3 Zx,DT
+	call B3at
 	Set3 TOS, Parsx		; Set TOS to literal value
 	rjmp NEXT
 	; }}}

@@ -18,11 +18,13 @@ gfunc f_0BRANCH	; {{{ #
 	; IP points to the offset to jump
 	Set3 Zx, IP
 	call B3at
-	breq3 Parsx, 1f
+	breq3 TOS, 2f
 	Set3 IP,Zx
+	PopST TOS
 	rjmp NEXT
-1:
+2:
 	Add3 IP, Parsx
+	PopST TOS
 	rjmp NEXT
 	; }}}
 

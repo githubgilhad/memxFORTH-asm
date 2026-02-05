@@ -16,14 +16,14 @@ gfunc f_LOOP	; {{{ # FIXME
 	PushR	Parsx
 	ReadR_N	1, DT
 	Sub3	DT,Parsx
-	brne	1f
+	brne	2f
 			; end of loop
 	PopR	Parsx
 	PopR	Parsx
 	ldi	Temp,3
 	Add31	IP,Temp
 	rjmp NEXT
-1:
+2:
 			; next pass of loop
 	Set3 Zx, IP
 	call B3at
