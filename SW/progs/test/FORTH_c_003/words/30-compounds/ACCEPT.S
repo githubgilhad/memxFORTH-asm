@@ -1,7 +1,7 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
 
-DEFWORD w_ACCEPT,		0,		"ACCEPT",		f_docol, yes	; ( c-addr max -- n ) (  --  ) move INPUT to addr, limited to max chars, return actual number TODO [0695]
+DEFWORD w_ACCEPT,		0,		"ACCEPT",		f_docol, yes		; ( c-addr max -- n ) (  --  ) move INPUT to addr, limited to max chars, return actual number TODO [0695]
 ; {{{
 
 	P24 var_TCB_AIB_max_cw
@@ -181,7 +181,7 @@ DEFWORD w_ACCEPT,		0,		"ACCEPT",		f_docol, yes	; ( c-addr max -- n ) (  --  ) mo
 ; Because external system hardware and software may perform the ACCEPT function, when a line terminator is received the action of the cursor, and therefore the display, is implementation-defined. It is recommended that the cursor remain immediately following the entered text after a line terminator is received. 
 ; 
 
-DEFWORD w_BEEP,			0,		"BEEP",			f_docol, yes	; ( -- ) BEEP
+DEFWORD w_BEEP,			0,		"BEEP",			f_docol, yes		; ( -- ) BEEP
 	P24 w_LIT1_cw
 	.byte 0x07	; '\a'
 	P24 w_EMIT_cw
@@ -189,7 +189,7 @@ DEFWORD w_BEEP,			0,		"BEEP",			f_docol, yes	; ( -- ) BEEP
 
 ; Práce s kurzorem
 
-DEFWORD w_PLACE_CURSOR,		0,		"PLACE_CURSOR",		f_docol, yes	; ( -- ) set cursor pos
+DEFWORD w_PLACE_CURSOR,		0,		"PLACE_CURSOR",		f_docol, yes		; ( -- ) set cursor pos
 
 	P24 var_TCB_AIB_cur_cw
 	P24 w_word_at_cw
@@ -208,7 +208,7 @@ DEFWORD w_PLACE_CURSOR,		0,		"PLACE_CURSOR",		f_docol, yes	; ( -- ) set cursor p
 
 ; Překreslení řádku
 
-DEFWORD w_DRAW_AIB,		0,		"DRAW_AIB",		f_docol, yes	; ( -- ) draw current data
+DEFWORD w_DRAW_AIB,		0,		"DRAW_AIB",		f_docol, yes		; ( -- ) draw current data
 ; {{{
 	P24 var_PROMPT_X_cw
 	P24 w_char_at_cw
@@ -221,10 +221,10 @@ DEFWORD w_DRAW_AIB,		0,		"DRAW_AIB",		f_docol, yes	; ( -- ) draw current data
 	P24 w_word_at_cw
 	P24 w_zero_cw
 	
-;;	P24 w_2DUP_cw	; ?DO (3)
-;;	P24 w_greater_cw
-;;	P24 w_0BRANCH_cw
-;;	P24 3f - .
+	P24 w_2DUP_cw	; ?DO (3)
+	P24 w_greater_cw
+	P24 w_0BRANCH_cw
+	P24 3f - .
 ;	P24 w_?DO_cw	; 2
 	P24 w_2toR_cw
 2:
@@ -238,7 +238,7 @@ DEFWORD w_DRAW_AIB,		0,		"DRAW_AIB",		f_docol, yes	; ( -- ) draw current data
 	P24 w_LOOP_cw
 	P24 2b - .
 
-;; 3:			; 3: ?DO
+3:			; 3: ?DO
 
 	P24 w_DROP_cw
 
@@ -247,10 +247,10 @@ DEFWORD w_DRAW_AIB,		0,		"DRAW_AIB",		f_docol, yes	; ( -- ) draw current data
 	P24 var_TCB_AIB_len_cw
 	P24 w_word_at_cw
 	
-;	P24 w_2DUP_cw	; ?DO (3)
-;	P24 w_greater_cw
-;	P24 w_0BRANCH_cw
-;	P24 3f - .
+	P24 w_2DUP_cw	; ?DO (3)
+	P24 w_greater_cw
+	P24 w_0BRANCH_cw
+	P24 3f - .
 ;	P24 w_?DO_cw	; 2
 	P24 w_2toR_cw
 2:
@@ -261,7 +261,7 @@ DEFWORD w_DRAW_AIB,		0,		"DRAW_AIB",		f_docol, yes	; ( -- ) draw current data
 	P24 w_LOOP_cw
 	P24 2b - .
 
-;; 3:			; 3: ?DO
+3:			; 3: ?DO
 
 
 	P24 w_PLACE_CURSOR_cw
@@ -282,7 +282,7 @@ DEFWORD w_DRAW_AIB,		0,		"DRAW_AIB",		f_docol, yes	; ( -- ) draw current data
 
 ; Vkládání znaku
 
-DEFWORD w_AIB_INSERT,		0,		"AIB_INSERT",		f_docol, yes	; ( c -- ) insert char
+DEFWORD w_AIB_INSERT,		0,		"AIB_INSERT",		f_docol, yes		; ( c -- ) insert char
 ; {{{
 
 	P24 var_TCB_AIB_len_cw
@@ -369,7 +369,7 @@ DEFWORD w_AIB_INSERT,		0,		"AIB_INSERT",		f_docol, yes	; ( c -- ) insert char
 
 ; Backspace
 
-DEFWORD w_AIB_BACKSPACE,	0,		"AIB_BACKSPACE",	f_docol, yes	; (  -- ) backspace
+DEFWORD w_AIB_BACKSPACE,	0,		"AIB_BACKSPACE",	f_docol, yes		; (  -- ) backspace
 
 	P24 var_TCB_AIB_cur_cw
 	P24 w_word_at_cw
@@ -400,7 +400,7 @@ DEFWORD w_AIB_BACKSPACE,	0,		"AIB_BACKSPACE",	f_docol, yes	; (  -- ) backspace
 ; }}}
 ; Delete
 
-DEFWORD w_AIB_DELETE,		0,		"AIB_DELETE",		f_docol, yes	; (  -- ) delete char
+DEFWORD w_AIB_DELETE,		0,		"AIB_DELETE",		f_docol, yes		; (  -- ) delete char
 
 	P24 var_TCB_AIB_cur_cw
 	P24 w_word_at_cw
@@ -454,7 +454,7 @@ DEFWORD w_AIB_DELETE,		0,		"AIB_DELETE",		f_docol, yes	; (  -- ) delete char
 ; }}}
 ; Pohyb kurzoru
 
-DEFWORD w_CURSOR_LEFT,		0,		"CURSOR_LEFT",		f_docol, yes	; ( -- ) 
+DEFWORD w_CURSOR_LEFT,		0,		"CURSOR_LEFT",		f_docol, yes		; ( -- ) 
 
 
 	P24 var_TCB_AIB_cur_cw
@@ -480,7 +480,7 @@ DEFWORD w_CURSOR_LEFT,		0,		"CURSOR_LEFT",		f_docol, yes	; ( -- )
 ;   TCB_AIB_cur W@ 0= IF BEEP ELSE 1 TCB_AIB_cur -W! THEN ;
 ; }}}
 
-DEFWORD w_CURSOR_RIGHT,		0,		"CURSOR_RIGHT",		f_docol, yes	; ( -- ) 
+DEFWORD w_CURSOR_RIGHT,		0,		"CURSOR_RIGHT",		f_docol, yes		; ( -- ) 
 
 	P24 var_TCB_AIB_cur_cw
 	P24 w_word_at_cw
@@ -508,7 +508,7 @@ DEFWORD w_CURSOR_RIGHT,		0,		"CURSOR_RIGHT",		f_docol, yes	; ( -- )
 
 ; Escape (vymazat vše)
 
-DEFWORD w_AIB_CLEAR,		0,		"AIB_CLEAR",		f_docol, yes	; (  -- ) clear buffer
+DEFWORD w_AIB_CLEAR,		0,		"AIB_CLEAR",		f_docol, yes		; (  -- ) clear buffer
 
 	P24 w_zero_cw
 	P24 var_TCB_AIB_len_cw

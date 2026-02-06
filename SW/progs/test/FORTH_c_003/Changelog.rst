@@ -15,6 +15,8 @@ Changelog
 --------------------------------------------------------------------------------
 
 %START%
+* 2026.02.06 01:05:27 - TUI somehow works (fragile, ESC crash it)
+* 2026.02.06 01:05:08 - DEFWORD w_NEXTcounter,			0,		"NEXTcounter",			f_NEXTcounter			; (  -- x ) returns NEXTcounter (# of jumps to NEXT)  [xxxx]
 * 2026.02.03 08:15:40 - NEXTcounter incereased on each NEXT
 
 [FORTH_c_003 0f77598] FORTH 2012 as a base ====
