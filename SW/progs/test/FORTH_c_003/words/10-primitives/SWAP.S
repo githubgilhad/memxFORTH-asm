@@ -7,6 +7,6 @@ gfunc f_SWAP	; {{{ #
 	Set3 Parsx, TOS ; TOS (b) -> Parsx
 	ReadST_N 0, TOS ; a-> TOS
 	WriteST_N 0, Parsx  ; b -> stack
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 

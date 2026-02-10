@@ -7,6 +7,7 @@ typedef struct __attribute__((packed)) { uint8_t lo, hi, hlo; } P24s;
 typedef union { 	P24s dta;
 			uint16_t u16;
 			__memx const void  *ptr;
+			void * ptr_ram;
 		} P24;
 typedef union { struct { uint8_t lo; uint8_t hi; };
 			uint16_t u16;

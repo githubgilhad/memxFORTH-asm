@@ -42,13 +42,20 @@ DEFWORD w_AIB_INSERT,		0,		"AIB_INSERT",		f_docol, yes		; ( c -- ) insert char
 DEFWORD w_AND,			0,		"AND",			f_AND			; ( a b -- a&b ) bitwise AND of two stack items
 DEFWORD w_BEEP,			0,		"BEEP",			f_docol, yes		; ( -- ) BEEP
 DEFWORD w_BRANCH,		FLG_ARG_3,	"BRANCH",		f_BRANCH		; ( -- ) add following P24 to IP and NEXT there; -3 is endless loop
+DEFWORD w_BRK,			0,		"BRK",			f_BRK			; (  --  ) do nothing, breakpoint may be set here [xxxx]
+DEFWORD w_BRK0,			0,		"BRK0",			f_BRK0			; (  --  ) do nothing, breakpoint may be set here [xxxx]
+DEFWORD w_BRK1,			0,		"BRK1",			f_BRK1			; (  --  ) do nothing, breakpoint may be set here [xxxx]
+DEFWORD w_BRK2,			0,		"BRK2",			f_BRK2			; (  --  ) do nothing, breakpoint may be set here [xxxx]
+DEFWORD w_BRK3,			0,		"BRK3",			f_BRK3			; (  --  ) do nothing, breakpoint may be set here [xxxx]
 DEFWORD w_CELLS,		0,		"CELLS",		f_CELLS			; ( a -- b ) b = a * CELL_size
 DEFWORD w_CELLS_plus,		0,		"CELLS+",		f_CELLS_plus		; ( a b -- c ) c = a + b * CELL_size (Usage: ARRAY_A index CELLS+ @ = value at  ARRAY_A[index] )
 DEFWORD w_CERROR,		0,		"CERROR",		f_docol, yes		; ( c-address u  -- ) reports error with string [xxxx]
 DEFWORD w_CLS,			0,		"CLS",			f_docol, yes		; (  --  ) CLear Screan [xxxx]
+DEFWORD w_COLON,			0,		":",			f_COLON			; ( C: "<spaces>name" -- colon-sys ) create new word [0450]
 DEFWORD w_COMPARE,		0,		"COMPARE",		f_COMPARE		; ( c-addr1 u1 c-addr2 u2 -- n ) compare 2 strings  n=0 identical, n= -1 string1 is LESS than string2
 DEFWORD w_COMPILEcomma,		0,		"COMPILE,",		f_comma			; ( x --  ) compile x at HERE
 DEFWORD w_COUNT,		0,		"COUNT",		f_COUNT			; ( c-addr1  -- c-addr2 u2 ) counted string to string
+DEFWORD w_CREATE,		0,		"CREATE",		f_CREATE		; ( "<spaces>name" -- ) Create a definition for name  [1000]
 DEFWORD w_CURSOR_LEFT,		0,		"CURSOR_LEFT",		f_docol, yes		; ( -- ) 
 DEFWORD w_CURSOR_RIGHT,		0,		"CURSOR_RIGHT",		f_docol, yes		; ( -- ) 
 DEFWORD w_CURSOR_XY,		0,		"CURSOR_XY",		f_CURSOR_XY		; ( x y --  ) move cursor to x,y [xxxx]
@@ -72,7 +79,7 @@ DEFWORD w_LIT1,			FLG_ARG_1,	"LIT1",			f_LIT1			; ( -- value ) push literal valu
 DEFWORD w_LIT2,			FLG_ARG_2,	"LIT2",			f_LIT2			; ( -- value ) push literal value 2B
 DEFWORD w_LIT3,			FLG_ARG_3,	"LIT3",			f_LIT3			; ( -- value ) push literal value 3B
 DEFWORD w_LITERAL,		FLG_IMMEDIATE,	"LITERAL",		f_LITERAL		; ( x -- ) compile x to current word 3B (as LIT3 x)
-DEFWORD w_LOOP,	FLG_IMMEDIATE + FLG_ARG_3,	"LOOP",			f_LOOP			; Runtime: ( -- ) ( R: loop-sys1 -- | loop-sys2 ) inc first and maybe loop ; Compilation: ( C: do-sys -- ) TODO compilation
+DEFWORD w_LOOP,		FLG_IMMEDIATE,		"LOOP",			f_LOOP			; Compilation ( C: do-sys --  ) compile 'do_loop' to definition ; Compilation: ( C: do-sys -- ) TODO compilation
 DEFWORD w_NDROP,		0,		"NDROP",		f_NDROP			; ( xn .. x1 n -- ) DROP N items from top of stack
 DEFWORD w_NEXTcounter,		0,		"NEXTcounter",		f_NEXTcounter		; (  -- x1 x2  ) returns NEXTcounter as Double (# of jumps to NEXT)  [xxxx]
 DEFWORD w_NIP,			0,		"NIP",			f_NIP			; ( a b -- b ) DROP second item in stack
@@ -87,6 +94,7 @@ DEFWORD w_RDROP,		0,		"RDROP",		f_RDROP			; ( -- ) ( R: x -- ) DROP for return s
 DEFWORD w_R_at,			0,		"R@",			f_R_at			; (  -- x ) ( R: x -- x ) copy CELL from return stack to data stack
 DEFWORD w_Rfrom,		0,		"R>",			f_Rfrom			; (  -- x ) ( R: x -- ) move CELL from return stack to data stack
 DEFWORD w_SEARCH_WORDLIST,	0,		"SEARCH_WORDLIST",	f_docol, yes		; ( c-addr u wid -- 0 | xt 1 | xt -1 ) search name, return xt 
+DEFWORD w_SEMICOLON,		FLG_IMMEDIATE,	";",			f_SEMICOLON		; (  --  ) ends colon definition, make word visible [----]
 DEFWORD w_SET_CURRENT,		0,		"SET-CURRENT",		f_docol, yes		; ( wid -- ) set current wordlist : SET-CURRENT ( wid -- ) TCB_WL_CURRENT ! ;
 DEFWORD w_SWAP,			0,		"SWAP",			f_SWAP			; ( a b -- b a ) SWAP top two stack items
 DEFWORD w_TEST,			0,		"TEST",			f_docol, yes		; ( -- ) // just test
@@ -99,7 +107,6 @@ DEFWORD w_char_at,		0,		"C@",			f_char_at		; ( addr -- byte ) fetch byte from ad
 DEFWORD w_char_store,		0,		"C!",			f_char_store		; ( byte addr -- )  store byte to address
 DEFWORD w_comma,		0,		",",			f_comma			; ( x --  ) compile x at HERE
 DEFWORD w_div,			0,		"/",			f_div			// ( a b -- a/b ) divide second by top TODO
-DEFWORD w_docol,		0,		"docol",		f_docol			; ( XX )  enter colon word
 DEFWORD w_dot_hex,		0,		".h",			f_dot_hex		; ( x  --  ) print hexa value and space [xxxx]
 DEFWORD w_equals,		0,		"=",			f_equals		; ( x y -- flag ) x == y
 DEFWORD w_exit,			0,		"exit",			f_exit			; ( XX ) exit from word
@@ -108,6 +115,7 @@ DEFWORD w_head2flags,		0,		"H>FLAGS",		f_head2flags		;  ( h -- flags )  : H>FLAG
 DEFWORD w_head2len,		0,		"H>LEN",		f_head2len		;  ( h -- x )  : H>LEN  ( h -- x )     4 +  ;
 DEFWORD w_head2name,		0,		"H>NAME",		f_head2name		;  ( h -- c-addr )  : H>NAME  ( h -- c-addr )     4 +  ;
 DEFWORD w_head2xt,		0,		"H>XT",			f_head2xt		;  ( h -- xt )  : H>XT  ( h -- xt ) 4 + DUP C@  + 1+  ;
+DEFWORD w_left_bracket,		FLG_IMMEDIATE,	"[",			f_left_bracket		; (  --  ) leave compilation, enter interpretation [2500]
 DEFWORD w_less,			0,		"<",			f_less			; ( x y -- flag ) x < y
 DEFWORD w_minus,		0,		"-",			f_minus			; ( a b -- a-b ) subtract top from second
 DEFWORD w_minus_char_store,	0,		"-C!",			f_minus_char_store	; ( byte addr -- )  sub byte from address
@@ -125,6 +133,7 @@ DEFWORD w_plus_char_store,	0,		"+C!",			f_plus_char_store	; ( byte addr -- )  ad
 DEFWORD w_plus_store,		0,		"+!",			f_plus_store		; ( value addr -- ) add cell to address
 DEFWORD w_plus_word_store,	0,		"+W!",			f_plus_word_store	; ( word addr -- )  add word to address
 DEFWORD w_qDUP,			0,		"?DUP",			f_qDUP			; ( a -- 0 | a a ) duplicate non zero CELL [0630]
+DEFWORD w_right_bracket,	0,		"]",			f_right_bracket		; (  --  ) leave interpretation, (re)enter compilation [2540]
 DEFWORD w_store,		0,		"!",			f_store			; ( value addr -- ) store cell to address
 DEFWORD w_strequ,		0,		"STR=",			f_strequ		; ( c-addr1 u1 c-addr2 u2 -- flag ) compare 2 strings  flag=-1 identical, flag=0 different
 DEFWORD w_strnonequ,		0,		"STR<>",		f_strnonequ		; ( c-addr1 u1 c-addr2 u2 -- flag ) compare 2 strings  flag=0 identical, flag=-1 different
@@ -137,4 +146,7 @@ DEFWORD w_word_store,		0,		"W!",			f_word_store		; ( word addr -- )  store word 
 DEFWORD w_zero,			0,		"0",			f_zero			; (  -- 0 ) push zero on stack : 0 0 ;
 DEFWORD w_zero_equals,		0,		"0=",			f_zero_equals		; ( x -- flag ) x == 0
 DEFWORD w_zero_non_equals,	0,		"0<>",			f_zero_non_equals	; ( x -- flag ) x <> 0
-DEFWORD w_zzz_last_word,	0,		"zzz_last_word",	f_zzz_last_word		; (  -- h ) return its head [----]
+DEFWORD w_zzz_eol_1,		0,		"zzz_eol_1",		f_zzz_eol_1		; (  -- h ) return its head [----]
+DEFWORD ww_do_create,		FLG_HIDDEN,	"do_create",		do_create	,line=2	; Runtime ( -- a-addr ) push address of datafield for name  [1000]
+DEFWORD ww_do_loop,	FLG_HIDDEN+FLG_ARG_3,	"do_loop",		do_loop		line=2	; Runtime: ( -- ) ( R: loop-sys1 -- | loop-sys2 ) inc 'first' and maybe loop 
+DEFWORD ww_zzz_eol_2,		0,		"zzz_eol_2",		f_zzz_eol_2, line=2	; (  -- h ) return its head [----]

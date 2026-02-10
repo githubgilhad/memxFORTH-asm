@@ -9,10 +9,10 @@ gfunc f_RAM_MOVE	; {{{ #
 	Set3 Zx, Parsx
 	
 	; len == 0 ?
-	mov	Temp, TOS_lo
-	or	Temp, TOS_hi
+	mov	Tx, TOS_lo
+	or	Tx, TOS_hi
 	breq	.f_RAM_MOVE.done
-	ldi	Temp, 1
+	ldi	Tx, 1
 
 	; porovnat dst a src
 	; pokud dst < src -> kopírovat dopředu
@@ -32,17 +32,17 @@ gfunc f_RAM_MOVE	; {{{ #
 	sbiw	DT_lo, 1
 
 .f_RAM_MOVE.bwd_loop:
-	ld	r19, -X
-	st	-Z, r19
-	Sub31	TOS, Temp
+	ld	Ty, -X
+	st	-Z, Ty
+	Sub31	TOS, Tx
 	brne	.f_RAM_MOVE.bwd_loop
 	rjmp	.f_RAM_MOVE.done
 
 .f_RAM_MOVE.copy_forward:
 .f_RAM_MOVE.fwd_loop:
-	ld	r19, X+
-	st	Z+, r19
-	Sub31	TOS, Temp
+	ld	Ty, X+
+	st	Z+, Ty
+	Sub31	TOS, Tx
 	brne	.f_RAM_MOVE.fwd_loop
 
 .f_RAM_MOVE.done:

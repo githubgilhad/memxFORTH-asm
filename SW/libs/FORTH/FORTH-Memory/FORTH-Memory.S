@@ -2,43 +2,46 @@
 #include "../FORTH-Defines/FORTH-Defines.h"
 #include "../FORTH-Macros/FORTH-Macros.h"
 
+// B?at and W?at are safe (modify only their params, no other regs)
+
 .section .text.FORTH.main.libs
 .global B1at, B2at, B3at, W1at, W2at, W3at, Memory_failed
 
+
 B2at:	; {{{ Read 2 bytes at; in: Zx, out: Parsx=r22,r23,r24 (as 2 bytes at Zx), Zx += 2
-	; Parsx = [Zx+++] 
+	; Parsx = [Zx++] 
 	; in: Zx, out: Parsx=r22,r23,r24 (as 2 bytes at Zx), Zx += 2
 	; check for 80+40=80 for RAM:
-	mov r21, Z_hlo
-	andi r21, 0x80+0x40
-	cpi r21, 0x80
+	mov  r22, Z_hlo
+	andi r22, 0x80+0x40
+	cpi  r22, 0x80
 	breq B2at.RAM
-	ori r21,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
-	ori Z_hlo,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
-	cpi r21, 0x40
+	ori  r22,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
+	ori  Z_hlo,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
+	cpi  r22, 0x40
 	breq B2at.store
 B2at.Memory_failed:
 	rjmp Memory_failed	; fail, no address at all
 B2at.RAM:
-	ld Parsx_lo, Z+
-	ld Parsx_hi, Z+
-	clr Parsx_hlo
-	tst ZH
+	ld   Parsx_lo, Z+
+	ld   Parsx_hi, Z+
+	clr  Parsx_hlo
+	tst  ZH
 	brne B2at.RAM.ok
-	cpi ZL,3
+	cpi  ZL,3
 	brlo B2at.Memory_failed
 				; fall thru
 B2at.RAM.ok:
 	clT
 	ret
 B2at.store:
-	mov r21, Z_hlo
-	andi r21, 0x46
-	cpi r21, 0x40
+	mov  r22, Z_hlo
+	andi r22, 0x46
+	cpi  r22, 0x40
 	breq B2at.40	; normal FLASH
-	cpi r21, 0x44
+	cpi  r22, 0x44
 	breq B2at.44	; Shared RAM
-;	cmp r21, 0x42
+;	cmp  r22, 0x42
 ;	breq B2at_42	; Extended RAM out of mapped range
 B2at.42:
 	rjmp Memory_failed	; not now
@@ -47,58 +50,58 @@ B2at.40:
 	out _SFR_IO_ADDR(RAMPZ), Z_hlo	; only &0x03 is used
 	elpm Parsx_lo, Z+
 	elpm Parsx_hi, Z+
-	clr Parsx_hlo
-	in Z_hlo, _SFR_IO_ADDR(RAMPZ)
-	ori Z_hlo, 0x40
+	clr  Parsx_hlo
+	in   Z_hlo, _SFR_IO_ADDR(RAMPZ)
+	ori  Z_hlo, 0x40
 	clT
 	ret
 B2at.44:
 	rjmp Memory_failed	; now we cannot use Shared memory
 	; }}}
 B1at:	; {{{ read 1 byte at; in: Zx, out: Parsx=r22,r23,r24 (as 1 byte at Zx), Zx += 1
-	; Parsx = [Zx+++] 
+	; Parsx = [Zx+] 
 	; in: Zx, out: Parsx=r22,r23,r24 (as 1 byte at Zx), Zx += 1
 	; check for 80+40=80 for RAM:
-	mov r21, Z_hlo
-	andi r21, 0x80+0x40
-	cpi r21, 0x80
+	mov  r22, Z_hlo
+	andi r22, 0x80+0x40
+	cpi  r22, 0x80
 	breq B1at.RAM
-	ori r21,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
-	ori Z_hlo,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
-	cpi r21, 0x40
+	ori  r22,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
+	ori  Z_hlo,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
+	cpi  r22, 0x40
 	breq B1at.store
 	rjmp Memory_failed	; fail, no address at all
 B1at.RAM:
-	ld Parsx_lo, Z+		; one byte may be read anywhere
-	clr Parsx_hi
-	clr Parsx_hlo
-	tst ZH			; but fail, if wrapped to 0000, continuing would be wrong 
+	ld   Parsx_lo, Z+	; one byte may be read anywhere
+	clr  Parsx_hi
+	clr  Parsx_hlo
+	tst  ZH			; but fail, if wrapped to 0000, continuing would be wrong 
 	brne B1at.RAM.ok
-	tst ZL
+	tst  ZL
 	breq Memory_failed
 				; fall thru
 B1at.RAM.ok:
 	clT
 	ret
 B1at.store:
-	mov r21, Z_hlo
-	andi r21, 0x46
-	cpi r21, 0x40
+	mov  r22, Z_hlo
+	andi r22, 0x46
+	cpi  r22, 0x40
 	breq B1at.40	; normal FLASH
-	cpi r21, 0x44
+	cpi  r22, 0x44
 	breq B1at.44	; Shared RAM
-;	cmp r21, 0x42
+;	cmp  r22, 0x42
 ;	breq B1at_42	; Extended RAM out of mapped range
 B1at.42:
 	rjmp Memory_failed	; not now
 
 B1at.40:
-	out _SFR_IO_ADDR(RAMPZ), Z_hlo	; only &0x03 is used
+	out  _SFR_IO_ADDR(RAMPZ), Z_hlo	; only &0x03 is used
 	elpm Parsx_lo, Z+
-	clr Parsx_hi
-	clr Parsx_hlo
-	in Z_hlo, _SFR_IO_ADDR(RAMPZ)
-	ori Z_hlo, 0x40
+	clr  Parsx_hi
+	clr  Parsx_hlo
+	in   Z_hlo, _SFR_IO_ADDR(RAMPZ)
+	ori  Z_hlo, 0x40
 	clT
 	ret
 B1at.44:
@@ -108,46 +111,46 @@ B3at:	; {{{ Read 3 bytes at; in: Zx, out: Parsx=r22,r23,r24 (as 3 bytes at Zx), 
 	; Parsx = [Zx+++] 
 	; in: Zx, out: Parsx=r22,r23,r24 (as 3 bytes at Zx), Zx += 3
 	; check for 80+40=80 for RAM:
-	mov r21, Z_hlo
-	andi r21, 0x80+0x40
-	cpi r21, 0x80
+	mov  r22, Z_hlo
+	andi r22, 0x80+0x40
+	cpi  r22, 0x80
 	breq B3at.RAM
-	ori r21,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
-	ori Z_hlo,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
-	cpi r21, 0x40
+	ori  r22,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
+	ori  Z_hlo,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
+	cpi  r22, 0x40
 	breq B3at.store
 	rjmp Memory_failed	; fail, no address at all
 B3at.RAM:
-	ld Parsx_lo, Z+
-	ld Parsx_hi, Z+
-	ld Parsx_hlo, Z+
-	tst ZH
+	ld   Parsx_lo, Z+
+	ld   Parsx_hi, Z+
+	ld   Parsx_hlo, Z+
+	tst  ZH
 	brne B3at.RAM.ok
-	cpi ZL,4
+	cpi  ZL,4
 	brlo Memory_failed
 				; fall thru
 B3at.RAM.ok:
 	clT
 	ret
 B3at.store:
-	mov r21, Z_hlo
-	andi r21, 0x46
-	cpi r21, 0x40
+	mov  r22, Z_hlo
+	andi r22, 0x46
+	cpi  r22, 0x40
 	breq B3at.40	; normal FLASH
-	cpi r21, 0x44
+	cpi  r22, 0x44
 	breq B3at.44	; Shared RAM
-;	cmp r21, 0x42
+;	cmp  r22, 0x42
 ;	breq B3at_42	; Extended RAM out of mapped range
 B3at.42:
 	rjmp Memory_failed	; not now
 
 B3at.40:
-	out _SFR_IO_ADDR(RAMPZ), Z_hlo	; only &0x03 is used
+	out  _SFR_IO_ADDR(RAMPZ), Z_hlo	; only &0x03 is used
 	elpm Parsx_lo, Z+
 	elpm Parsx_hi, Z+
 	elpm Parsx_hlo, Z+
-	in Z_hlo, _SFR_IO_ADDR(RAMPZ)
-	ori Z_hlo, 0x40
+	in   Z_hlo, _SFR_IO_ADDR(RAMPZ)
+	ori  Z_hlo, 0x40
 	clT
 	ret
 B3at.44:
@@ -162,15 +165,17 @@ W2at:	; {{{ Write 2 bytes at; in: Zx, Parsx=r22,r23, out: Zx += 2
 	; [Zx++] = Parsx (2 bytes)
 	; in: Zx, Parsx=r22,r23, out: Zx += 2
 	; check for RAM (0x80) vs FLASH/other
-	mov r21, Z_hlo
+	push r21
+	mov  r21, Z_hlo
 	andi r21, 0x80
-	cpi r21, 0x80
+	cpi  r21, 0x80
+	pop  r21
 	breq W2at.RAM
 	rjmp Memory_failed	; FLASH is read-only, fail
 W2at.RAM:
-	cpi ZH, 0xFF
+	cpi  ZH, 0xFF
 	brne 1f
-	cpi ZL, 0xFE
+	cpi  ZL, 0xFE
 	brlo 1f
 	rjmp Memory_failed	; owerflow over FFFF
 1:
@@ -181,19 +186,21 @@ W2at.RAM.ok:
 	ret
 	; }}}
 W1at:	; {{{ Write 1 byte at; in: Zx, Parsx_lo=r22, out: Zx += 1
-	; [Zx++] = Parsx_lo (1 byte)
+	; [Zx+] = Parsx_lo (1 byte)
 	; in: Zx, Parsx_lo=r22, out: Zx += 1
 	; check for RAM (0x80) vs FLASH/other
-	mov r21, Z_hlo
+	push r21
+	mov  r21, Z_hlo
 	andi r21, 0x80
-	cpi r21, 0x80
+	cpi  r21, 0x80
+	pop  r21
 	breq W1at.RAM
 	rjmp Memory_failed	; FLASH is read-only, fail
 W1at.RAM:
 	st Z+, Parsx_lo		; one byte may be store anywhere
-	tst ZH			; but fail, if wrapped to 0000, continuing would be wrong
+	tst  ZH			; but fail, if wrapped to 0000, continuing would be wrong
 	brne W1at.RAM.ok
-	tst ZL
+	tst  ZL
 	breq Memory_failed
 W1at.RAM.ok:
 	clT
@@ -203,15 +210,17 @@ W3at:	; {{{ Write 3 bytes at; in: Zx, Parsx=r22,r23,r24, out: Zx += 3
 	; [Zx+++] = Parsx (3 bytes)
 	; in: Zx, Parsx=r22,r23,r24, out: Zx += 3
 	; check for RAM (0x80) vs FLASH/other
-	mov r21, Z_hlo
+	push r21
+	mov  r21, Z_hlo
 	andi r21, 0x80
-	cpi r21, 0x80
+	cpi  r21, 0x80
+	pop  r21
 	breq W3at.RAM
 	rjmp Memory_failed	; FLASH is read-only, fail
 W3at.RAM:
-	cpi ZH, 0xFF
+	cpi  ZH, 0xFF
 	brne 1f
-	cpi ZL, 0xFE
+	cpi  ZL, 0xFD
 	brlo 1f
 	rjmp Memory_failed	; owerflow over FFFF
 1:
@@ -222,3 +231,4 @@ W3at.RAM.ok:
 	clT
 	ret
 	; }}}
+

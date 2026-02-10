@@ -7,14 +7,14 @@ DEFWORD w_2Rfrom,		0,		"2R>",			f_2Rfrom		; (  -- x y ) ( R: x y -- ) move 2 CEL
 gfunc f_Rfrom	; {{{ #
 	PushST TOS
 	PopR   TOS
-	rjmp   NEXT
+	jmp   NEXT
 ; }}}
 gfunc f_2Rfrom	; {{{ #
 	PushST     TOS
 	PopR       TOS
 	PopR       Parsx
 	PushST     Parsx
-	rjmp       NEXT
+	jmp       NEXT
 ; }}}
 
 

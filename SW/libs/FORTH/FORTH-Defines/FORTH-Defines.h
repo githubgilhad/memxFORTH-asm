@@ -9,7 +9,22 @@
 #ifdef __ASSEMBLER__
 ;//////////////////////////////////////////////////////////////////////////////
 
-#define 	Temp r18
+#define 	Cpar1_lo r24
+#define 	Cpar1_hi r25
+#define 	Cpar1 Cpar1_lo, Cpar1_hi
+
+#define 	Cpar2_lo r22
+#define 	Cpar2_hi r23
+#define 	Cpar2 Cpar2_lo, Cpar2_hi
+
+#define 	Temp_lo r18
+#define 	Temp_hi r19
+#define 	Temp_hlo r20
+#define 	Temp Temp_lo, Temp_hi, Temp_hlo
+#define 	Temp2 Temp_lo, Temp_hi
+#define 	Tx   r21
+#define 	Ty   r0
+
 ;	Z + r25 is temp, usualy for memory access
 #define 	Z_lo ZL
 #define 	Z_hi ZH

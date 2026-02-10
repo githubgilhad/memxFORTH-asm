@@ -205,17 +205,17 @@
 	ldi \a_hlo, hlo8(\address)
 .endm			; }}}
 
-.macro Ldi2i a_lo, a_hi,  address ; {{{ #  LDI "a", address, 2B (via r18:r19)
-	ldi r18, lo8(\address)
-	ldi r19, hi8(\address)
-	movw \a_lo, r18
+.macro Ldi2i a_lo, a_hi,  address ; {{{ #  LDI "a", address, 2B (via r18:r19 = Temp2)
+	ldi Temp_lo, lo8(\address)
+	ldi Temp_hi, hi8(\address)
+	movw \a_lo, Temp_lo
 .endm			; }}}
-.macro Ldi3i a_lo, a_hi, a_hlo,  address ; {{{ #  LDI "a", address, 3B (via r18:r19)
-	ldi r18, lo8(\address)
-	ldi r19, hi8(\address)
-	movw \a_lo, r18
-	ldi r18, hlo8(\address)
-	mov \a_hlo, r18
+.macro Ldi3i a_lo, a_hi, a_hlo,  address ; {{{ #  LDI "a", address, 3B (via r18:r19 = Temp2)
+	ldi Temp_lo, lo8(\address)
+	ldi Temp_hi, hi8(\address)
+	movw \a_lo, Temp_lo
+	ldi Temp_lo, hlo8(\address)
+	mov \a_hlo, Temp_lo
 .endm			; }}}
 
 ; === Load direct + Store direct ===
@@ -298,13 +298,15 @@
 .endm			; }}}
 
 ; === TCB members
-.macro TCB_member ofset	; {{{ # In: Zx=member, Out: Zx=address #
+.macro TCB_member ofset	; {{{ # In: member, Out: Zx=address # Use: Zx
 	ldi Z_lo, lo8(\ofset)
 	ldi Z_hi, hi8(\ofset)
 	add Z_lo,TCB_lo
 	adc Z_hi,TCB_hi
 	ldi Z_hlo, 0x80
 .endm	; }}}
+
+; === P16, P24, func ...
 .macro P16 addr	; {{{ store 2B address
 	.byte lo8(\addr)
 	.byte hi8(\addr)
@@ -447,11 +449,11 @@
 #define CELL_PLUS_TWO_BYTES 5
 #define CURRENT_TEXT_SECTION .text.FORTH.words
 #define CURRENT_DATA_SECTION .FORTH_data.headers
-.macro DEFWORD lbl, attr, name, codeword, final_data_label="none"	// {{{ final_data_label = optional data label
+.macro DEFWORD lbl, attr, name, codeword, final_data_label="none", line=1	// {{{ final_data_label = optional data label, line=1 linking line, 1=main, 2=variant_1 ... translated into 101, 102, ... labels
 .section CURRENT_DATA_SECTION,"a"
 gobj \lbl
-	P24 1b-3	; link to previous head
-1:
+	P24 10\line\()b-3	; link to previous head
+10\line:
 obj \lbl\()_attr
 	.byte  \attr	// attributes
 	.byte ( (\lbl\()_cw - \lbl) - CELL_PLUS_TWO_BYTES )	; name len
@@ -472,32 +474,32 @@ gobj \lbl\()_data
 .endif
 	// more payload may be outside macro
 .endm	// }}}
-.macro DEFVAR name, Cname	// {{{
+.macro DEFVAR name, Cname, line=1	// {{{
 .section .bss.FORTH.variables
 gobj \Cname
 	P24 0
 
-DEFWORD var_\Cname,FLG_ARG_3,"\name",f_dovar
+DEFWORD var_\Cname, FLG_ARG_3, "\name", f_dovar, line=\line
 	P24 \Cname
 .endm	// }}}
-.macro DEFCONST name	// {{{
-	DEFWORD const_\name,0,"\name",push_const_\name
+.macro DEFCONST name, line=1	// {{{
+	DEFWORD const_\name,0,"\name",push_const_\name, line=\line
 .endm	// }}}
-.macro DEFCONSTI1 name, cname, value	// {{{
-	DEFWORD const_\cname,FLG_ARG_1,"\name",f_CONST1, true
+.macro DEFCONSTI1 name, cname, value, line=1	// {{{
+	DEFWORD const_\cname,FLG_ARG_1,"\name",f_CONST1, true, line=\line
 	.byte \value
 .endm	// }}}
-.macro DEFCONSTI2 name, cname, value	// {{{
-	DEFWORD const_\cname,FLG_ARG_2,"\name",f_CONST2, true
+.macro DEFCONSTI2 name, cname, value, line=1	// {{{
+	DEFWORD const_\cname,FLG_ARG_2,"\name",f_CONST2, true, line=\line
 	.word \value
 .endm	// }}}
-.macro DEFCONSTI3 name, cname, value	// {{{
-	DEFWORD const_\cname,FLG_ARG_3,"\name",f_CONST3, true
+.macro DEFCONSTI3 name, cname, value, line=1	// {{{
+	DEFWORD const_\cname,FLG_ARG_3,"\name",f_CONST3, true, line=\line
 	P24 \value
 .endm	// }}}
 
-.macro DEFTCBVAR name, member	; {{{
-	DEFWORD var_\member,FLG_ARG_2,"\name",f_push_tcb_member
+.macro DEFTCBVAR name, member, line=1	; {{{
+	DEFWORD var_\member,FLG_ARG_2,"\name",f_push_tcb_member, line=\line
 	P16 \member
 .endm	; }}}
 

@@ -3,11 +3,11 @@
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc Tracer	; {{{
 	PUSH_R0_R31
-	ldi Temp, ~0x40
-	and DT_hlo, Temp
-	mov  r25,r1
-	mov  r24,DT_hlo
-	movw r22,DT_lo
+	ldi Tx, ~0x40
+	and DT_hlo, Tx
+	movw Cpar2_lo,DT_lo
+	mov  Cpar1_lo,DT_hlo
+	mov  Cpar1_hi,r1
 	
 	movw r20,IP_lo
 	movw r18,RST_lo

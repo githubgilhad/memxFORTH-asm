@@ -15,8 +15,15 @@ Changelog
 --------------------------------------------------------------------------------
 
 %START%
+* 2026.02.09 12:23:17 - DEFWORD w_SEMICOLON,		FLG_IMMEDIATE,	";",			f_SEMICOLON		; (  --  ) ends colon definition, make word visible [----]
+* 2026.02.09 00:37:32 - DEFWORD w_right_bracket,	0,		"]",			f_right_bracket		; (  --  ) leave interpretation, (re)enter compilation [----]
+* 2026.02.09 00:36:32 - DEFWORD w_left_bracket,		FLG_IMMEDIATE,	"[",			f_left_bracket		; (  --  ) leave compilation, enter interpretation [----]
+* 2026.02.08 23:22:53 - DEFWORD w_CREATE,		0,		"CREATE",		f_CREATE		; ( "<spaces>name" -- ) -> ( -- a-addr ) Create a definition for name  [1000]
+
+Temp, Tx,Ty , Cpar1, Cpar2 registers
+
 * 2026.02.06 01:05:27 - TUI somehow works (fragile, ESC crash it)
-* 2026.02.06 01:05:08 - DEFWORD w_NEXTcounter,			0,		"NEXTcounter",			f_NEXTcounter			; (  -- x ) returns NEXTcounter (# of jumps to NEXT)  [xxxx]
+* 2026.02.06 01:05:08 - DEFWORD w_NEXTcounter,		0,		"NEXTcounter",		f_NEXTcounter		; (  -- x ) returns NEXTcounter (# of jumps to NEXT)  [xxxx]
 * 2026.02.03 08:15:40 - NEXTcounter incereased on each NEXT
 
 [FORTH_c_003 0f77598] FORTH 2012 as a base ====

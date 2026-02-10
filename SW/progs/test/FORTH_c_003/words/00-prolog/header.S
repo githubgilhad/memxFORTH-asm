@@ -27,7 +27,9 @@
 .section CURRENT_DATA_SECTION,"a",@progbits
 gobj FORTH_WORDS_START	; {{{ trick for STOP value for search: 0.header with none data
 	P24 0		// prev header none
-1:
+101:
+102:
+103:
 obj FORTH_WORDS_START.attr
 	.byte FLG_HIDDEN
 	.byte 0 //len 0 + FLG_HIDDEN = impossible to find

@@ -8,7 +8,7 @@ DEFWORD w_PARSE_NAME,		0,		"PARSE-NAME",		f_PARSE_NAME		; ( -- c-address u ) par
 
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
-gfunc f_PARSE_NAME	; {{{ #
+gfunc func_PARSE_NAME	; {{{ #
 	PushST	TOS
 	mov	r0,r1
 	inc	r0		; r0 = 1
@@ -31,8 +31,8 @@ gfunc f_PARSE_NAME	; {{{ #
 		breq	.f_PARSE_NAME.loop1.end
 		Add21	t_in, r0	; >IN move, we consume the char
 ;		Add31	TOS,r0
-		ld	Temp, X+
-		cpi	Temp, ' ' + 1
+		ld	Tx, X+
+		cpi	Tx, ' ' + 1
 		brsh	.f_PARSE_NAME.found_start       ; c > ' '
 		rjmp	.f_PARSE_NAME.loop1
 .f_PARSE_NAME.loop1.end:
@@ -41,15 +41,15 @@ gfunc f_PARSE_NAME	; {{{ #
 .f_PARSE_NAME.found_start:
 		movw	r24, XL
 		Sub21	r24,r25, r0
-		ldi	Temp, 0x80
-		PushST	r24,r25, Temp
+		ldi	Tx, 0x80
+		PushST	r24,r25, Tx
 		Add31	TOS,r0
 .f_PARSE_NAME.loop2:
 		Cmp2	t_in, t_max
 		breq	.f_PARSE_NAME.end
 		Add21	t_in, r0
-		ld	Temp, X+
-		cpi	Temp, ' ' + 1
+		ld	Tx, X+
+		cpi	Tx, ' ' + 1
 		brlo	.f_PARSE_NAME.end       ; c <= ' '
 		Add31	TOS,r0
 		rjmp	.f_PARSE_NAME.loop2
@@ -58,8 +58,11 @@ gfunc f_PARSE_NAME	; {{{ #
 	TCB_member	TCB_TIB_cur
 		st	Z+, r22
 		st	Z+, r23
+	ret
+; }}}
+gfunc f_PARSE_NAME	; {{{ #
+	call func_PARSE_NAME
 	rjmp NEXT
 ; }}}
-
 
 

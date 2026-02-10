@@ -20,8 +20,8 @@ gfunc f_push_tcb_member	; {{{ #
 	Set2 TOS2,Parsx2
 	add TOS_lo,TCB_lo
 	adc TOS_hi,TCB_hi
-	ldi Temp, 0x80
-	mov TOS_hlo, Temp
+	ldi Tx, 0x80
+	mov TOS_hlo, Tx
 	rjmp NEXT
 	; }}}
 

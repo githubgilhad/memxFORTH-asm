@@ -333,6 +333,15 @@ reti
 
 
 ; === }}}
+; === TX0_WriteA: vstup r24 = znak, blokuje při plném bufferu, vystup r24 - aktualni delka bufferu; uses r18, r19, r20, Z {{{ pise pouze ASCII
+.global TX0_WriteA
+TX0_WriteA:
+	sbrc r24,7
+	ldi r24, '.'
+	cpi r24, ' '
+	brsh TX0_Write
+	ldi r24, '.'
+; }}} fall thru
 ; === TX0_Write: vstup r24 = znak, blokuje při plném bufferu, vystup r24 - aktualni delka bufferu; uses r18, r19, r20, Z {{{
 .global TX0_Write
 TX0_Write:

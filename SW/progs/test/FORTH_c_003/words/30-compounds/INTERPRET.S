@@ -120,7 +120,7 @@ DEFWORD w_INTERPRET,		0,		"INTERPRET",		f_docol, yes		; ( -- )  : INTERPRET ... 
 ;;			IF				\ (3) word found
 ;;				2>R 2DROP 2R>		\ zahodit jméno a delku, zbyde  xt flag
 ;;				STATE C@ 
-;;				IF			\ (4) state
+;;				IF			\ (4) state (0=interpret, 1=compile)
 ;;					1= IF		\ (5) IMMEDIATE
 ;;						EXECUTE
 ;;					ELSE		\ 5:(6) IMMEDIATE
@@ -134,7 +134,7 @@ DEFWORD w_INTERPRET,		0,		"INTERPRET",		f_docol, yes		; ( -- )  : INTERPRET ... 
 ;;				2DUP NUMBER
 ;;				IF			\ (5) number
 ;;					NIP NIP
-;;					STATE C@ IF	\ (6) state_num
+;;					STATE C@ IF	\ (6) state_num (0=interpret, 1=compile)
 ;;						LITERAL
 ;;							\ ELSE -6- left number on stack
 ;;					THEN		\ 6: state_num

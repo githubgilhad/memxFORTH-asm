@@ -1,18 +1,24 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
 
-DEFWORD w_LOOP,	FLG_IMMEDIATE + FLG_ARG_3,	"LOOP",			f_LOOP			; Runtime: ( -- ) ( R: loop-sys1 -- | loop-sys2 ) inc first and maybe loop ; Compilation: ( C: do-sys -- ) TODO compilation
+DEFWORD w_LOOP,		FLG_IMMEDIATE,		"LOOP",			f_LOOP			; Compilation ( C: do-sys --  ) compile 'do_loop' to definition ; Compilation: ( C: do-sys -- ) TODO compilation
+DEFWORD ww_do_loop,	FLG_HIDDEN+FLG_ARG_3,	"do_loop",		do_loop		line=2	; Runtime: ( -- ) ( R: loop-sys1 -- | loop-sys2 ) inc 'first' and maybe loop 
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
-gfunc f_LOOP	; {{{ # FIXME
+gfunc f_LOOP	; {{{ # FIXME				FIXME: IMMEDIATE slova se typicky chovaji stejne (nebo nefunguji v interpretu), ale zakoduji do nove definice sve pomocne do_*** verze, ktere jsou zcela jine a funguji jen zakodovane ve slove. !!! f_LOOP <> do_LOOP (vyhledove jiny slovnik mimo ORDER/HIDDEN)
 	TCB_member TCB_STATE
-	call	B1at	; 0 Interpret, 1 Compiling
+		RB1at	; 0 Interpret, 1 Compiling
 	tst	Parsx_lo
 	brne	.f_LOOP.Compiling
 			; Interpret
+
+.f_LOOP.Compiling:	; FIXME
+	rjmp NEXT
+; }}}
+gfunc do_loop	; {{{
 	PopR	Parsx
-	ldi 	Temp, 1
-	Add31	Parsx, Temp
+	ldi 	Tx, 1
+	Add31	Parsx, Tx
 	PushR	Parsx
 	ReadR_N	1, DT
 	Sub3	DT,Parsx
@@ -20,17 +26,14 @@ gfunc f_LOOP	; {{{ # FIXME
 			; end of loop
 	PopR	Parsx
 	PopR	Parsx
-	ldi	Temp,3
-	Add31	IP,Temp
+	ldi	Tx,3
+	Add31	IP,Tx
 	rjmp NEXT
 2:
 			; next pass of loop
 	Set3 Zx, IP
 	call B3at
 	Add3 IP, Parsx
-	rjmp NEXT
-
-.f_LOOP.Compiling:	; FIXME
 	rjmp NEXT
 ; }}}
 

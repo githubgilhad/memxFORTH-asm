@@ -6,13 +6,13 @@ DEFWORD w_NUMBER,		0,		"NUMBER",		f_NUMBER		; ( c-addr u -- 0 | x -1 ) convert s
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_NUMBER	; {{{ # 
 	tcb_member	TCB_AIB
-	movw		r18,ZL
+	movw		Temp_lo,ZL
 	PopST_Zx
-	movw	XL,r18
+	movw	XL,Temp_lo
 	or	TOS_hi,TOS_hlo
 	brne	.f_NUMBER.fail
-	ldi	Temp, 27	; %- +24 digit +1
-	cp	TOS_lo, Temp
+	ldi	Tx, 27	; %- +24 digit +1
+	cp	TOS_lo, Tx
 	brsh	.f_NUMBER.fail
 .f_NUMBER.loop:
 	tst	TOS_lo
@@ -24,14 +24,14 @@ gfunc f_NUMBER	; {{{ #
 .f_NUMBER.endl:
 	st		X+, r1
 	tcb_member	TCB_BASE
-	ld		r22, Z
+	ld		Cpar2_lo, Z
 	tcb_member	TCB_AIB
-	movw		r24, ZL
+	movw		Cpar1_lo, ZL
 	call		c_to_number
-	Set3		TOS, r25,r25,r25
-	tst		r25
+	Set3		TOS, Cpar1_hi,Cpar1_hi,Cpar1_hi
+	tst		Cpar1_hi
 	breq		.f_NUMBER.end
-	PushST		r22,r23,r24
+	PushST		Cpar2,Cpar1_lo
 	rjmp NEXT
 .f_NUMBER.fail:
 	Set3 TOS, r1,r1,r1

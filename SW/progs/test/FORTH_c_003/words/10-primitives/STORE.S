@@ -18,7 +18,7 @@ gfunc f_store	; {{{ #
 	; W3at expects: Zx = address, Parsx = value to write
 	call W3at		; Write 3 bytes: [Zx] = Parsx, Zx += 3
 	PopST TOS		; Pop new TOS (was value, now get next item)
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_char_store	; {{{ #
 	PopST Parsx		; Pop value to Parsx
@@ -26,7 +26,7 @@ gfunc f_char_store	; {{{ #
 	; W1at expects: Zx = address, Parsx_lo = byte to write, ignores Parsx_hi,Parsx_hlo
 	call W1at		; Write 1 byte: [Zx] = Parsx_lo, Zx += 1
 	PopST TOS		; Pop new TOS (was byte, now get next item)
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_word_store	; {{{ #
 	PopST Parsx		; Pop value to Parsx
@@ -34,7 +34,7 @@ gfunc f_word_store	; {{{ #
 	; W1at expects: Zx = address, Parsx_lo = byte to write, ignores Parsx_hi,Parsx_hlo
 	call W2at		; Write 2 byte: [Zx] = Parsx_lo,Parsx_hi, Zx += 2
 	PopST TOS		; Pop new TOS (was byte, now get next item)
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 
 gfunc f_plus_store	; {{{ #
@@ -47,7 +47,7 @@ gfunc f_plus_store	; {{{ #
 	; W3at expects: Zx = address, Parsx = value to write
 	call W3at		; Write 3 bytes: [Zx] = Parsx, Zx += 3
 	PopST TOS		; Pop new TOS (was value, now get next item)
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_plus_char_store	; {{{ #
 	PopST DT		; Pop value to DT
@@ -58,7 +58,7 @@ gfunc f_plus_char_store	; {{{ #
 	; W1at expects: Zx = address, Parsx_lo = byte to write, ignores Parsx_hi,Parsx_hlo
 	call W1at		; Write 1 byte: [Zx] = Parsx_lo, Zx += 1
 	PopST TOS		; Pop new TOS (was byte, now get next item)
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_plus_word_store	; {{{ #
 	PopST DT		; Pop value to DT
@@ -69,7 +69,7 @@ gfunc f_plus_word_store	; {{{ #
 	; W1at expects: Zx = address, Parsx_lo = byte to write, ignores Parsx_hi,Parsx_hlo
 	call W2at		; Write 2 byte: [Zx] = Parsx_lo,Parsx_hi, Zx += 2
 	PopST TOS		; Pop new TOS (was byte, now get next item)
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 
 gfunc f_minus_store	; {{{ #
@@ -82,7 +82,7 @@ gfunc f_minus_store	; {{{ #
 	; W3at expects: Zx = address, Parsx = value to write
 	call W3at		; Write 3 bytes: [Zx] = Parsx, Zx += 3
 	PopST TOS		; Pop new TOS (was value, now get next item)
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_minus_char_store	; {{{ #
 	PopST DT		; Pop value to DT
@@ -93,7 +93,7 @@ gfunc f_minus_char_store	; {{{ #
 	; W1at expects: Zx = address, Parsx_lo = byte to write, ignores Parsx_hi,Parsx_hlo
 	call W1at		; Write 1 byte: [Zx] = Parsx_lo, Zx += 1
 	PopST TOS		; Pop new TOS (was byte, now get next item)
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_minus_word_store	; {{{ #
 	PopST DT		; Pop value to DT
@@ -104,5 +104,5 @@ gfunc f_minus_word_store	; {{{ #
 	; W1at expects: Zx = address, Parsx_lo = byte to write, ignores Parsx_hi,Parsx_hlo
 	call W2at		; Write 2 byte: [Zx] = Parsx_lo,Parsx_hi, Zx += 2
 	PopST TOS		; Pop new TOS (was byte, now get next item)
-	rjmp NEXT
+	jmp NEXT
 	; }}}

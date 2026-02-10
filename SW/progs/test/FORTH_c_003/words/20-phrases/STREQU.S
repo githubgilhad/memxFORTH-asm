@@ -80,13 +80,27 @@ f_strnonequ.compare_loop:
 				; Sub31 u2,r23 u2==u1, so no needed
 	;-----------
 	; -------- compare chars
+;;; mov r24, c2
+;;; call TX0_WriteA
 	cp  c1,c2
 	breq f_strnonequ.compare_loop
 
 f_strnonequ.diffs:
+;;; ldi r24, 'X'
+;;; call TX0_WriteA
+;;; ldi r24, 10
+;;; call TX0_Write
+;;; ldi r24, 13
+;;; call TX0_Write
 	clr r24
 	rjmp f_strnonequ.compare_done
 f_strnonequ.equal:
+;;; ldi r24, '='
+;;; call TX0_WriteA
+;;; ldi r24, 10
+;;; call TX0_Write
+;;; ldi r24, 13
+;;; call TX0_Write
 	ldi r24,0xFF	; -1 (24bit signed)
 f_strnonequ.compare_done:		; r24:25 is result
 	POP_R2_R17	; pop back

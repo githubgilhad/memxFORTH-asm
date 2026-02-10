@@ -48,6 +48,6 @@ DEFWORD w_TEST,			0,		"TEST",			f_docol, yes		; ( -- ) // just test
 	P24 w_dot_hex_cw
 	P24 w_exit_cw
 2:
-	.byte lo8(3f - .)
+	.byte lo8(3f - . - 1 )
 	.ascii "### Hello World ###"
 3:

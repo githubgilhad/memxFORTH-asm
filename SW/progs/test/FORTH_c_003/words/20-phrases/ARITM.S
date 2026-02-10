@@ -6,13 +6,13 @@ DEFWORD w_one_minus,		0,		"1-",			f_one_minus		; ( a -- b ) b = a - 1 [xxxx]
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_one_plus	; {{{ #
-	ldi	Temp, 1
-	Add31	TOS, Temp
+	ldi	Tx, 1
+	Add31	TOS, Tx
 	rjmp NEXT
 ; }}}
 gfunc f_one_minus	; {{{ #
-	ldi	Temp, 1
-	Sub31	TOS, Temp
+	ldi	Tx, 1
+	Sub31	TOS, Tx
 	rjmp NEXT
 ; }}}
 

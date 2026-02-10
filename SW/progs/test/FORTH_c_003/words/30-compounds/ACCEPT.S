@@ -235,7 +235,7 @@ DEFWORD w_DRAW_AIB,		0,		"DRAW_AIB",		f_docol, yes		; ( -- ) draw current data
 	P24 w_char_at_cw
 	P24 w_EMIT_cw
 
-	P24 w_LOOP_cw
+	P24 ww_do_loop_cw
 	P24 2b - .
 
 3:			; 3: ?DO
@@ -258,7 +258,7 @@ DEFWORD w_DRAW_AIB,		0,		"DRAW_AIB",		f_docol, yes		; ( -- ) draw current data
 	P24 const_BL_cw
 	P24 w_EMIT_cw
 
-	P24 w_LOOP_cw
+	P24 ww_do_loop_cw
 	P24 2b - .
 
 3:			; 3: ?DO

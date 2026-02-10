@@ -6,7 +6,7 @@ DEFWORD w_LEAVE, FLG_IMMEDIATE + FLG_ARG_3,	"LEAVE",		f_LEAVE			; ( -- ) ( R: lo
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_LEAVE	; {{{ # FIXME
 	TCB_member TCB_STATE
-	call	B1at	; 0 Interpret, 1 Compiling
+		RB1at	; 0 Interpret, 1 Compiling
 	tst	Parsx_lo
 	brne	.f_LEAVE.Compiling
 			; Interpret

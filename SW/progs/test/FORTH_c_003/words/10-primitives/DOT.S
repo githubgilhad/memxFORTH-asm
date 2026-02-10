@@ -5,9 +5,10 @@ DEFWORD w_dot_hex,		0,		".h",			f_dot_hex		; ( x  --  ) print hexa value and spa
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_dot_hex	; {{{ # 
-	Set3 Parsx,TOS
+	Set2 Cpar2,TOS2
+	mov Cpar1_lo,TOS_hlo
 	call TX0_WriteHex24
-	ldi r24, ' '
+	ldi Cpar1_lo, ' '
 	call TX0_Write
 	PopST TOS
 	rjmp NEXT

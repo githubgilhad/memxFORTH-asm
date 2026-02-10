@@ -24,8 +24,8 @@ DEFWORD w_minus_one,		0,		"-1",			f_minus_one		; (  -- 0 ) push minus one on sta
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_minus_one	; {{{ #
 	PushST TOS
-	ser Temp
-	Set3 TOS, Temp,Temp,Temp
+	ser Tx
+	Set3 TOS, Tx,Tx,Tx
 	rjmp NEXT
 	; }}}
 

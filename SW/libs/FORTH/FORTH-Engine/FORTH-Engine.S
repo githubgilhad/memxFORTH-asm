@@ -73,6 +73,8 @@ gfunc NEXT // DT=*IP++; jmp **DT++		{{{
 	Set3 Zx, Parsx
 	Div2 Zx
 	out _SFR_IO_ADDR(EIND), Z_hlo
+NEXT.eijmp:
+	.global NEXT.eijmp
 	eijmp			; jmp *Parsx (not call, it is FORTH function with NEXT)
 NEXT.IRQ:
 	Lds3 Zx, FORTH_IRQ_addr

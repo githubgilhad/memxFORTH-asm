@@ -18,11 +18,11 @@ gfunc f_2DROP	; {{{ #
 	; }}}
 gfunc f_NDROP	; {{{ #
 	Set3  Parsx, TOS
-	ldi   Temp,1
+	ldi   Tx,1
 	breq3 Parsx, 3f
 2:
 	PopST TOS
-	Sub31 Parsx,Temp
+	Sub31 Parsx,Tx
 	brne 2b
 3:
 	rjmp NEXT
@@ -38,38 +38,38 @@ gfunc f_DROPat	; {{{ #
 	Set2  Parsx2, TOS2
 	Add2 Parsx2, TOS2
 	Add2 Parsx2, TOS2 ; TOS*3
-	ldi Temp,1
-	Sub21 Parsx2,Temp ; -1
+	ldi Tx,1
+	Sub21 Parsx2,Tx ; -1
 	Add2 Parsx2, DST ; + DST
 	Set2 XL,XH,Parsx2 ; do X
 	
 ; B - nastavim source registr Z na DST + ((TOS-1) * 3 -1) tedy vrsek x2
-	ldi Temp, 3
-	Sub21 Parsx2,Temp ; -3
+	ldi Tx, 3
+	Sub21 Parsx2,Tx ; -3
 	Set2 Zx2,Parsx2  ; do Z
 	
-; C - budu kopirovat (TOS-1) = 2 prvky, tedy 6 byte (x2 a x1) pomoci lds Temp,Z+; sts X+,Temp
-	ldi Temp, 1
+; C - budu kopirovat (TOS-1) = 2 prvky, tedy 6 byte (x2 a x1) pomoci lds Tx,Z+; sts X+,Tx
+	ldi Tx, 1
 .f_DROPat.loop: 
-	Sub21 TOS2, Temp ; decrement TOS
+	Sub21 TOS2, Tx ; decrement TOS
 	breq2 TOS2, .f_DROPat.end ; jump to end, if TOS==0
 	
-	ld r0,Z+
-	st X+,r0
+	ld Tx,Z+
+	st X+,Tx
 	
-	ld r0,Z+
-	st X+,r0
+	ld Tx,Z+
+	st X+,Tx
 	
-	ld r0,Z+
-	st X+,r0
+	ld Tx,Z+
+	st X+,Tx
 	
 	rjmp .f_DROPat.loop
 	
 .f_DROPat.end: ; all items moved
 	
 ; D - pak upravim DST (zvysim o CELL, tedy 3) a nactu TOS (tedy x1, DST se pritom taky zvysi)
-	ldi Temp, 3
-	Add21 DST, Temp ; move DST up
+	ldi Tx, 3
+	Add21 DST, Tx ; move DST up
 	
 	PopST TOS ; get new TOS, move DST up again
 	
@@ -100,45 +100,45 @@ gfunc f_NIP	; {{{ #
 ;; potrebuju ukazatel na vrsek x3 jako cile a vrsek x2 jako zdroje, pak presunout 2 prvky (=6 byte)
 ;; A - nastavim dest registr X na DST + (TOS * 3 -1) tedy vrsek x3
 ;; B - nastavim source registr Z na DST + ((TOS-1) * 3 -1) tedy vrsek x2
-;; C - budu kopirovat (TOS-1) = 2 prvky, tedy 6 byte (x2 a x1) pomoci lds Temp,Z+; sts X+,Temp
+;; C - budu kopirovat (TOS-1) = 2 prvky, tedy 6 byte (x2 a x1) pomoci lds Tx,Z+; sts X+,Tx
 ;; D - pak upravim DST (zvysim o CELL, tedy 3) a nactu TOS (tedy x1, DST se pritom taky zvysi)
 ;; 
 ;; A - 
 ;; Set3  Parsx, TOS
 ;; Add3 Parsx, TOS
 ;; Add3 Parsx, TOS ; TOS*3
-;; ldi Temp,1
-;; Sub31 Parsx,Temp ; -1
+;; ldi Tx,1
+;; Sub31 Parsx,Tx ; -1
 ;; Add3 Parsx, DST ; + DST
 ;; Set3 X,Parsx ; do X
 ;; 
 ;; B -
-;; ldi Temp, 3
-;; Sub31 Parsx,Temp ; -3
+;; ldi Tx, 3
+;; Sub31 Parsx,Tx ; -3
 ;; Set3 Z,Parsx ; do Z
 ;; 
 ;; C -
-;; ldi Temp, 1
+;; ldi Tx, 1
 ;; loop: 
-;; Sub31 TOS, Temp ; decrement TOS
+;; Sub31 TOS, Tx ; decrement TOS
 ;; breq3 TOS, end ; jump to end, if TOS==0
 ;; 
-;; lds Temp2,Z+
-;; sts X+,Temp2
+;; lds Tx,Z+
+;; sts X+,Tx
 ;; 
-;; lds Temp2,Z+
-;; sts X+,Temp2
+;; lds Tx,Z+
+;; sts X+,Tx
 ;; 
-;; lds Temp2,Z+
-;; sts X+,Temp2
+;; lds Tx,Z+
+;; sts X+,Tx
 ;; 
 ;; rjmp loop
 ;; 
 ;; end: ; all items moved
 ;; 
 ;; D -
-;; ldi Temp, 3
-;; Add31 DST, Temp ; move DST up
+;; ldi Tx, 3
+;; Add31 DST, Tx ; move DST up
 ;; 
 ;; PopST TOS ; get new TOS, move DST up again
 ;; 
