@@ -4,7 +4,7 @@
 
 // nnLIBS: Serial.none/usart0 FORTH/FORTH-Engine FORTH/FORTH-Memory
 // LIBS: Serial.RTS/usart0 FORTH/FORTH-Engine FORTH/FORTH-Memory
-// LOCLIBS: 003_fill_RAM words/all_words C2forth
+// LOCLIBS: 003_fill_RAM words/all_words C2forth bats
 
 //#include "Serial.none/usart0/usart0.h"
 #include "Serial.RTS/usart0/usart0.h"
@@ -12,6 +12,7 @@
 #include "TCB_offsets.c"
 #include "C2forth.h"
 #include "flags.h"
+#include "bats.h"
 
 #define TEXT __attribute__((section(".text")))
 TEXT void write_char(char c){	// {{{
@@ -95,6 +96,7 @@ TEXT void c_cursor_xy(uint8_t x, uint8_t y) {	// {{{
 	write_num8(x+1);
 	write_char('H');
 }	// }}}
+
 Thread_Controll_Block TCB_test;
 extern uint8_t TX0_WriteHex8(uint8_t h);  
 extern uint8_t TX0_WriteHex16(uint16_t h);
@@ -103,45 +105,38 @@ extern uint8_t TX0_WriteHex24(uint32_t h);
 // External FORTH primitives
 extern void f_dup(void);
 extern void run_in_FORTH_xt_in_IP(void);
+
+typedef const __memx uint8_t *xpC;
+typedef const __memx uint8_t   xC;
+typedef const uint8_t *npC;
+typedef const uint8_t   nC;
+
+
 extern __memx const uint8_t w_TEST_cw;
 extern __memx const uint8_t w_QUIT_cw;
 extern __memx const uint8_t w_zzz_eol_1;
 extern __memx const uint8_t ww_zzz_eol_2;
-extern __memx const uint8_t FORTH_WORDS_START;
+extern xC FORTH_WORDS_START;
+extern xC FORTH_WORDS_END;
+extern xC f_docol;
+extern xC w_docol_cw;
+extern const __memx uint32_t	val_of_w_exit_cw;
+extern const __memx uint32_t	val_of_f_docol;
 
+uint8_t HERE1[0x300];
 #include <avr/pgmspace.h>
 
-P24 C_B3at(P24 in) {	// {{{
-	P24 out;
-	__asm__ volatile (
-	/* vstup: in je v r22:r23:r24 */
-	
-	"mov r30, r22 \n\t"   /* lo  */
-	"mov r31, r23 \n\t"   /* hi  */
-	"mov r25, r24 \n\t"   /* hlo */
-	
-	"call B3at     \n\t"  /* zavolání asm */
-	
-	/* výstup: r22:r23:r24 už obsahují návrat */
-	: "=r" (out)          /* out ← r22:r23:r24 */
-	: "r" (in)            /* in  → r22:r23:r24 */
-	: "r25", "r30", "r31", "memory"
-	);
-	
-	return out;
-}	// }}}
-uint8_t C_B1at(uint32_t in) __attribute__((naked));
-uint8_t C_B1at(uint32_t in)
-{
-    __asm__ volatile (
-        "mov r30, r22 \n\t"
-        "mov r31, r23 \n\t"
-        "mov r25, r24 \n\t"
-        "call B1at     \n\t"
-        "mov r24, r22 \n\t"
-        "ret"
-    );
-}	// }}}
+
+#define F(str) ((const __attribute__((__progmem__))char*)(str))
+#pragma GCC push_options
+#pragma GCC optimize ("no-strict-aliasing")
+
+static inline P24 U32_P24(uint32_t x){ return *(P24*)&x;  }
+static inline uint32_t P24_U32(P24 x) { uint32_t r; __asm__ ( "clr %D0" : "=r" (r) : "0" (x)); return r; }
+static inline uint32_t xpC_U32(xpC x) { uint32_t r; __asm__ ( "clr %D0" : "=r" (r) : "0" (x)); return r; }
+static inline uint32_t npC_U32(npC x) { uint32_t r; __asm__ ( "clr %D0" : "=r" (r) : "0" (x)); return r; }
+//static inline DOUBLE_t U32_D(uint32_t x){ return x & 0x00FFFFFFUL; }
+#pragma GCC pop_options
 static inline P24 u32_to_p24(uint32_t v) // {{{
 {
     P24 p;
@@ -156,15 +151,18 @@ static inline uint32_t p24_to_u32(P24 p)	// {{{
             ((uint32_t)p.dta.hi  << 8) |
             ((uint32_t)p.dta.hlo << 16);
 }	// }}}
+TEXT uint32_t cw2name(uint32_t start) {	// {{{
+	for (uint8_t i=0; i<32;i++) {
+		start--;
+		if(C_B1at(start) < 32) break;
+	};
+	return start;
+}	// }}}
 TEXT void C_Tracer(uint32_t DT,uint16_t IP,uint16_t RST,uint16_t DST,uint32_t TOS) {	// {{{
 	uint8_t c;
 	char cc;
-	uint32_t a = (uint32_t)DT-3;
-	for (uint8_t i=0; i<32;i++) {
-		a--;
-		c = C_B1at(a);
-		if (c <32) break;
-	};
+	uint32_t a = cw2name(DT-3);
+	c=C_B1at(a);
 	
 	P24 *rst_ptr = (P24 *)(uintptr_t)RST;
 	P24 *dst_ptr = (P24 *)(uintptr_t)DST;
@@ -228,13 +226,13 @@ return;
 }	// }}}
 TEXT void C_words() {	// {{{
 	uint32_t head, a;
-	P24 p;
+	uint32_t p;
 	uint8_t len = TCB_test.WL_ORDER_len;
 	for (uint8_t i=0;i<len;i++) {
 		TX0_WriteStr("\r\n=== ");
 		TX0_WriteHex8(i);
 		TX0_WriteStr(" ===\r\n");
-		p=TCB_test.WL_ORDER[i];
+		p=P24_U32(TCB_test.WL_ORDER[i]);
 		/*
 		TX0_WriteHex8(p.dta.hlo);
 		TX0_WriteHex8(p.dta.hi);
@@ -250,7 +248,7 @@ TEXT void C_words() {	// {{{
 		TX0_Write(':');
 		*/
 		
-		head= p24_to_u32(p);
+		head= p;
 		uint8_t count=10;
 		
 		uint8_t b,b1,b2,b3,att;
@@ -269,13 +267,17 @@ TEXT void C_words() {	// {{{
 		// TX0_Write(':');
 		att=C_B1at(a++);//attrib
 		if (att){
-			if (att & FLG_IMMEDIATE)
 			if (att & FLG_IMMEDIATE)	{ TX0_Write('I'); };
 			if (att & FLG_HIDDEN)		{ TX0_Write('H'); };
 			if (att & FLG_FOG)		{ TX0_Write('F'); };
-			if (att & FLG_ARG_1)		{ TX0_Write('1'); };
-			if (att & FLG_ARG_2)		{ TX0_Write('2'); };
-//			if (att & FLG_ARG_3)		{ TX0_Write('3'); };
+			if (att & FLG_ADDR)		{ TX0_Write('A'); } 
+			else
+			switch (att & FLG_ARG_MASK) {
+				case FLG_ARG_1:		{ TX0_Write('1'); };
+				case FLG_ARG_2:		{ TX0_Write('2'); };
+				case FLG_ARG_3:		{ TX0_Write('3'); };
+				case FLG_ARG_4:		{ TX0_Write('4'); };
+			};
 			if (att & FLG_PSTRING)		{ TX0_Write('P'); };
 			TX0_Write(':');
 		};
@@ -287,10 +289,147 @@ TEXT void C_words() {	// {{{
 	};
 }	// }}}
 
+// {{{ old FORTH
+typedef uint32_t DOUBLE_t;	// 2 cell on data stack 4B
+char buf[32];	// temporary buffer - stack eating structures cannot be in NEXT-chained functions, or stack will overflow !!!
+DOUBLE_t cw2h(DOUBLE_t cw) {	// {{{ codeword address to head address
+//TX0_WriteStr("cw2h( ");
+// TX0_WriteHex24(xpC_U32(&FORTH_WORDS_START));
+// TX0_Write('<');
+// TX0_WriteHex24(cw);
+// TX0_Write('<');
+// TX0_WriteHex24( xpC_U32(&FORTH_WORDS_END));
+// TX0_Write('|');
+// TX0_WriteHex24(RAM(npC_U32(&HERE1[0])));
+// TX0_Write('<');
+// TX0_WriteHex24(cw);
+// TX0_Write('<');
+// TX0_WriteHex24( RAM(npC_U32(&HERE1[0]))+sizeof(HERE1) );
+	if ( ! (
+		( (xpC_U32(&FORTH_WORDS_START) <= cw) && ( cw < xpC_U32(&FORTH_WORDS_END)) ) ||
+		( (RAM(npC_U32(&HERE1[0])) <= cw) && ( cw < RAM(npC_U32(&HERE1[0]))+sizeof(HERE1) ) )
+		) ) { return 0; };
+// TX0_Write('+');
+	if (!cw) return 0;
+// TX0_Write('+');
+	uint8_t i =0;
+	cw--;
+	while ((i<33 ) && (i!=C_B1at(cw))) {i++;cw--;};
+// TX0_Write('=');
+// TX0_WriteHex8(i);
+// TX0_Write(')');
+	if (i<33) return cw-5;
+	return 0;
+}	// }}}
+DOUBLE_t h2cw(DOUBLE_t h) {	// {{{ convert head address to codeword address
+	h+=5;
+	h+=1+C_B1at(h);
+	return h;
+}	// }}}
+uint8_t name_to_buf(DOUBLE_t cw) {	// {{{ fill name into global buf codeword - return flags
+	DOUBLE_t h=cw2h(cw);
+	if (!h) {strcpy_P(buf,F(" Not a word "));return 0;};
+	uint8_t flags,len;
+	flags=C_B1at(h+4);
+	len=C_B1at(h+5);
+	uint8_t i=0;
+	for (; i<len;i++) buf[i]=C_B1at(h+6+i);
+	buf[i]=0;
+	return flags;
+}	// }}}
 
+void C_export(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition of WORD
+	uint32_t val;
+	uint8_t flags;
+	if ( ! cw2h(cw)) { TX0_WriteStr("Not valid CW."); return;};
+	TX0_Write('\r');
+	TX0_Write('\n');
+	TX0_Write(':');
+	TX0_Write(' ');
+	flags = name_to_buf(cw);
+	TX0_WriteStr(buf);
+	if (flags & FLG_IMMEDIATE) TX0_WriteStr(" IMMEDIATE");
+	if (flags & FLG_HIDDEN) TX0_WriteStr(" ( HIDDEN )");
+	if (flags & FLG_FOG) TX0_WriteStr(" ( FOG )");
+	if (val_of_f_docol != C_B3at(cw)) {
+		TX0_WriteStr(" NOT_DOCOL definition ");
+		return;	// neumim rozepsat
+		};
+	cw+=3;
+	do {
+		val=C_B3at(cw);
+		cw+=3;
+		if (val == val_of_w_exit_cw) break;
+		TX0_Write(' ');
+		flags=name_to_buf(val);
+		TX0_WriteStr(buf);
+		if ( ((flags & FLG_ARG_MASK)==FLG_ARG_3) || ((flags & FLG_ADDR)==FLG_ADDR)) {
+			val=C_B3at(cw);
+			cw+=3;
+			TX0_Write(' ');
+			uint32_t h1=cw2h(val);
+				if (h1) {	// it points to cw of existing word
+					name_to_buf(val);
+					TX0_WriteStr(buf);
+					TX0_WriteStr(" ( \\'0x");
+					TX0_WriteHex24(val);
+					TX0_WriteStr(" )");
+				} else {
+					TX0_WriteStr("\\'0x");
+					TX0_WriteHex24(val);
+				};
+			val=0;
+		}
+		else if ( ((flags & FLG_ARG_MASK)==FLG_ARG_4)) {
+			val=C_B2at(cw);
+			cw+=2;
+			TX0_WriteStr(" \\'0x");
+			TX0_WriteHex16(val);
+			val=C_B2at(cw);
+			cw+=2;
+			TX0_WriteHex16(val);
+			val=0;
+		}
+		else if ( ((flags & FLG_ARG_MASK)==FLG_ARG_2)) {
+			val=C_B2at(cw);
+			cw+=2;
+			TX0_WriteStr(" \\'0x");
+			TX0_WriteHex16(val);
+			val=0;
+		}
+		else if ( ((flags & FLG_ARG_MASK)==FLG_ARG_1)) {
+			val=C_B1at(cw);
+			cw+=1;
+			TX0_WriteStr(" \\'0x");
+			TX0_WriteHex8(val);
+			val=0;
+		}
+		else if ((flags & FLG_PSTRING) && (C_B3at(cw)<128)) { // too long strings probabely are not arguments
+			val=C_B1at(cw);
+			cw+=1;
+			TX0_WriteStr(" \\'0x");
+			TX0_WriteHex24(val);
+			TX0_WriteStr(" \\\"");
+			while (val--) TX0_WriteA(C_B1at(cw++));
+			TX0_WriteStr("\"");
+			val=0;
+		};
+	} while (1);
+//	} while (val != val_of_w_exit_cw);
+	TX0_WriteStr(" ;");
+	TX0_Write('\r');
+	TX0_Write('\n');
+
+}	// }}}
+
+// }}}
 TEXT void setup(void) {
 	usart0_setup();
 	sei();
+	/*
+	TX0_WriteHex24(xpC_U32(&f_docol));	// vyjde to stejne obema zpusoby
+	TX0_WriteHex24(val_of_f_docol);
+	*/
 }
 
 TEXT void loop(void) {
@@ -316,7 +455,6 @@ static inline uint16_t p16_to_u16(P16 p)
     return  ((uint16_t)p.lo) |
             ((uint16_t)p.hi  << 8);
 }
-uint8_t HERE1[0x300];
 // static 
 P24 WL_all;
 P24 WL_all_2;

@@ -1,6 +1,9 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+;    PCMSK0 |= (1 << PCINT4); // Enable interrupt for PCINT4     
+;    PCICR |= _BV(PCIE0);     // Enable Pin Change Interrupt for PCINT0
+
 #define DEBUG
 #ifdef DEBUG
 ; === DEBUG {{{
@@ -14,9 +17,9 @@
 .global TX0_Head
 .global TX0_Tail
 .global TX0_Buffer
+.global Hex_Buffer
 #endif
 ; }}}
-
 
 ; === Konstanta pro baud rate 115200 při 16 MHz a U2Xn = 0: UBRR = 8
 .equ BAUD_UBRR,8
@@ -81,6 +84,7 @@ TX0_Count:		.byte 0
 TX0_Head:		.byte 0
 TX0_Tail:		.byte 0
 TX0_Buffer:		.skip TX0_BUFFER_SIZE
+Hex_Buffer:		.skip 9	; 32bit string + \0
 
 .type RX0_Count, @object
 .type RX0_Head, @object
@@ -91,6 +95,8 @@ TX0_Buffer:		.skip TX0_BUFFER_SIZE
 .type TX0_Head, @object
 .type TX0_Tail, @object
 .type TX0_Buffer, @object
+.type Hex_Buffer, @object
+
 ignoreme_2: .byte 0
 ; === }}}
 .section .text.LIBS.main
@@ -272,13 +278,22 @@ USART0_UDRE_ISR:
 
 
 ; === }}}
+; === TX0_WriteA: vstup r24 = znak, blokuje při plném bufferu, vystup r24 - aktualni delka bufferu; uses r18, r19, r20, Z {{{ pise pouze ASCII
+.global TX0_WriteA
+TX0_WriteA:
+	sbrc r24,7
+	ldi r24, '.'
+	cpi r24, ' '
+	brsh TX0_Write
+	ldi r24, '.'
+; }}} fall thru
 ; === TX0_Write: vstup r24 = znak, neblokuje při plném bufferu, ztraci znaky, vystup r24 - aktualni delka bufferu; uses r18, r19, r20, Z {{{
 .global TX0_Write
 TX0_Write:
 ret
 	lds r18, TX0_Count
 	cpi r18, TX0_BUFFER_SIZE-1
-	breq TX0_Write.end
+	breq TX0_Write
 	lds r19, TX0_Head
 	ldi ZL, lo8(TX0_Buffer)
 	ldi ZH, hi8(TX0_Buffer)

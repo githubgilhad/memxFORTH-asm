@@ -8,7 +8,7 @@ gfunc f_plus	; {{{ #
 	add TOS_lo, Parsx_lo
 	adc TOS_hi, Parsx_hi
 	adc TOS_hlo, Parsx_hlo
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 
 

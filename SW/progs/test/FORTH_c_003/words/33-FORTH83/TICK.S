@@ -1,12 +1,21 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
-DEFWORD w_tick,			0,		"'",			f_docol, yes		; ( -- addr ) addr is xt of next word in TIB TODO
-;	P24 w_parse_name_cw
-;	P24 w_find_name_cw
-;	P24 w_head2cw_cw
+DEFWORD w_tick,			0,		"'",			f_docol, yes		; ( "name" -- addr ) addr is xt of next word in TIB TODO
+	P24 w_PARSE_NAME_cw
+	P24 w_FIND_NAME_cw
+	P24 ww_do_IF_cw
+	P24 2f - .
+	P24 w_toR_cw
+	P24 w_2DROP_cw
+	P24 w_Rfrom_cw
+	P24 ww_do_ELSE_cw
+	P24 3f - .
+2:
+	P24 w_2DROP_cw
+	P24 w_zero_cw
+3:
 	P24 w_exit_cw
-; : ' PARSE-WORD SEARCH-WORD H>CW ;
-; : ' PARSE-NAME FIND-NAME
+; : ' PARSE-NAME FIND-NAME IF >R 2DROP R> ELSE 2DROP 0 THEN ;
 
 ;      '            -- addr                       M,83            "tick"
 ;           Used in the form:

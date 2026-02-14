@@ -7,7 +7,7 @@ DEFWORD w_NUMBER,		0,		"NUMBER",		f_NUMBER		; ( c-addr u -- 0 | x -1 ) convert s
 gfunc f_NUMBER	; {{{ # 
 	tcb_member	TCB_AIB
 	movw		Temp_lo,ZL
-	PopST_Zx
+	PopST	Zx
 	movw	XL,Temp_lo
 	or	TOS_hi,TOS_hlo
 	brne	.f_NUMBER.fail
@@ -32,11 +32,11 @@ gfunc f_NUMBER	; {{{ #
 	tst		Cpar1_hi
 	breq		.f_NUMBER.end
 	PushST		Cpar2,Cpar1_lo
-	rjmp NEXT
+	jmp NEXT
 .f_NUMBER.fail:
 	Set3 TOS, r1,r1,r1
 .f_NUMBER.end:
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 

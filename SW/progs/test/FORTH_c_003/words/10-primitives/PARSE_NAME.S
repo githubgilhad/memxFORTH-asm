@@ -62,7 +62,7 @@ gfunc func_PARSE_NAME	; {{{ #
 ; }}}
 gfunc f_PARSE_NAME	; {{{ #
 	call func_PARSE_NAME
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 

@@ -13,13 +13,14 @@ B2at:	; {{{ Read 2 bytes at; in: Zx, out: Parsx=r22,r23,r24 (as 2 bytes at Zx), 
 	; in: Zx, out: Parsx=r22,r23,r24 (as 2 bytes at Zx), Zx += 2
 	; check for 80+40=80 for RAM:
 	mov  r22, Z_hlo
-	andi r22, 0x80+0x40
+	andi r22, 0x80		;+0x40
 	cpi  r22, 0x80
 	breq B2at.RAM
-	ori  r22,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
-	ori  Z_hlo,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
-	cpi  r22, 0x40
-	breq B2at.store
+;	ori  r22,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
+;	ori  Z_hlo,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
+;	cpi  r22, 0x40
+;	breq B2at.store
+	rjmp B2at.store
 B2at.Memory_failed:
 	rjmp Memory_failed	; fail, no address at all
 B2at.RAM:
@@ -37,7 +38,7 @@ B2at.RAM.ok:
 B2at.store:
 	mov  r22, Z_hlo
 	andi r22, 0x46
-	cpi  r22, 0x40
+	cpi  r22, 0		;+0x40
 	breq B2at.40	; normal FLASH
 	cpi  r22, 0x44
 	breq B2at.44	; Shared RAM
@@ -52,7 +53,7 @@ B2at.40:
 	elpm Parsx_hi, Z+
 	clr  Parsx_hlo
 	in   Z_hlo, _SFR_IO_ADDR(RAMPZ)
-	ori  Z_hlo, 0x40
+;	ori  Z_hlo, 0x40
 	clT
 	ret
 B2at.44:
@@ -63,13 +64,14 @@ B1at:	; {{{ read 1 byte at; in: Zx, out: Parsx=r22,r23,r24 (as 1 byte at Zx), Zx
 	; in: Zx, out: Parsx=r22,r23,r24 (as 1 byte at Zx), Zx += 1
 	; check for 80+40=80 for RAM:
 	mov  r22, Z_hlo
-	andi r22, 0x80+0x40
+	andi r22, 0x80		;+0x40
 	cpi  r22, 0x80
 	breq B1at.RAM
-	ori  r22,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
-	ori  Z_hlo,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
-	cpi  r22, 0x40
-	breq B1at.store
+;	ori  r22,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
+;	ori  Z_hlo,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
+;	cpi  r22, 0x40
+;	breq B1at.store
+	rjmp B1at.store
 	rjmp Memory_failed	; fail, no address at all
 B1at.RAM:
 	ld   Parsx_lo, Z+	; one byte may be read anywhere
@@ -86,7 +88,7 @@ B1at.RAM.ok:
 B1at.store:
 	mov  r22, Z_hlo
 	andi r22, 0x46
-	cpi  r22, 0x40
+	cpi  r22, 0		; 0x40
 	breq B1at.40	; normal FLASH
 	cpi  r22, 0x44
 	breq B1at.44	; Shared RAM
@@ -101,7 +103,7 @@ B1at.40:
 	clr  Parsx_hi
 	clr  Parsx_hlo
 	in   Z_hlo, _SFR_IO_ADDR(RAMPZ)
-	ori  Z_hlo, 0x40
+;	ori  Z_hlo, 0x40
 	clT
 	ret
 B1at.44:
@@ -112,13 +114,14 @@ B3at:	; {{{ Read 3 bytes at; in: Zx, out: Parsx=r22,r23,r24 (as 3 bytes at Zx), 
 	; in: Zx, out: Parsx=r22,r23,r24 (as 3 bytes at Zx), Zx += 3
 	; check for 80+40=80 for RAM:
 	mov  r22, Z_hlo
-	andi r22, 0x80+0x40
+	andi r22, 0x80		;+0x40
 	cpi  r22, 0x80
 	breq B3at.RAM
-	ori  r22,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
-	ori  Z_hlo,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
-	cpi  r22, 0x40
-	breq B3at.store
+;	ori  r22,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
+;	ori  Z_hlo,0x40		; FIXME zatim mam jen RAM a FLASH ale FLASH mi negeneruje OR 0x40 - opravit vsude v kodu, nebo v dokumentaci
+;	cpi  r22, 0x40
+;	breq B3at.store
+	rjmp B3at.store
 	rjmp Memory_failed	; fail, no address at all
 B3at.RAM:
 	ld   Parsx_lo, Z+
@@ -135,7 +138,7 @@ B3at.RAM.ok:
 B3at.store:
 	mov  r22, Z_hlo
 	andi r22, 0x46
-	cpi  r22, 0x40
+	cpi  r22, 0		;0x40
 	breq B3at.40	; normal FLASH
 	cpi  r22, 0x44
 	breq B3at.44	; Shared RAM
@@ -150,7 +153,7 @@ B3at.40:
 	elpm Parsx_hi, Z+
 	elpm Parsx_hlo, Z+
 	in   Z_hlo, _SFR_IO_ADDR(RAMPZ)
-	ori  Z_hlo, 0x40
+;	ori  Z_hlo, 0x40
 	clT
 	ret
 B3at.44:

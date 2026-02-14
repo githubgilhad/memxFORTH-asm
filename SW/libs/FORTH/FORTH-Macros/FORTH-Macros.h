@@ -9,27 +9,15 @@
 ; Stack grows down (decrement before store, increment after load)
 
 .macro PushST a_lo, a_hi, a_hlo	; {{{ # push "a"  to  DST, 3B (no TOS)
-	movw ZL, DST_lo
-	st -Z, \a_hlo
-	st -Z, \a_hi
-	st -Z, \a_lo
-	movw DST_lo, ZL
+	st -Y, \a_hlo
+	st -Y, \a_hi
+	st -Y, \a_lo
 .endm
 	; }}}
 .macro PopST a_lo, a_hi, a_hlo	; {{{ #  pop  "a" from DST, 3B (no TOS)
-	movw ZL, DST_lo
-	ld \a_lo, Z+
-	ld \a_hi, Z+
-	ld \a_hlo, Z+
-	movw DST_lo, ZL
-.endm
-	; }}}
-.macro PopST_Zx			; {{{ #  pop  Zx from DST, 3B (no TOS)
-	movw XL, DST_lo
-	ld Z_lo, X+
-	ld Z_hi, X+
-	ld Z_hlo, X+
-	movw DST_lo, XL
+	ld \a_lo, Y+
+	ld \a_hi, Y+
+	ld \a_hlo, Y+
 .endm
 	; }}}
 .macro PopSTn a_lo, a_hi, a_hlo, n	; {{{ #  n * pop  "a" from DST, 3B (no TOS)
@@ -479,27 +467,27 @@ gobj \lbl\()_data
 gobj \Cname
 	P24 0
 
-DEFWORD var_\Cname, FLG_ARG_3, "\name", f_dovar, line=\line
+DEFWORD var_\Cname, 0, "\name", f_dovar, line=\line
 	P24 \Cname
 .endm	// }}}
 .macro DEFCONST name, line=1	// {{{
 	DEFWORD const_\name,0,"\name",push_const_\name, line=\line
 .endm	// }}}
 .macro DEFCONSTI1 name, cname, value, line=1	// {{{
-	DEFWORD const_\cname,FLG_ARG_1,"\name",f_CONST1, true, line=\line
+	DEFWORD const_\cname,0,"\name",f_CONST1, true, line=\line
 	.byte \value
 .endm	// }}}
 .macro DEFCONSTI2 name, cname, value, line=1	// {{{
-	DEFWORD const_\cname,FLG_ARG_2,"\name",f_CONST2, true, line=\line
+	DEFWORD const_\cname,0,"\name",f_CONST2, true, line=\line
 	.word \value
 .endm	// }}}
 .macro DEFCONSTI3 name, cname, value, line=1	// {{{
-	DEFWORD const_\cname,FLG_ARG_3,"\name",f_CONST3, true, line=\line
+	DEFWORD const_\cname,0,"\name",f_CONST3, true, line=\line
 	P24 \value
 .endm	// }}}
 
 .macro DEFTCBVAR name, member, line=1	; {{{
-	DEFWORD var_\member,FLG_ARG_2,"\name",f_push_tcb_member, line=\line
+	DEFWORD var_\member,0,"\name",f_push_tcb_member, line=\line
 	P16 \member
 .endm	; }}}
 

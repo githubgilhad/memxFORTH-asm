@@ -1,8 +1,8 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
 
-DEFWORD w_LOOP,		FLG_IMMEDIATE,		"LOOP",			f_LOOP			; Compilation ( C: do-sys --  ) compile 'do_loop' to definition ; Compilation: ( C: do-sys -- ) TODO compilation
-DEFWORD ww_do_loop,	FLG_HIDDEN+FLG_ARG_3,	"do_loop",		do_loop		line=2	; Runtime: ( -- ) ( R: loop-sys1 -- | loop-sys2 ) inc 'first' and maybe loop 
+DEFWORD w_LOOP,			FLG_IMMEDIATE,	"LOOP",			f_LOOP			; Compilation ( C: do-sys --  ) compile 'do_loop' to definition ; Compilation: ( C: do-sys -- ) TODO compilation
+DEFWORD ww_do_loop,	FLG_HIDDEN+FLG_ARG_3,	"do_loop",		do_loop,	line=2	; Runtime: ( -- ) ( R: loop-sys1 -- | loop-sys2 ) inc 'first' and maybe loop 
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_LOOP	; {{{ # FIXME				FIXME: IMMEDIATE slova se typicky chovaji stejne (nebo nefunguji v interpretu), ale zakoduji do nove definice sve pomocne do_*** verze, ktere jsou zcela jine a funguji jen zakodovane ve slove. !!! f_LOOP <> do_LOOP (vyhledove jiny slovnik mimo ORDER/HIDDEN)

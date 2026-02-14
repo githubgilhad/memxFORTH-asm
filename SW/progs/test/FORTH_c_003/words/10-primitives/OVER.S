@@ -7,7 +7,7 @@ gfunc f_OVER	; {{{ #
 	ReadST_N 0, Parsx   ; read (a)
 	PushST TOS		; Push TOS (b) to stack
 	Set3 TOS, Parsx		; Set TOS to (a)
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 
 ; https://forth-standard.org/standard/core/OVER

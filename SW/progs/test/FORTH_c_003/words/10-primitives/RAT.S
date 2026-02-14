@@ -7,14 +7,14 @@ DEFWORD w_2R_at,		0,		"2R@",			f_2R_at			; (  -- x y ) ( R: x y -- x y ) copy 2 
 gfunc f_R_at	; {{{ #
 	PushST     TOS
 	ReadR_N 0, TOS
-	rjmp       NEXT
+	jmp       NEXT
 ; }}}
 gfunc f_2R_at	; {{{ #
 	PushST     TOS
 	ReadR_N 1, TOS
 	PushST     TOS
 	ReadR_N 0, TOS
-	rjmp       NEXT
+	jmp       NEXT
 ; }}}
 
 ; https://forth-standard.org/standard/core/RFetch

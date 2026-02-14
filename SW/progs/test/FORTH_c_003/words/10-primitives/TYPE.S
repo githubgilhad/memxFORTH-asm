@@ -5,7 +5,7 @@ DEFWORD w_TYPE,			0,		"TYPE",			f_TYPE			; ( c-addr u --  ) EMITs string [2310]
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_TYPE	; {{{ # 
-	PopST_Zx
+	PopST	Zx
 	breq3 TOS, .f_TYPE.end
 .f_TYPE.loop:
 	call	B1at

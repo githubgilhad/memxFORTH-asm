@@ -2,7 +2,7 @@
 
 
 DEFWORD w_CREATE,		0,		"CREATE",		f_CREATE		; ( "<spaces>name" -- ) Create a definition for name  [1000]
-DEFWORD ww_do_create,		FLG_HIDDEN,	"do_create",		do_create	,line=2	; Runtime ( -- a-addr ) push address of datafield for name  [1000]
+DEFWORD ww_do_create,		FLG_HIDDEN,	"do_create",		do_create,	line=2	; Runtime ( -- a-addr ) push address of datafield for name  [1000]
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_CREATE	; {{{ # 

@@ -68,9 +68,9 @@
 .endm			; }}}
 
 ; === RX/TX buffer velikosti
-.equ RX0_BUFFER_SIZE,32
-.equ RX0_BUFFER_THRESHOLD,8
-.equ TX0_BUFFER_SIZE,64
+.equ RX0_BUFFER_SIZE,64
+.equ RX0_BUFFER_THRESHOLD,16
+.equ TX0_BUFFER_SIZE,120
 
 ; === data {{{
 .section .bss.LIBS

@@ -4,7 +4,7 @@
 DEFWORD w_SEMICOLON,		FLG_IMMEDIATE,	";",			f_SEMICOLON		; (  --  ) ends colon definition, make word visible [----]
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
-gfunc f_SEMICOLON	; {{{ # FIXME
+gfunc f_SEMICOLON	; {{{ # 
 	TCB_member TCB_WL_CURRENT	; &TCB_WL_CURRENT
 		RB3at			; &wid
 	Set3 Zx,Parsx

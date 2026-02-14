@@ -18,6 +18,7 @@ DEFWORD w_QUIT,			0,		"QUIT",			f_docol, yes		; Main loop,  : QUIT INIT BEGIN BE
 	P24 w_INTERPRET_cw
 	P24 w_BRANCH_cw
 	P24 2b - .
+	P24 w_exit_cw
 
 
 ;;	: QUIT

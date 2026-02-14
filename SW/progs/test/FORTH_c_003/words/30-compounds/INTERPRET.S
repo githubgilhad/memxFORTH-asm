@@ -107,7 +107,7 @@ DEFWORD w_INTERPRET,		0,		"INTERPRET",		f_docol, yes		; ( -- )  : INTERPRET ... 
 ;	P24 w_AGAIN_cw		; 2
 	P24 w_BRANCH_cw
 	P24 2b - .
-;	P24 w_exit_cw		; no exit here
+	P24 w_exit_cw		; no exit here, but it is stopmark
 
 ;;	: INTERPRET  ( -- )
 ;;		BEGIN					\ 2: 

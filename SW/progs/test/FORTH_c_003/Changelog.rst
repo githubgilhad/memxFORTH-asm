@@ -15,6 +15,12 @@ Changelog
 --------------------------------------------------------------------------------
 
 %START%
+* 2026.02.13 22:10:27 - DEFWORD w_EXPORT,		0,		"EXPORT",		f_EXPORT		; ( xt --  ) exports word [xxxx]
+* 2026.02.11 11:39:34 - DEFWORD w_THEN,			FLG_IMMEDIATE,	"THEN",			f_THEN			; C:( addr  -- ) get addr from stack and fill offset here [----]
+* 2026.02.11 11:30:10 - DEFWORD ww_do_ELSE,		FLG_ARG_3,	"do_ELSE",		f_BRANCH, line=2	; (  --  ) jump  [----]
+* 2026.02.11 11:29:57 - DEFWORD w_ELSE,			FLG_IMMEDIATE,	"ELSE",			f_ELSE			; C:( addr  -- addr ) compile do_ELSE, 0,get addr from stack and fill offset after 0, push addr of 0 to stack [----]
+* 2026.02.11 09:50:43 - DEFWORD w_IF,			FLG_IMMEDIATE,	"IF",			f_IF			; (  --  ) compile do_IF 0, push addr of 0 to stack   [----]
+* 2026.02.11 09:46:21 - DEFWORD do_IF,			FLG_ARG_3,	"do_IF",		f_0BRANCH, line=2	; (  --  ) 0BRANCH  [----]
 * 2026.02.09 12:23:17 - DEFWORD w_SEMICOLON,		FLG_IMMEDIATE,	";",			f_SEMICOLON		; (  --  ) ends colon definition, make word visible [----]
 * 2026.02.09 00:37:32 - DEFWORD w_right_bracket,	0,		"]",			f_right_bracket		; (  --  ) leave interpretation, (re)enter compilation [----]
 * 2026.02.09 00:36:32 - DEFWORD w_left_bracket,		FLG_IMMEDIATE,	"[",			f_left_bracket		; (  --  ) leave compilation, enter interpretation [----]

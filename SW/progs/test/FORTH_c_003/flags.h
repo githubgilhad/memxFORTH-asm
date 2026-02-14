@@ -8,7 +8,10 @@
 #define FLG_ARG_1	0x01		// if next 1 byte (byte)   is argument, not next entry
 #define FLG_ARG_2	0x02		// if next 2 bytes (word)  is argument, not next entry
 #define FLG_ARG_3	0x03		// if next 3 bytes (PTR_t) is argument, not next entry
-#define FLG_PSTRING	0x04		// PSTRING follows (LITSTRING)
+#define FLG_ARG_4	0x04		// if next 4 bytes (long/call addr) is argument, not next entry
+#define FLG_ARG_MASK	0x07		// all ARG_* for masking
+#define FLG_PSTRING	0x08		// PSTRING follows (LITSTRING)
+#define FLG_ADDR	0x10		// ADDRESS follows (3 bytes) - show name
 #define FLG_NOFLAG	0		// nothing extra
 // #define FLG_NOFLAG	~(FLG_IMMEDIATE | FLG_HIDDEN)
 

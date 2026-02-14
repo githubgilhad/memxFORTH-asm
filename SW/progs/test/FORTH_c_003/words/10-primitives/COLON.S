@@ -1,7 +1,7 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
 
-DEFWORD w_COLON,			0,		":",			f_COLON			; ( C: "<spaces>name" -- colon-sys ) create new word [0450]
+DEFWORD w_COLON,		0,		":",			f_COLON			; ( C: "<spaces>name" -- colon-sys ) create new word [0450]
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_COLON	; {{{ # 
@@ -9,7 +9,7 @@ gfunc f_COLON	; {{{ #
 		RB3at
 	PushST	Parsx
 	call	func_CREATE
-	PopST_Zx
+	PopST	Zx
 	ldi	Tx,3
 	Add31	Zx,Tx			; attributes
 	ldi	Parsx_lo, FLG_HIDDEN
