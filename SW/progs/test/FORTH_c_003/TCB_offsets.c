@@ -19,6 +19,7 @@ typedef struct __attribute__((packed)) {
 	P24 IP;
 	P16 DST;
 	P16 RST;
+	P16 LST;
 	P24 TOS;
 	P24 DT; 	// probably not used, we will return to yield() before NEXT	//  probably not used, generated in NEXT
 	P16 TCB_cur;	// address of this variable
@@ -36,9 +37,12 @@ typedef struct __attribute__((packed)) {
 	P16 DataStackLast;
 	P16 ReturnStackFirst;
 	P16 ReturnStackLast;
+	P16 LStackFirst;
+	P16 LStackLast;
 
 	P24 DataStack[DST_SIZE];
 	P24 ReturnStack[RST_SIZE];
+	P24 LStack[LST_SIZE];
 	uint8_t TIB[TIB_SIZE];
 	uint8_t AIB[AIB_SIZE];
 	P24 WL_ORDER[ORDER_SIZE];
@@ -59,6 +63,7 @@ void gen_offsets(void)		// this is envelope for our generated text, it will NOT 
 	GEN(TCB_IP,			offsetof(Thread_Controll_Block, IP));
 	GEN(TCB_DST,			offsetof(Thread_Controll_Block, DST));
 	GEN(TCB_RST,			offsetof(Thread_Controll_Block, RST));
+	GEN(TCB_LST,			offsetof(Thread_Controll_Block, LST));
 	GEN(TCB_TOS,			offsetof(Thread_Controll_Block, TOS));
 	GEN(TCB_DT,			offsetof(Thread_Controll_Block, DT));
 	GEN(TCB_TCB_cur,		offsetof(Thread_Controll_Block, TCB_cur));
@@ -76,8 +81,11 @@ void gen_offsets(void)		// this is envelope for our generated text, it will NOT 
 	GEN(TCB_DataStackLast,		offsetof(Thread_Controll_Block, DataStackLast));
 	GEN(TCB_ReturnStackFirst,	offsetof(Thread_Controll_Block, ReturnStackFirst));
 	GEN(TCB_ReturnStackLast,	offsetof(Thread_Controll_Block, ReturnStackLast));
+	GEN(TCB_LStackFirst,		offsetof(Thread_Controll_Block, LStackFirst));
+	GEN(TCB_LStackLast,		offsetof(Thread_Controll_Block, LStackLast));
 	GEN(TCB_DataStack,		offsetof(Thread_Controll_Block, DataStack));
 	GEN(TCB_ReturnStack,		offsetof(Thread_Controll_Block, ReturnStack));
+	GEN(TCB_LStack,			offsetof(Thread_Controll_Block, LStack));
 	GEN(TCB_TIB,			offsetof(Thread_Controll_Block, TIB));
 	GEN(TCB_AIB,			offsetof(Thread_Controll_Block, AIB));
 	GEN(TCB_WL_ORDER,		offsetof(Thread_Controll_Block, WL_ORDER));

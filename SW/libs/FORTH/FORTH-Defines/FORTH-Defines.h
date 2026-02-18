@@ -2,8 +2,18 @@
 
 #pragma once
 
-#define USE_LINE_16
+#define FLAG_RAM		0x80	// if set, use LD rx,Z+ approach, if not, read more
+#define FLAG_RAM_bit		7	// for SBRC – Skip if Bit in Register is Cleared and friends
+
+#define FLAG_STORE		0x60	// 0x40+0x20	0x00 is FLASH, use LPM rx,Z+ approach
+					//		0x01 is External Memory via D-Latch and A+C Ports
+					//		0x10 is Shared Memory via Ports JKL
+#define FLAG_DoubleIndirect	0x10	// for NEXT - dereference 2x, use Temp as secondary DT, for CREATE..DOES>
+#define FLAG_DoubleIndirect_bit	4	// for SBRC
+
 #define P24_Canary 0xCACAA7
+
+#define USE_LINE_16
 #define DoNEXTcounter	// if defined, NEXT increase NEXTcounter on each entry
 
 #ifdef __ASSEMBLER__
@@ -72,6 +82,14 @@
 #define 	DST	DST_lo, DST_hi
 #define 	DST3	DST_lo, DST_hi, DST_hlo
 
+;	L-Stack is in RAM 0 (calee protected)
+#define 	LST_lo	r14
+#define 	LST_hi	r15
+#define 	LST_hlo	r1
+				; LST_hlo is zero
+#define 	LST	LST_lo, LST_hi
+#define 	LST3	LST_lo, LST_hi, LST_hlo
+
 ;	Return Stack is in RAM 0 (calee protected)
 #define 	RST_lo	r2
 #define 	RST_hi	r3
@@ -92,6 +110,7 @@
 
 #define DST_SIZE 30
 #define RST_SIZE 30
+#define LST_SIZE 30
 #define TIB_SIZE 80
 #define AIB_SIZE 80
 #define ORDER_SIZE 16

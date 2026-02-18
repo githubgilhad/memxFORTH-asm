@@ -7,6 +7,6 @@ gfunc f_minus	; {{{ #
 	PopST Parsx		; Pop second item to Parsx
 	Sub3 Parsx, TOS
 	Set3 TOS, Parsx
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 

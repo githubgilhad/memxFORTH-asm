@@ -18,7 +18,7 @@ gfunc f_LITERAL	; {{{ #
 	TCB_member	TCB_HERE
 			RW3at
 		PopST	TOS
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 
 ; https://forth-standard.org/standard/core/LITERALERAL
@@ -50,7 +50,7 @@ gfunc f_LIT1	; {{{ #
 	Set3 IP, Zx		; IP += 2
 	PushST TOS		; Push old TOS
 	Set3 TOS, Parsx_lo, r1, r1	; Set TOS to literal value
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_LIT2	; {{{ #
 	; IP points to the literal value
@@ -59,7 +59,7 @@ gfunc f_LIT2	; {{{ #
 	Set3 IP, Zx		; IP += 2
 	PushST TOS		; Push old TOS
 	Set3 TOS, Parsx_lo, Parsx_hi, r1	; Set TOS to literal value
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_LIT3	; {{{ #
 	; IP points to the literal value
@@ -68,7 +68,7 @@ gfunc f_LIT3	; {{{ #
 	Set3 IP, Zx		; IP += 3
 	PushST TOS		; Push old TOS
 	Set3 TOS, Parsx		; Set TOS to literal value
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 
 
@@ -77,21 +77,21 @@ gfunc f_CONST1	; {{{  ( -- x ) use DT 1B as value
 	Set3 Zx,DT
 	call B1at
 	Set3 TOS, Parsx_lo, r1, r1	; Set TOS to literal value
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_CONST2	; {{{  ( -- x ) use DT 2B as value
 	PushST TOS
 	Set3 Zx,DT
 	call B2at
 	Set3 TOS, Parsx_lo, Parsx_hi, r1	; Set TOS to literal value
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_CONST3	; {{{  ( -- x ) use DT 3B as value
 	PushST TOS
 	Set3 Zx,DT
 	call B3at
 	Set3 TOS, Parsx		; Set TOS to literal value
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 
 

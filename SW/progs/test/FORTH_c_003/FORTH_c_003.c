@@ -123,7 +123,8 @@ extern xC w_docol_cw;
 extern const __memx uint32_t	val_of_w_exit_cw;
 extern const __memx uint32_t	val_of_f_docol;
 
-uint8_t HERE1[0x300];
+#define HERE_SIZE 0x300
+uint8_t HERE1[HERE_SIZE];
 #include <avr/pgmspace.h>
 
 
@@ -475,6 +476,8 @@ TEXT int main(void) {
 	TCB_test.	DataStackLast	.ptr	= & TCB_test.DataStack		[DST_SIZE - 1];
 	TCB_test.	ReturnStackFirst.ptr	= & TCB_test.ReturnStack	[0];
 	TCB_test.	ReturnStackLast	.ptr	= & TCB_test.ReturnStack	[RST_SIZE - 1];
+	TCB_test.	LStackFirst	.ptr	= & TCB_test.LStack		[0];
+	TCB_test.	LStackLast	.ptr	= & TCB_test.LStack		[LST_SIZE - 1];
 	
 	/*
 	for (uint8_t i=0; i<DST_SIZE;++i)	TCB_test.DataStack[i] 	= u32_to_p24(P24_Canary);
@@ -486,9 +489,11 @@ TEXT int main(void) {
 	
 	for (uint8_t i=0; i<DST_SIZE;++i)	TCB_test.DataStack[i] 	= u32_to_p24(0x444444);
 	for (uint8_t i=0; i<RST_SIZE;++i)	TCB_test.ReturnStack[i]	= u32_to_p24(0x525252);
+	for (uint8_t i=0; i<LST_SIZE;++i)	TCB_test.LStack[i]	= u32_to_p24(0x4C4C4C);
 	for (uint8_t i=0; i<TIB_SIZE;++i)	TCB_test.TIB[i]	= 'T';
 	for (uint8_t i=0; i<AIB_SIZE;++i)	TCB_test.AIB[i]	= 'A';
 	for (uint8_t i=0; i<ORDER_SIZE;++i)	TCB_test.WL_ORDER[i]	= u32_to_p24(0x4f4f4f);
+	for (uint16_t i=0; i<HERE_SIZE;++i)	HERE1[i]	= 'H';
 	
 	// For now, just echo serial input
 	TCB_test.	STATE			= F_INTERPRETING ;
@@ -508,6 +513,7 @@ TEXT int main(void) {
 	TCB_test.	IP		.ptr	= & w_TEST_cw;
 	TCB_test.	DST		.ptr	= & TCB_test.DataStack		[DST_SIZE - 2];
 	TCB_test.	RST		.ptr	= & TCB_test.ReturnStack	[RST_SIZE - 1];
+	TCB_test.	LST		.ptr	= & TCB_test.LStack		[LST_SIZE - 1];
 	TCB_test.	TOS			=   u32_to_p24( P24_Canary );
 	TCB_test.	DT			=   u32_to_p24( P24_Canary );
 /*

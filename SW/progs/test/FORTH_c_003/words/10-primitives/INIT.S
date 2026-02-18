@@ -32,8 +32,8 @@ f_INIT.len:
 f_INIT.data:
 ;	.ascii "CLS : foo $123456 .h ; foo \r"	; "CLS $123456 .h 10 EMIT TEST \r"
 ;	.ascii " : foo 1 2 3  ; WORDS \r "	; "CLS $123456 .h 10 EMIT TEST \r"
-	.ascii " : foo 1 2 3  ; foo .S ' foo EXPORT \r "
-;	.ascii " : foo 1 2 3  ; foo .S  "
+;	.ascii " : foo 1 2 3  ; foo .S ' foo EXPORT \r "
+	.ascii " : foo 10 0 DO I .h I 5 = IF LEAVE THEN $123 .h LOOP ; ' foo EXPORT \r "
 2:
 .balign 2
 

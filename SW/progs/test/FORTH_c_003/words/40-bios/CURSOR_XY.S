@@ -4,7 +4,7 @@
 DEFWORD w_CURSOR_XY,		0,		"CURSOR_XY",		f_CURSOR_XY		; ( x y --  ) move cursor to x,y [xxxx]
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
-gfunc f_CURSOR_XY		; {{{ # FIXME
+gfunc f_CURSOR_XY		; {{{ # 
 	PopST	Cpar1,Tx	; r24 = x
 	movw	Cpar2_lo,TOS_lo	; R22 = y
 	call c_cursor_xy

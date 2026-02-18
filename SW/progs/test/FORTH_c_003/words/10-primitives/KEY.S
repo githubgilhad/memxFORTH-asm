@@ -20,6 +20,6 @@ gfunc f_KEY	; {{{ #
 ;; 	ldi Cpar1_lo, 32
 ;; 	call TX0_Write
 ;; 2:
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 

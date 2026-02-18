@@ -1,12 +1,12 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
 
-DEFWORD w_DOT_S,		0,		".S",		f_DOT_S		; (  --  ) list data stack [xxxx]
+DEFWORD w_DOT_S,		0,		".S",			f_DOT_S			; (  --  ) list data stack [xxxx]
 
 #define dst_ptr XL,XH
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
-gfunc f_DOT_S	; {{{ #  FIXME
+gfunc f_DOT_S	; {{{ #  
 	PUSH_R2_R17
 	TCB_member	TCB_DataStackLast
 		RB3at

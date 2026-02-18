@@ -1,6 +1,6 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
-DEFWORD w_tick,			0,		"'",			f_docol, yes		; ( "name" -- addr ) addr is xt of next word in TIB TODO
+DEFWORD w_tick,			0,		"'",			f_docol, yes		; ( "name" -- 0 | xt  ) xt of next word in TIB [----]
 	P24 w_PARSE_NAME_cw
 	P24 w_FIND_NAME_cw
 	P24 ww_do_IF_cw

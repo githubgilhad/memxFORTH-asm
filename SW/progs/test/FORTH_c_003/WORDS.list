@@ -61,7 +61,8 @@ DEFWORD w_CURSOR_LEFT,		0,		"CURSOR_LEFT",		f_docol, yes		; ( -- )
 DEFWORD w_CURSOR_RIGHT,		0,		"CURSOR_RIGHT",		f_docol, yes		; ( -- ) 
 DEFWORD w_CURSOR_XY,		0,		"CURSOR_XY",		f_CURSOR_XY		; ( x y --  ) move cursor to x,y [xxxx]
 DEFWORD w_DEFINITIONS,		0,		"DEFINITIONS",		f_DEFINITIONS		; ( -- ) set CURRENT to first WL in ORDER
-DEFWORD w_DOT_S,		0,		".S",		f_DOT_S		; (  --  ) list data stack [xxxx]
+DEFWORD w_DO,			FLG_IMMEDIATE,	"DO",			f_DO			; Compilation ( C: -- 0 do-sys ) compile 'do_do' to definition
+DEFWORD w_DOT_S,		0,		".S",			f_DOT_S			; (  --  ) list data stack [xxxx]
 DEFWORD w_DRAW_AIB,		0,		"DRAW_AIB",		f_docol, yes		; ( -- ) draw current data
 DEFWORD w_DROP,			0,		"DROP",			f_DROP			; ( a -- ) DROP top of stack
 DEFWORD w_DROPat,		0,		"DROP@",		f_DROPat		; ( xn .. x1 n -- xn-1 .. x1) DROP item at place n (n>2) (1=DROP, 2=NIP)
@@ -80,12 +81,12 @@ DEFWORD w_IFNOT,		FLG_IMMEDIATE,	"IFNOT",		f_IFNOT			; C:(  -- addr ) compile do
 DEFWORD w_INIT,			0,		"INIT",			f_INIT			; (  -- ) Set stacks and all other data to init values
 DEFWORD w_INTERPRET,		0,		"INTERPRET",		f_docol, yes		; ( -- )  : INTERPRET ... ; 
 DEFWORD w_KEY,			0,		"KEY",			f_KEY			; ( -- char ) read character from serial
-DEFWORD w_LEAVE, FLG_IMMEDIATE + FLG_ARG_3,	"LEAVE",		f_LEAVE			; ( -- ) ( R: loop-sys -- ) leave loop TODO compilation
+DEFWORD w_LEAVE, 		FLG_IMMEDIATE,	"LEAVE",		f_LEAVE			; Compilation ( C: backn do-sys  -- backn backn+1 do-sys ) compile 'do_leave' to definition
 DEFWORD w_LIT1,			FLG_ARG_1,	"LIT1",			f_LIT1			; ( -- value ) push literal value 1B
 DEFWORD w_LIT2,			FLG_ARG_2,	"LIT2",			f_LIT2			; ( -- value ) push literal value 2B
 DEFWORD w_LIT3,			FLG_ARG_3,	"LIT3",			f_LIT3			; ( -- value ) push literal value 3B
 DEFWORD w_LITERAL,		FLG_IMMEDIATE,	"LITERAL",		f_LITERAL		; ( x -- ) compile x to current word 3B (as LIT3 x)
-DEFWORD w_LOOP,			FLG_IMMEDIATE,	"LOOP",			f_LOOP			; Compilation ( C: do-sys --  ) compile 'do_loop' to definition ; Compilation: ( C: do-sys -- ) TODO compilation
+DEFWORD w_LOOP,			FLG_IMMEDIATE,	"LOOP",			f_LOOP			; Compilation ( C: 0 back1 .. backn do-sys --  ) compile 'do_loop' to definition
 DEFWORD w_NDROP,		0,		"NDROP",		f_NDROP			; ( xn .. x1 n -- ) DROP N items from top of stack
 DEFWORD w_NEXTcounter,		0,		"NEXTcounter",		f_NEXTcounter		; (  -- x1 x2  ) returns NEXTcounter as Double (# of jumps to NEXT)  [xxxx]
 DEFWORD w_NIP,			0,		"NIP",			f_NIP			; ( a b -- b ) DROP second item in stack
@@ -93,7 +94,7 @@ DEFWORD w_NUMBER,		0,		"NUMBER",		f_NUMBER		; ( c-addr u -- 0 | x -1 ) convert s
 DEFWORD w_OVER,			0,		"OVER",			f_OVER			; ( a b -- a b a ) copy second stack item to top
 DEFWORD w_PARSE_NAME,		0,		"PARSE-NAME",		f_PARSE_NAME		; ( -- c-address u ) parse name from TIB [xxxx]
 DEFWORD w_PLACE_CURSOR,		0,		"PLACE_CURSOR",		f_docol, yes		; ( -- ) set cursor pos
-DEFWORD w_PLUSLOOP, FLG_IMMEDIATE + FLG_ARG_2,	"+LOOP",		f_PLUSLOOP		; (  --  ) do something TODO
+DEFWORD w_PLUSLOOP,		FLG_IMMEDIATE,	"+LOOP",		f_PLUSLOOP		; Compilation ( C: 0 back1 .. backn do-sys --  ) compile 'do_plusloop' to definition
 DEFWORD w_QUIT,			0,		"QUIT",			f_docol, yes		; Main loop,  : QUIT INIT BEGIN BEGIN TIB TIB.max ACCEPT UNTIL INTERPRET REPEAT ;  
 DEFWORD w_RAM_MOVE,		0,		"RAM-MOVE",		f_RAM_MOVE		; ( addr1 addr2 u -- ) in RAM only, move u bytes to addr2 (in right direction)
 DEFWORD w_RDROP,		0,		"RDROP",		f_RDROP			; ( -- ) ( R: x -- ) DROP for return stack
@@ -106,7 +107,7 @@ DEFWORD w_SWAP,			0,		"SWAP",			f_SWAP			; ( a b -- b a ) SWAP top two stack ite
 DEFWORD w_TEST,			0,		"TEST",			f_docol, yes		; ( -- ) // just test
 DEFWORD w_THEN,			FLG_IMMEDIATE,	"THEN",			f_THEN			; C:( addr  -- ) get addr from stack and fill offset here [----]
 DEFWORD w_TYPE,			0,		"TYPE",			f_TYPE			; ( c-addr u --  ) EMITs string [2310]
-DEFWORD w_UNLOOP,		0,		"UNLOOP",		f_docol, yes		; ( -- ) remove one level of DO..LOOP to eventually enable EXIT
+DEFWORD w_UNLOOP,		0,		"UNLOOP",		f_docol, yes		; ( -- ) ( R: limit first -- ) remove one level of DO..LOOP to eventually enable EXIT
 DEFWORD w_WORDLIST,		0,		"WORDLIST",		f_docol, yes		; ( -- wid ) create wordlist : WORDLIST ( -- wid ) HERE 0 , ; \ reserve CELL, store zeroes there, return its address
 DEFWORD w_WORDS,		0,		"WORDS",		f_WORDS			; (  --  ) print all words [xxxx]
 DEFWORD w_at,			0,		"@",			f_at			; ( addr -- value ) fetch cell from address
@@ -144,7 +145,7 @@ DEFWORD w_right_bracket,	0,		"]",			f_right_bracket		; (  --  ) leave interpreta
 DEFWORD w_store,		0,		"!",			f_store			; ( value addr -- ) store cell to address
 DEFWORD w_strequ,		0,		"STR=",			f_strequ		; ( c-addr1 u1 c-addr2 u2 -- flag ) compare 2 strings  flag=-1 identical, flag=0 different
 DEFWORD w_strnonequ,		0,		"STR<>",		f_strnonequ		; ( c-addr1 u1 c-addr2 u2 -- flag ) compare 2 strings  flag=0 identical, flag=-1 different
-DEFWORD w_tick,			0,		"'",			f_docol, yes		; ( "name" -- addr ) addr is xt of next word in TIB TODO
+DEFWORD w_tick,			0,		"'",			f_docol, yes		; ( "name" -- 0 | xt  ) xt of next word in TIB [----]
 DEFWORD w_times,		0,		"*",			f_times			// ( a b -- a*b ) multiply top two stack items (24-bit result, may overflow) TODO
 DEFWORD w_toR,			0,		">R",			f_toR			; ( x  --  )( R: -- x ) move CELL from data stack to return stack
 DEFWORD w_wid_item,		0,		"wid[]",		f_wid_item		; ( i -- wid_i ) get i.th order wordlist (1 most actual) [xxx]
@@ -158,5 +159,8 @@ DEFWORD ww_do_ELSE,		FLG_ARG_3,	"do_ELSE",		f_BRANCH,	line=2	; (  --  ) jump  [-
 DEFWORD ww_do_IF,		FLG_ARG_3,	"do_IF",		f_0BRANCH,	line=2	; ( flag --  ) jump if ZERO [----]
 DEFWORD ww_do_IFNOT,		FLG_ARG_3,	"do_IFNOT",		f_1BRANCH,	line=2	; ( flag --  ) jump if NOT ZERO [----]
 DEFWORD ww_do_create,		FLG_HIDDEN,	"do_create",		do_create,	line=2	; Runtime ( -- a-addr ) push address of datafield for name  [1000]
-DEFWORD ww_do_loop,	FLG_HIDDEN+FLG_ARG_3,	"do_loop",		do_loop,	line=2	; Runtime: ( -- ) ( R: loop-sys1 -- | loop-sys2 ) inc 'first' and maybe loop 
+DEFWORD ww_do_do,		FLG_HIDDEN,	"do_do",		do_do,		line=2	; Runtime: ( limit first -- ) ( R:  -- limit first ) set loop params
+DEFWORD ww_do_leave, 	FLG_HIDDEN + FLG_ARG_3,	"do_leave",		do_leave	line=2	; Runtime: ( -- ) ( R: limit first -- ) leave loop, jump after LOOP
+DEFWORD ww_do_loop,	FLG_HIDDEN + FLG_ARG_3,	"do_loop",		do_loop,	line=2	; Runtime: ( -- ) ( R: limit first -- | limit first+1 ) inc 'first' and maybe loop
+DEFWORD ww_do_plusloop,	FLG_HIDDEN + FLG_ARG_3,	"do_plusloop",		do_plusloop,	line=2	; Runtime: ( x -- ) ( R: limit first -- | limit first+x ) inc 'first' by 'x' and maybe loop
 DEFWORD ww_zzz_eol_2,		0,		"zzz_eol_2",		f_zzz_eol_2, line=2	; (  -- h ) return its head [----]

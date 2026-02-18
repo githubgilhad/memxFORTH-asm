@@ -47,7 +47,7 @@ gfunc f_RAM_MOVE	; {{{ #
 
 .f_RAM_MOVE.done:
 	PopST TOS
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 ; 
 ; MOVE ( addr1 addr2 u -- ) TODO (mam RAM-MOVE)

@@ -15,6 +15,16 @@ Changelog
 --------------------------------------------------------------------------------
 
 %START%
+* 2026.02.14 09:36:28 - DEFWORD w_UNLOOP,		0,		"UNLOOP",		f_docol, yes		; ( -- ) ( R: limit first -- ) remove one level of DO..LOOP to eventually enable EXIT
+* 2026.02.14 09:34:16 - DEFWORD w_LEAVE, 		FLG_IMMEDIATE,	"LEAVE",		f_LEAVE			; Compilation ( C: backn do-sys  -- backn backn+1 do-sys ) compile 'do_leave' to definition
+* 2026.02.14 09:34:04 - DEFWORD ww_do_leave, 	FLG_HIDDEN + FLG_ARG_3,	"do_leave",		do_leave	line=2	; Runtime: ( -- ) ( R: limit first -- ) leave loop, jump after LOOP
+* 2026.02.14 09:33:51 - DEFWORD w_LOOP,			FLG_IMMEDIATE,	"LOOP",			f_LOOP			; Compilation ( C: 0 back1 .. backn do-sys --  ) compile 'do_loop' to definition
+* 2026.02.14 09:33:40 - DEFWORD w_PLUSLOOP,		FLG_IMMEDIATE,	"+LOOP",		f_PLUSLOOP		; Compilation ( C: 0 back1 .. backn do-sys --  ) compile 'do_plusloop' to definition
+* 2026.02.14 09:33:32 - DEFWORD ww_do_loop,	FLG_HIDDEN + FLG_ARG_3,	"do_loop",		do_loop,	line=2	; Runtime: ( -- ) ( R: limit first -- | limit first+1 ) inc 'first' and maybe loop
+* 2026.02.14 09:33:15 - DEFWORD ww_do_plusloop,	FLG_HIDDEN + FLG_ARG_3,	"do_plusloop",		do_plusloop,	line=2	; Runtime: ( x -- ) ( R: limit first -- | limit first+x ) inc 'first' by 'x' and maybe loop
+* 2026.02.14 07:41:02 - DEFWORD w_DO,			FLG_IMMEDIATE,	"DO",			f_DO			; Compilation ( C: -- do-sys ) first DO loop
+* 2026.02.14 07:40:28 - DEFWORD ww_do_do,	FLG_HIDDEN+FLG_ARG_3,	"do_do",		do_do,		line=2	; Runtime: ( limit first -- ) ( R:  -- limit first ) set loop params 
+* 2026.02.14 07:11:59 - DEFWORD w_DOT_S,		0,		".S",			f_DOT_S			; (  --  ) list data stack [xxxx]
 * 2026.02.13 22:10:27 - DEFWORD w_EXPORT,		0,		"EXPORT",		f_EXPORT		; ( xt --  ) exports word [xxxx]
 * 2026.02.11 11:39:34 - DEFWORD w_THEN,			FLG_IMMEDIATE,	"THEN",			f_THEN			; C:( addr  -- ) get addr from stack and fill offset here [----]
 * 2026.02.11 11:30:10 - DEFWORD ww_do_ELSE,		FLG_ARG_3,	"do_ELSE",		f_BRANCH, line=2	; (  --  ) jump  [----]

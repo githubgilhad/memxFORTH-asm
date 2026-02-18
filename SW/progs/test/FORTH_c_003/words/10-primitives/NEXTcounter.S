@@ -9,7 +9,7 @@ gfunc f_NEXTcounter	; {{{ #
 	Lds3 TOS,NEXTcounter
 	PushST TOS
 	Lds3 TOS,NEXTcounter+3
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 

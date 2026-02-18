@@ -46,6 +46,28 @@
 	movw RST_lo,ZL
 .endm			; }}}
 
+.macro PushL a_lo, a_hi, a_hlo	; {{{ # push "a" to LST, 3B
+	movw ZL, LST_lo
+	st -Z, \a_hlo
+	st -Z, \a_hi
+	st -Z, \a_lo
+	movw LST_lo,ZL
+.endm	
+	; }}}
+.macro PopL a_lo, a_hi, a_hlo	; {{{ # pop "a" from LST, 3B
+	movw ZL, LST_lo
+	ld \a_lo,  Z+
+	ld \a_hi,  Z+
+	ld \a_hlo, Z+
+	movw LST_lo,ZL
+.endm			; }}}
+.macro PeekL a_lo, a_hi, a_hlo	; {{{ # peek "a" from LST, 3B
+	movw ZL, LST_lo
+	ld \a_lo,  Z+
+	ld \a_hi,  Z+
+	ld \a_hlo, Z+
+.endm			; }}}
+
 .macro ReadST_N N, a_lo, a_hi, a_hlo	; {{{ # read N-th item from real Data Stack into registers (N=>0, no TOS) (a b -- a b ; N=0 => a fetched)
 	movw ZL, DST_lo
 	.if \N != 0

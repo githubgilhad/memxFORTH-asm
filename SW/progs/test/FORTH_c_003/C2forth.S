@@ -48,6 +48,8 @@ C2FORTH:	; {{{ C2FORTH(User *data, void (*fn)(void));
 	Ld2Z DST
 	TCB_2_Z TCB_RST
 	Ld2Z RST
+	TCB_2_Z TCB_LST
+	Ld2Z LST
 	TCB_2_Z TCB_TOS
 	Ld3Z TOS
 	TCB_2_Z TCB_DT
@@ -66,6 +68,8 @@ C2FORTH:	; {{{ C2FORTH(User *data, void (*fn)(void));
 	St3Z IP
 	TCB_2_Z TCB_DST
 	St2Z DST
+	TCB_2_Z TCB_LST
+	St2Z LST
 	TCB_2_Z TCB_RST
 	St2Z RST
 	TCB_2_Z TCB_TOS

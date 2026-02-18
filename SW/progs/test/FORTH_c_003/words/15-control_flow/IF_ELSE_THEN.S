@@ -13,14 +13,15 @@ DEFWORD w_THEN,			FLG_IMMEDIATE,	"THEN",			f_THEN			; C:( addr  -- ) get addr fr
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_IF	; {{{ # 
-	PushST		TOS
 	TCB_member	TCB_HERE	; &HERE
 		RB3at			; Parsx = value of HERE
 	Set3		Zx, Parsx
 	Ldi3		Parsx, ww_do_IF_cw
 	call W3at			; compile do_IF (=0BRANCH)
-	Set3		TOS, Zx		; here we need overwrite jump distance
+	Set3		Temp, Zx	; here we need overwrite jump distance
+	PushL		Temp
 	ZERO		Parsx
+	Set3		Zx, Temp
 	call W3at			; compile do_IF (=0BRANCH) offset
 	Set3		Parsx,Zx
 	TCB_member	TCB_HERE	; &HERE
@@ -28,14 +29,15 @@ gfunc f_IF	; {{{ #
 	rjmp NEXT
 ; }}}
 gfunc f_IFNOT	; {{{ # 
-	PushST		TOS
 	TCB_member	TCB_HERE	; &HERE
 		RB3at			; Parsx = value of HERE
 	Set3		Zx, Parsx
 	Ldi3		Parsx, ww_do_IFNOT_cw
 	call W3at			; compile do_IF (=0BRANCH)
-	Set3		TOS, Zx		; here we need overwrite jump distance
+	Set3		Temp, Zx	; here we need overwrite jump distance
+	PushL		Temp
 	ZERO		Parsx
+	Set3		Zx, Temp
 	call W3at			; compile do_IF (=0BRANCH)
 	Set3		Parsx,Zx
 	TCB_member	TCB_HERE	; &HERE
@@ -48,8 +50,9 @@ gfunc f_ELSE	; {{{ #
 	Set3		Zx, Parsx
 	Ldi3		Parsx, ww_do_ELSE_cw
 	call W3at			; compile do_ELSE (=0BRANCH)
-	Set3 		DT, TOS 	; need to owerwrite this addr with offset to next P24
-	Set3		TOS, Zx		; here we need overwrite jump distance
+	PopL		DT		; need to owerwrite this addr with offset to next P24
+	Set3		Temp, Zx	; here we need overwrite jump distance
+	PushL		Temp
 	ZERO		Parsx
 	call W3at			; compile do_ELSE (=0BRANCH)
 	Set3		Parsx,Zx
@@ -65,10 +68,10 @@ gfunc f_THEN	; {{{ #
 	TCB_member	TCB_HERE	; &HERE
 		RB3at			; Parsx = value of HERE
 	; compute offset to HERE
-	Sub3		Parsx, TOS
-	Set3		Zx,TOS
+	PopL		Temp
+	Sub3		Parsx, Temp
+	Set3		Zx,Temp
 	call		W3at		; fix value at IF
-	PopST		TOS
 	rjmp NEXT
 ; }}}
 

@@ -71,11 +71,22 @@ gfunc NEXT // DT=*IP++; jmp **DT++		{{{
 	Set3 DT, Zx		; Parsx=*DT; DT+=3
 ; call Tracer
 	Set3 Zx, Parsx
+	sbrc Z_hlo,4		; skip if Z_hlo & 0x10 == 0x00 (not double indirect address)
+	rjmp NEXT.DoubleIndirect
 	Div2 Zx
 	out _SFR_IO_ADDR(EIND), Z_hlo
 NEXT.eijmp:
 	.global NEXT.eijmp
-	eijmp			; jmp *Parsx (not call, it is FORTH function with NEXT)
+	eijmp			; jmp *Zx (not call, it is FORTH function with NEXT)
+NEXT.DoubleIndirect:
+	call B3at
+	Set3 Temp,Zx
+	Div2 Zx
+	out _SFR_IO_ADDR(EIND), Z_hlo
+NEXT.eijmpDi:
+	.global NEXT.eijmpDi
+	eijmp			; jmp *Zx (not call, it is FORTH function with NEXT)
+
 NEXT.IRQ:
 	Lds3 Zx, FORTH_IRQ_addr
 	call B3at
