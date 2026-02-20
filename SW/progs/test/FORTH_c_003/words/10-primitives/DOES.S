@@ -21,9 +21,10 @@ gfunc f_DOES	; {{{ # zakompiluje adresy f_does a do_does do noveho slova
 ; }}}
 
 gfunc f_does	; {{{ #  do CW noveho slova da DoubleIndirect odkaz na do_does
-	Set3 Zx, IP
-	call B3at
-	Set3 IP, Zx		; IP += 3, Parsx=addr of do_does
+	Set3 Parsx,IP
+;	Set3 Zx, IP
+;	call B3at
+;	Set3 IP, Zx		; IP += 3, Parsx=addr of do_does
 	ori  Parsx_hlo,FLAG_DoubleIndirect
 	Set3 DT, Parsx		; DT=addr of do_does DoubleIndirect
 	TCB_member TCB_WL_CURRENT	; &TCB_WL_CURRENT

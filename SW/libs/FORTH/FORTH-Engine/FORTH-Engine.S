@@ -67,6 +67,8 @@ gfunc NEXT // DT=*IP++; jmp **DT++		{{{
 	call B3at
 	Set3 IP, Zx		; DT=*IP; IP +=3
 	Set3 Zx, Parsx
+NEXT.from_Execute:
+	.global NEXT.from_Execute
 	call B3at
 	Set3 DT, Zx		; Parsx=*DT; DT+=3
 ; call Tracer
@@ -79,8 +81,10 @@ NEXT.eijmp:
 	.global NEXT.eijmp
 	eijmp			; jmp *Zx (not call, it is FORTH function with NEXT)
 NEXT.DoubleIndirect:
+gfunc NEXT_Di
 	call B3at
 	Set3 Temp,Zx
+	Set3 Zx, Parsx
 	Div2 Zx
 	out _SFR_IO_ADDR(EIND), Z_hlo
 NEXT.eijmpDi:

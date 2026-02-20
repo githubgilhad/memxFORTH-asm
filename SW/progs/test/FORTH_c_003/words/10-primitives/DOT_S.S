@@ -12,7 +12,7 @@ DEFWORD w_DOT_L,		0,		".L",			f_DOT_L			; (  --  ) list secondary L stack [xxxx]
 gfunc f_DOT_S	; {{{ #  
 	PUSH_R2_R17
 	TCB_member	TCB_DataStackLast
-		RB3at
+		RB2at
 	Set2		dst_ptr, Parsx2
 	ldi		Tx, 6
 	Sub21		dst_ptr, Tx
@@ -42,12 +42,12 @@ gfunc f_DOT_S	; {{{ #
 gfunc f_DOT_R	; {{{ #  
 	PUSH_R2_R17
 	TCB_member	TCB_ReturnStackLast
-		RB3at
+		RB2at
 	Set2		dst_ptr, Parsx2
-	ldi		Tx, 6
-	Sub21		dst_ptr, Tx
+;	ldi		Tx, 4
+;	Sub21		dst_ptr, Tx
 	Cmp2		dst_ptr, RST
-	brlo	.f_DOT_R.noTOS
+	brlo	.f_DOT_R.end
 2:
 	ld	r24, -X
 	call TX0_WriteHex8
@@ -59,19 +59,19 @@ gfunc f_DOT_R	; {{{ #
 	call TX0_Write
 	Cmp2	RST,dst_ptr
 	brlo	2b ; branch if DST< dst_ptr
-.f_DOT_R.noTOS:
+.f_DOT_R.end:
 	POP_R2_R17
 	jmp NEXT
 ; }}}
 gfunc f_DOT_L	; {{{ #  
 	PUSH_R2_R17
 	TCB_member	TCB_LStackLast
-		RB3at
+		RB2at
 	Set2		dst_ptr, Parsx2
-	ldi		Tx, 6
-	Sub21		dst_ptr, Tx
+;	ldi		Tx, 3
+;	Sub21		dst_ptr, Tx
 	Cmp2		dst_ptr, LST
-	brlo	.f_DOT_L.noTOS
+	brlo	.f_DOT_L.end
 2:
 	ld	r24, -X
 	call TX0_WriteHex8
@@ -83,7 +83,7 @@ gfunc f_DOT_L	; {{{ #
 	call TX0_Write
 	Cmp2	LST,dst_ptr
 	brlo	2b ; branch if DST< dst_ptr
-.f_DOT_L.noTOS:
+.f_DOT_L.end:
 	POP_R2_R17
 	jmp NEXT
 ; }}}

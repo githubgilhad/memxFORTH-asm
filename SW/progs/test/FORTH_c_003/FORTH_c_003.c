@@ -297,6 +297,7 @@ TEXT void C_words() {	// {{{
 	};
 }	// }}}
 TEXT void C_dump(uint32_t MEM) {	// {{{
+	nodebug=false;
 	debug_dump (MEM,F("DEBUG"));
 }	// }}}
 

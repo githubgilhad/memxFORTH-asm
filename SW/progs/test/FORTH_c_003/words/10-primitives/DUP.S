@@ -7,19 +7,19 @@ DEFWORD w_qDUP,			0,		"?DUP",			f_qDUP			; ( a -- 0 | a a ) duplicate non zero C
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_DUP	; {{{ #
 	PushST TOS
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_2DUP	; {{{ #
 	ReadST_N 0, DT
 	PushST TOS
 	PushST DT
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_qDUP	; {{{ #
 	breq3	TOS, 2f
 	PushST	TOS
 2:
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 
 

@@ -58,7 +58,7 @@ OBJS = $(BUILD)/$(TARGET).o $(LIB_OBJS) $(LOC_LIB_OBJS)
 # ========== Build pravidla ==========
 
 
-all: $(BUILD)/$(TARGET).hex $(TARGET).dis sizecheck TODO WORDS | $(BUILD)/
+all: $(BUILD)/$(TARGET).hex $(TARGET).dis sizecheck TODO WORDS tags | $(BUILD)/
 
 -include Makefile.local
 
@@ -141,6 +141,9 @@ monitor:
 	picocom -b 115200 --flow n --noreset --quiet $(PORT)
 
 upload_monitor: upload monitor
+
+tags:
+	ctags -R .
 
 clean:
 	rm -f *.o *.elf *.hex *.dis 

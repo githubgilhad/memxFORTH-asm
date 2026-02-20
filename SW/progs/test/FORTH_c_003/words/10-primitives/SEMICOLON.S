@@ -21,7 +21,10 @@ gfunc f_SEMICOLON	; {{{ #
 		RB3at			; value of HERE
 	Set3 Zx,Parsx
 	Ldi3 Parsx, w_exit_cw
-	call W3at			; save LAST at HERE+++
+	call W3at			;
+	Set3 Parsx,Zx
+	TCB_member	TCB_HERE	; &HERE
+		RW3at			; update value of HERE
 	
 	ldi Parsx_lo, F_INTERPRETING	; ]
 	TCB_member TCB_STATE
