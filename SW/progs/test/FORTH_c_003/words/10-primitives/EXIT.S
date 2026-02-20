@@ -4,6 +4,6 @@ DEFWORD w_EXIT,			0,		"EXIT",			f_exit			; ( XX ) synonymum exit, not catched by
 ; EXIT - exit from word
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_exit	; {{{ #
-	rjmp EXIT
+	jmp EXIT
 	; }}}
 

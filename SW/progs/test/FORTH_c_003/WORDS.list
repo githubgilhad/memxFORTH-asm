@@ -31,9 +31,11 @@ DEFWORD w_0BRANCH,		FLG_ARG_3,	"0BRANCH",		f_0BRANCH		; ( -- ) branch if zero - 
 DEFWORD w_1BRANCH,		FLG_ARG_3,	"1BRANCH",		f_1BRANCH		; ( -- ) branch if NOT zero - add following P24 to IP and NEXT there; -3 is endless loop, else skip, eat stack [xxxx]
 DEFWORD w_2DROP,		0,		"2DROP",		f_2DROP			; ( a a -- ) 2DROP top of stack
 DEFWORD w_2DUP,			0,		"2DUP",			f_2DUP			; ( a b -- a b a b ) duplicate 2 CELLs on top of stack [0380]
+DEFWORD w_2Lfrom,		0,		"2L>",			f_2Lfrom		; (  -- x y ) ( L: x y -- ) move 2 CELLs from L stack to data stack (in order)
 DEFWORD w_2RDROP,		0,		"2RDROP",		f_2RDROP		; ( -- ) ( R: x y -- ) 2DROP for return stack
 DEFWORD w_2R_at,		0,		"2R@",			f_2R_at			; (  -- x y ) ( R: x y -- x y ) copy 2 CELLs from return stack to data stack (same order)
 DEFWORD w_2Rfrom,		0,		"2R>",			f_2Rfrom		; (  -- x y ) ( R: x y -- ) move 2 CELLs from return stack to data stack (in order)
+DEFWORD w_2toL,			0,		"2>L",			f_2toL			; ( x y  --  )( L: -- x y ) move 2 CELLs from data stack to L stack (in order)
 DEFWORD w_2toR,			0,		"2>R",			f_2toR			; ( x y  --  )( R: -- x y ) move 2 CELLs from data stack to return stack (in order)
 DEFWORD w_ACCEPT,		0,		"ACCEPT",		f_docol, yes		; ( c-addr max -- n ) (  --  ) move INPUT to addr, limited to max chars, return actual number TODO [0695]
 DEFWORD w_AIB_BACKSPACE,	0,		"AIB_BACKSPACE",	f_docol, yes		; (  -- ) backspace
@@ -62,7 +64,11 @@ DEFWORD w_CURSOR_RIGHT,		0,		"CURSOR_RIGHT",		f_docol, yes		; ( -- )
 DEFWORD w_CURSOR_XY,		0,		"CURSOR_XY",		f_CURSOR_XY		; ( x y --  ) move cursor to x,y [xxxx]
 DEFWORD w_DEFINITIONS,		0,		"DEFINITIONS",		f_DEFINITIONS		; ( -- ) set CURRENT to first WL in ORDER
 DEFWORD w_DO,			FLG_IMMEDIATE,	"DO",			f_DO			; Compilation ( C: -- 0 do-sys ) compile 'do_do' to definition
-DEFWORD w_DOT_S,		0,		".S",			f_DOT_S			; (  --  ) list data stack [xxxx]
+DEFWORD w_DOES,		FLG_IMMEDIATE,		"DOES>",		f_DOES			; (  --  ) DOES> runtime part of new word [----]
+DEFWORD w_DOT_D,		0,		".D",			f_DOT_S			; (  --  ) list data D stack [xxxx]
+DEFWORD w_DOT_L,		0,		".L",			f_DOT_L			; (  --  ) list secondary L stack [xxxx]
+DEFWORD w_DOT_R,		0,		".R",			f_DOT_R			; (  --  ) list return R stack [xxxx]
+DEFWORD w_DOT_S,		0,		".S",			f_DOT_S			; (  --  ) list data Stack [xxxx]
 DEFWORD w_DRAW_AIB,		0,		"DRAW_AIB",		f_docol, yes		; ( -- ) draw current data
 DEFWORD w_DROP,			0,		"DROP",			f_DROP			; ( a -- ) DROP top of stack
 DEFWORD w_DROPat,		0,		"DROP@",		f_DROPat		; ( xn .. x1 n -- xn-1 .. x1) DROP item at place n (n>2) (1=DROP, 2=NIP)
@@ -87,6 +93,7 @@ DEFWORD w_LIT2,			FLG_ARG_2,	"LIT2",			f_LIT2			; ( -- value ) push literal valu
 DEFWORD w_LIT3,			FLG_ARG_3,	"LIT3",			f_LIT3			; ( -- value ) push literal value 3B
 DEFWORD w_LITERAL,		FLG_IMMEDIATE,	"LITERAL",		f_LITERAL		; ( x -- ) compile x to current word 3B (as LIT3 x)
 DEFWORD w_LOOP,			FLG_IMMEDIATE,	"LOOP",			f_LOOP			; Compilation ( C: 0 back1 .. backn do-sys --  ) compile 'do_loop' to definition
+DEFWORD w_Lfrom,		0,		"L>",			f_Lfrom			; (  -- x ) ( L: x -- ) move CELL from L stack to data stack
 DEFWORD w_NDROP,		0,		"NDROP",		f_NDROP			; ( xn .. x1 n -- ) DROP N items from top of stack
 DEFWORD w_NEXTcounter,		0,		"NEXTcounter",		f_NEXTcounter		; (  -- x1 x2  ) returns NEXTcounter as Double (# of jumps to NEXT)  [xxxx]
 DEFWORD w_NIP,			0,		"NIP",			f_NIP			; ( a b -- b ) DROP second item in stack
@@ -147,6 +154,7 @@ DEFWORD w_strequ,		0,		"STR=",			f_strequ		; ( c-addr1 u1 c-addr2 u2 -- flag ) c
 DEFWORD w_strnonequ,		0,		"STR<>",		f_strnonequ		; ( c-addr1 u1 c-addr2 u2 -- flag ) compare 2 strings  flag=0 identical, flag=-1 different
 DEFWORD w_tick,			0,		"'",			f_docol, yes		; ( "name" -- 0 | xt  ) xt of next word in TIB [----]
 DEFWORD w_times,		0,		"*",			f_times			// ( a b -- a*b ) multiply top two stack items (24-bit result, may overflow) TODO
+DEFWORD w_toL,			0,		">L",			f_toL			; ( x  --  )( L: -- x ) move CELL from data stack to L stack
 DEFWORD w_toR,			0,		">R",			f_toR			; ( x  --  )( R: -- x ) move CELL from data stack to return stack
 DEFWORD w_wid_item,		0,		"wid[]",		f_wid_item		; ( i -- wid_i ) get i.th order wordlist (1 most actual) [xxx]
 DEFWORD w_word_at,		0,		"W@",			f_word_at		; ( addr -- word ) fetch word (2bytes) from address
@@ -163,4 +171,5 @@ DEFWORD ww_do_do,		FLG_HIDDEN,	"do_do",		do_do,		line=2	; Runtime: ( limit first
 DEFWORD ww_do_leave, 	FLG_HIDDEN + FLG_ARG_3,	"do_leave",		do_leave	line=2	; Runtime: ( -- ) ( R: limit first -- ) leave loop, jump after LOOP
 DEFWORD ww_do_loop,	FLG_HIDDEN + FLG_ARG_3,	"do_loop",		do_loop,	line=2	; Runtime: ( -- ) ( R: limit first -- | limit first+1 ) inc 'first' and maybe loop
 DEFWORD ww_do_plusloop,	FLG_HIDDEN + FLG_ARG_3,	"do_plusloop",		do_plusloop,	line=2	; Runtime: ( x -- ) ( R: limit first -- | limit first+x ) inc 'first' by 'x' and maybe loop
+DEFWORD ww_does,	FLG_ARG_3,		"(does>)",		f_does			; (  -- addr ) fix new word's CW with DoubleIndirect address of runtime part [----]
 DEFWORD ww_zzz_eol_2,		0,		"zzz_eol_2",		f_zzz_eol_2, line=2	; (  -- h ) return its head [----]

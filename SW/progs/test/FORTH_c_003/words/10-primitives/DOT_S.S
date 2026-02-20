@@ -1,7 +1,10 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
 
-DEFWORD w_DOT_S,		0,		".S",			f_DOT_S			; (  --  ) list data stack [xxxx]
+DEFWORD w_DOT_S,		0,		".S",			f_DOT_S			; (  --  ) list data Stack [xxxx]
+DEFWORD w_DOT_D,		0,		".D",			f_DOT_S			; (  --  ) list data D stack [xxxx]
+DEFWORD w_DOT_R,		0,		".R",			f_DOT_R			; (  --  ) list return R stack [xxxx]
+DEFWORD w_DOT_L,		0,		".L",			f_DOT_L			; (  --  ) list secondary L stack [xxxx]
 
 #define dst_ptr XL,XH
 
@@ -33,6 +36,54 @@ gfunc f_DOT_S	; {{{ #
 	ldi	r24, ' '
 	call TX0_Write
 .f_DOT_S.noTOS:
+	POP_R2_R17
+	jmp NEXT
+; }}}
+gfunc f_DOT_R	; {{{ #  
+	PUSH_R2_R17
+	TCB_member	TCB_ReturnStackLast
+		RB3at
+	Set2		dst_ptr, Parsx2
+	ldi		Tx, 6
+	Sub21		dst_ptr, Tx
+	Cmp2		dst_ptr, RST
+	brlo	.f_DOT_R.noTOS
+2:
+	ld	r24, -X
+	call TX0_WriteHex8
+	ld	r24, -X
+	call TX0_WriteHex8
+	ld	r24, -X
+	call TX0_WriteHex8
+	ldi	r24, ' '
+	call TX0_Write
+	Cmp2	RST,dst_ptr
+	brlo	2b ; branch if DST< dst_ptr
+.f_DOT_R.noTOS:
+	POP_R2_R17
+	jmp NEXT
+; }}}
+gfunc f_DOT_L	; {{{ #  
+	PUSH_R2_R17
+	TCB_member	TCB_LStackLast
+		RB3at
+	Set2		dst_ptr, Parsx2
+	ldi		Tx, 6
+	Sub21		dst_ptr, Tx
+	Cmp2		dst_ptr, LST
+	brlo	.f_DOT_L.noTOS
+2:
+	ld	r24, -X
+	call TX0_WriteHex8
+	ld	r24, -X
+	call TX0_WriteHex8
+	ld	r24, -X
+	call TX0_WriteHex8
+	ldi	r24, ' '
+	call TX0_Write
+	Cmp2	LST,dst_ptr
+	brlo	2b ; branch if DST< dst_ptr
+.f_DOT_L.noTOS:
 	POP_R2_R17
 	jmp NEXT
 ; }}}

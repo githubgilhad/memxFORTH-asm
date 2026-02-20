@@ -326,6 +326,13 @@
 	.byte hi8(\addr)
 	.byte hlo8(\addr)
 .endm		; }}}
+
+.macro P24s p:vararg ; {{{ store any number of 3B addresses
+	.irp a, \p
+		P24 \a
+	.endr
+.endm			; }}}
+
 .macro P24f addr	; {{{ store 3B address - cannot do for data - THIS MACRO FAILS
 	.byte lo8(\addr / 2 )
 	.byte hi8(\addr / 2 )

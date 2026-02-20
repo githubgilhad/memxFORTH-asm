@@ -25,7 +25,7 @@ gfunc f_INIT	; {{{ #         DT2 = X, Z needed for elpm
 	st	X+, Temp_lo
 	subi	Tx, 1
 	brne	2b
-	rjmp	NEXT
+	jmp	NEXT
 ; }}}
 f_INIT.len:
 	.byte 2f - . - 1

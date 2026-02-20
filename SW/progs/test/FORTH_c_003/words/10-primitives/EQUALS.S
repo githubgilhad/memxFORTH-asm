@@ -17,54 +17,54 @@ gfunc f_non_equals	; {{{ #
 	Cmp3  Parsx, TOS
 	breq 2f
 	TRUE TOS
-	rjmp NEXT
+	jmp NEXT
 2:
 	FALSE TOS
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 gfunc f_equals	; {{{ #
 	PopST Parsx
 	Cmp3  Parsx, TOS
 	breq 2f
 	FALSE TOS
-	rjmp NEXT
+	jmp NEXT
 2:
 	TRUE TOS
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 gfunc f_zero_non_equals	; {{{ #
 	breq3 TOS, 2f
 	TRUE TOS
-	rjmp NEXT
+	jmp NEXT
 2:
 	FALSE TOS
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 gfunc f_zero_equals	; {{{ #
 	breq3 TOS, 2f
 	FALSE TOS
-	rjmp NEXT
+	jmp NEXT
 2:
 	TRUE TOS
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 gfunc f_one_non_equals	; {{{ #
 	dec TOS_lo
 	breq3 TOS, 2f
 	TRUE TOS
-	rjmp NEXT
+	jmp NEXT
 2:
 	FALSE TOS
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 gfunc f_one_equals	; {{{ #
 	dec TOS_lo
 	breq3 TOS, 2f
 	FALSE TOS
-	rjmp NEXT
+	jmp NEXT
 2:
 	TRUE TOS
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 gfunc f_less	; {{{ #
@@ -72,19 +72,19 @@ gfunc f_less	; {{{ #
 	Sub3 Parsx,TOS
 	brlt 2f
 	FALSE TOS
-	rjmp NEXT
+	jmp NEXT
 2:
 	TRUE TOS
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 gfunc f_greater	; {{{ #
 	PopST Parsx
 	Sub3 TOS,Parsx
 	brlt 2f
 	FALSE TOS
-	rjmp NEXT
+	jmp NEXT
 2:
 	TRUE TOS
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 

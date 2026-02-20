@@ -4,7 +4,7 @@
 
 // nnLIBS: Serial.none/usart0 FORTH/FORTH-Engine FORTH/FORTH-Memory
 // LIBS: Serial.RTS/usart0 FORTH/FORTH-Engine FORTH/FORTH-Memory
-// LOCLIBS: 003_fill_RAM words/all_words C2forth bats
+// LOCLIBS: 003_fill_RAM words/all_words C2forth bats debug io
 
 //#include "Serial.none/usart0/usart0.h"
 #include "Serial.RTS/usart0/usart0.h"
@@ -13,10 +13,17 @@
 #include "C2forth.h"
 #include "flags.h"
 #include "bats.h"
+#include "debug.h"
 
 #define TEXT __attribute__((section(".text")))
 TEXT void write_char(char c){	// {{{
 	TX0_Write(c);
+}	// }}}
+TEXT void write_charA(char c){	// {{{
+	TX0_WriteA(c);
+}	// }}}
+TEXT char read_char(){	// {{{
+	return RX0_Read();
 }	// }}}
 TEXT void write_num8(uint8_t n) {	// {{{
 	if (n>99) {
@@ -128,7 +135,7 @@ uint8_t HERE1[HERE_SIZE];
 #include <avr/pgmspace.h>
 
 
-#define F(str) ((const __attribute__((__progmem__))char*)(str))
+// #define F(str) ((const __attribute__((__progmem__))char*)(str))
 #pragma GCC push_options
 #pragma GCC optimize ("no-strict-aliasing")
 
@@ -288,6 +295,9 @@ TEXT void C_words() {	// {{{
 		TX0_Write(' ');
 		};
 	};
+}	// }}}
+TEXT void C_dump(uint32_t MEM) {	// {{{
+	debug_dump (MEM,F("DEBUG"));
 }	// }}}
 
 // {{{ old FORTH

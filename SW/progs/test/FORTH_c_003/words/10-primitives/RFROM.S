@@ -3,6 +3,9 @@
 DEFWORD w_Rfrom,		0,		"R>",			f_Rfrom			; (  -- x ) ( R: x -- ) move CELL from return stack to data stack
 DEFWORD w_2Rfrom,		0,		"2R>",			f_2Rfrom		; (  -- x y ) ( R: x y -- ) move 2 CELLs from return stack to data stack (in order)
 
+DEFWORD w_Lfrom,		0,		"L>",			f_Lfrom			; (  -- x ) ( L: x -- ) move CELL from L stack to data stack
+DEFWORD w_2Lfrom,		0,		"2L>",			f_2Lfrom		; (  -- x y ) ( L: x y -- ) move 2 CELLs from L stack to data stack (in order)
+
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_Rfrom	; {{{ #
 	PushST TOS
@@ -13,6 +16,19 @@ gfunc f_2Rfrom	; {{{ #
 	PushST     TOS
 	PopR       TOS
 	PopR       Parsx
+	PushST     Parsx
+	jmp       NEXT
+; }}}
+
+gfunc f_Lfrom	; {{{ #
+	PushST TOS
+	PopL   TOS
+	jmp   NEXT
+; }}}
+gfunc f_2Lfrom	; {{{ #
+	PushST     TOS
+	PopL       TOS
+	PopL       Parsx
 	PushST     Parsx
 	jmp       NEXT
 ; }}}
