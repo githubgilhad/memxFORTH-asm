@@ -15,6 +15,7 @@ Changelog
 --------------------------------------------------------------------------------
 
 %START%
+* 2026.02.20 22:54:37 - DEFWORD w_DUMP,			0,		"DUMP",			f_DUMP			; ( addr  --  ) dump memory around addr  [----]
 * 2026.02.20 14:43:17 - DEFWORD w_DOES,		FLG_IMMEDIATE,		"DOES>",		f_DOES			; (  --  ) DOES> runtime part of new word [----]
 * 2026.02.20 14:42:58 - DEFWORD ww_does,	FLG_ARG_3,		"(does>)",		f_does			; (  -- addr ) fix new word's CW with DoubleIndirect address of runtime part [----]
 * 2026.02.14 09:36:28 - DEFWORD w_UNLOOP,		0,		"UNLOOP",		f_docol, yes		; ( -- ) ( R: limit first -- ) remove one level of DO..LOOP to eventually enable EXIT

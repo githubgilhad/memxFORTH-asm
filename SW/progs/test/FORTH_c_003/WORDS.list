@@ -1,10 +1,3 @@
-DEFCONSTI1	words/05-variables/bios.KEYS.S	/^DEFCONSTI1 "BL",		BL,		'~'$/;"	l
-DEFCONSTI1	words/05-variables/bios.KEYS.S	/^DEFCONSTI1 "K_BACKSPACE",	K_BACKSPACE,	0x7f$/;"	l
-DEFCONSTI1	words/05-variables/bios.KEYS.S	/^DEFCONSTI1 "K_DEL",		K_DEL,		'}'$/;"	l
-DEFCONSTI1	words/05-variables/bios.KEYS.S	/^DEFCONSTI1 "K_ENTER",		K_ENTER,	0x0d$/;"	l
-DEFCONSTI1	words/05-variables/bios.KEYS.S	/^DEFCONSTI1 "K_ESC",		K_ESC,		0x1b$/;"	l
-DEFCONSTI1	words/05-variables/bios.KEYS.S	/^DEFCONSTI1 "K_LEFT",		K_LEFT,		'['$/;"	l
-DEFCONSTI1	words/05-variables/bios.KEYS.S	/^DEFCONSTI1 "K_RIGHT",		K_RIGHT,	']'$/;"	l
 DEFCONSTI1 "BL",		BL,		' '
 DEFCONSTI1 "BL",		BL,		'~'
 DEFCONSTI1 "K_BACKSPACE",	K_BACKSPACE,	'\b'
@@ -19,21 +12,7 @@ DEFCONSTI1 "K_LEFT",		K_LEFT,		'4'+0x80
 DEFCONSTI1 "K_LEFT",		K_LEFT,		'['
 DEFCONSTI1 "K_RIGHT",		K_RIGHT,	'6'+0x80
 DEFCONSTI1 "K_RIGHT",		K_RIGHT,	']'
-DEFCONSTI2	words/05-variables/TCB.S	/^DEFCONSTI2 "TCB.TIB.max", TCB_TIB_max, TIB_SIZE$/;"	l
 DEFCONSTI2 "TCB.TIB.max", TCB_TIB_max, TIB_SIZE
-DEFINES_H	defines.h	/^#define DEFINES_H$/;"	d
-DEFTCBVAR	words/05-variables/HERE.S	/^DEFTCBVAR "HERE",TCB_HERE		; first free byte in RAM$/;"	l
-DEFTCBVAR	words/05-variables/TCB.S	/^DEFTCBVAR "TCB.AIB", TCB_AIB$/;"	l
-DEFTCBVAR	words/05-variables/TCB.S	/^DEFTCBVAR "TCB.AIB.cur", TCB_AIB_cur$/;"	l
-DEFTCBVAR	words/05-variables/TCB.S	/^DEFTCBVAR "TCB.AIB.len", TCB_AIB_len$/;"	l
-DEFTCBVAR	words/05-variables/TCB.S	/^DEFTCBVAR "TCB.AIB.max", TCB_AIB_max$/;"	l
-DEFTCBVAR	words/05-variables/TCB.S	/^DEFTCBVAR "TCB.STATE", TCB_STATE$/;"	l
-DEFTCBVAR	words/05-variables/TCB.S	/^DEFTCBVAR "TCB.TIB", TCB_TIB$/;"	l
-DEFTCBVAR	words/05-variables/TCB.S	/^DEFTCBVAR "TCB.TIB.cur", TCB_TIB_cur$/;"	l
-DEFTCBVAR	words/05-variables/TCB.S	/^DEFTCBVAR "TCB.TIB.len", TCB_TIB_len$/;"	l
-DEFTCBVAR	words/05-variables/TCB.S	/^DEFTCBVAR "TCB.WL.CURRENT", TCB_WL_CURRENT$/;"	l
-DEFTCBVAR	words/05-variables/TCB.S	/^DEFTCBVAR "TCB.WL.ORDER", TCB_WL_ORDER$/;"	l
-DEFTCBVAR	words/05-variables/TCB.S	/^DEFTCBVAR "TCB.WL.ORDER.count", TCB_WL_ORDER_len$/;"	l
 DEFTCBVAR "HERE",TCB_HERE		; first free byte in RAM
 DEFTCBVAR "TCB.AIB", TCB_AIB
 DEFTCBVAR "TCB.AIB.cur", TCB_AIB_cur
@@ -46,157 +25,8 @@ DEFTCBVAR "TCB.TIB.len", TCB_TIB_len
 DEFTCBVAR "TCB.WL.CURRENT", TCB_WL_CURRENT
 DEFTCBVAR "TCB.WL.ORDER", TCB_WL_ORDER
 DEFTCBVAR "TCB.WL.ORDER.count", TCB_WL_ORDER_len
-DEFVAR	words/05-variables/bios.KEYS.S	/^DEFVAR "PROMPT_X",	PROMPT_X$/;"	l
-DEFVAR	words/05-variables/bios.KEYS.S	/^DEFVAR "PROMPT_Y",	PROMPT_Y$/;"	l
 DEFVAR "PROMPT_X",	PROMPT_X
 DEFVAR "PROMPT_Y",	PROMPT_Y
-DEFWORD	words/05-variables/WORDLIST.S	/^DEFWORD w_DEFINITIONS,		0,		"DEFINITIONS",		f_DEFINITIONS		; ( -- ) set CURRENT to first WL in O/;"	l
-DEFWORD	words/05-variables/WORDLIST.S	/^DEFWORD w_FIND_NAME,		0,		"FIND-NAME",		f_docol, yes		; FIND-NAME ( c-addr u -- c-addr u 0 | xt /;"	l
-DEFWORD	words/05-variables/WORDLIST.S	/^DEFWORD w_GET_CURRENT,		0,		"GET-CURRENT",		f_docol, yes		; ( -- wid ) get current wordlist : GE/;"	l
-DEFWORD	words/05-variables/WORDLIST.S	/^DEFWORD w_GET_ORDER,		0,		"GET-ORDER",		f_docol, yes		; ( -- wid_n .. wid_1 n ) get current sear/;"	l
-DEFWORD	words/05-variables/WORDLIST.S	/^DEFWORD w_SEARCH_WORDLIST,	0,		"SEARCH_WORDLIST",	f_docol, yes		; ( c-addr u wid -- 0 | xt 1 | x/;"	l
-DEFWORD	words/05-variables/WORDLIST.S	/^DEFWORD w_SET_CURRENT,		0,		"SET-CURRENT",		f_docol, yes		; ( wid -- ) set current wordlist : SE/;"	l
-DEFWORD	words/05-variables/WORDLIST.S	/^DEFWORD w_WORDLIST,		0,		"WORDLIST",		f_docol, yes		; ( -- wid ) create wordlist : WORDLIST ( --/;"	l
-DEFWORD	words/05-variables/WORDLIST.S	/^DEFWORD w_head2flags,		0,		"H>FLAGS",		f_head2flags		;  ( h -- flags )  : H>FLAGS  ( h -- flags /;"	l
-DEFWORD	words/05-variables/WORDLIST.S	/^DEFWORD w_head2len,		0,		"H>LEN",		f_head2len		;  ( h -- x )  : H>LEN  ( h -- x )     4 +  ;$/;"	l
-DEFWORD	words/05-variables/WORDLIST.S	/^DEFWORD w_head2name,		0,		"H>NAME",		f_head2name		;  ( h -- c-addr )  : H>NAME  ( h -- c-addr ) /;"	l
-DEFWORD	words/05-variables/WORDLIST.S	/^DEFWORD w_head2xt,		0,		"H>XT",			f_head2xt		;  ( h -- xt )  : H>XT  ( h -- xt ) 4 + DUP C@  + 1/;"	l
-DEFWORD	words/05-variables/WORDLIST.S	/^DEFWORD w_wid_item,		0,		"wid[]",		f_wid_item		; ( i -- wid_i ) get i.th order wordlist (1 most /;"	l
-DEFWORD	words/10-primitives/AND.S	/^DEFWORD w_AND,			0,		"AND",			f_AND			; ( a b -- a&b ) bitwise AND of two stack items$/;"	l
-DEFWORD	words/10-primitives/AT.S	/^DEFWORD w_at,			0,		"@",			f_at			; ( addr -- value ) fetch cell from address$/;"	l
-DEFWORD	words/10-primitives/AT.S	/^DEFWORD w_char_at,		0,		"C@",			f_char_at		; ( addr -- byte ) fetch byte from address$/;"	l
-DEFWORD	words/10-primitives/AT.S	/^DEFWORD w_word_at,		0,		"W@",			f_word_at		; ( addr -- word ) fetch word (2bytes) from address$/;"	l
-DEFWORD	words/10-primitives/BRACKETS.S	/^DEFWORD w_left_bracket,		FLG_IMMEDIATE,	"[",			f_left_bracket		; (  --  ) leave compilation, ent/;"	l
-DEFWORD	words/10-primitives/BRACKETS.S	/^DEFWORD w_right_bracket,	0,		"]",			f_right_bracket		; (  --  ) leave interpretation, (re)enter /;"	l
-DEFWORD	words/10-primitives/BRANCH.S	/^DEFWORD w_0BRANCH,		FLG_ARG_3,	"0BRANCH",		f_0BRANCH		; ( -- ) branch if zero - add following P2/;"	l
-DEFWORD	words/10-primitives/BRANCH.S	/^DEFWORD w_1BRANCH,		FLG_ARG_3,	"1BRANCH",		f_1BRANCH		; ( -- ) branch if NOT zero - add followin/;"	l
-DEFWORD	words/10-primitives/BRANCH.S	/^DEFWORD w_BRANCH,		FLG_ARG_3,	"BRANCH",		f_BRANCH		; ( -- ) add following P24 to IP and NEXT the/;"	l
-DEFWORD	words/10-primitives/BRK.S	/^DEFWORD w_BRK,			0,		"BRK",			f_BRK			; (  --  ) do nothing, breakpoint may be set here [xxxx]$/;"	l
-DEFWORD	words/10-primitives/BRK.S	/^DEFWORD w_BRK0,			0,		"BRK0",			f_BRK0			; (  --  ) do nothing, breakpoint may be set here [xxxx/;"	l
-DEFWORD	words/10-primitives/BRK.S	/^DEFWORD w_BRK1,			0,		"BRK1",			f_BRK1			; (  --  ) do nothing, breakpoint may be set here [xxxx/;"	l
-DEFWORD	words/10-primitives/BRK.S	/^DEFWORD w_BRK2,			0,		"BRK2",			f_BRK2			; (  --  ) do nothing, breakpoint may be set here [xxxx/;"	l
-DEFWORD	words/10-primitives/BRK.S	/^DEFWORD w_BRK3,			0,		"BRK3",			f_BRK3			; (  --  ) do nothing, breakpoint may be set here [xxxx/;"	l
-DEFWORD	words/10-primitives/CELLS.S	/^DEFWORD w_CELLS,		0,		"CELLS",		f_CELLS			; ( a -- b ) b = a * CELL_size$/;"	l
-DEFWORD	words/10-primitives/CELLS.S	/^DEFWORD w_CELLS_plus,		0,		"CELLS+",		f_CELLS_plus		; ( a b -- c ) c = a + b * CELL_size (Usage:/;"	l
-DEFWORD	words/10-primitives/COLON.S	/^DEFWORD w_COLON,		0,		":",			f_COLON			; ( C: "<spaces>name" -- colon-sys ) create new word [045/;"	l
-DEFWORD	words/10-primitives/COMMA.S	/^DEFWORD w_COMPILEcomma,		0,		"COMPILE,",		f_comma			; ( x --  ) compile x at HERE$/;"	l
-DEFWORD	words/10-primitives/COMMA.S	/^DEFWORD w_comma,		0,		",",			f_comma			; ( x --  ) compile x at HERE$/;"	l
-DEFWORD	words/10-primitives/COUNT.S	/^DEFWORD w_COUNT,		0,		"COUNT",		f_COUNT			; ( c-addr1  -- c-addr2 u2 ) counted string to string$/;"	l
-DEFWORD	words/10-primitives/CREATE.S	/^DEFWORD w_CREATE,		0,		"CREATE",		f_CREATE		; ( "<spaces>name" -- ) Create a definition for name/;"	l
-DEFWORD	words/10-primitives/CREATE.S	/^DEFWORD ww_do_create,		FLG_HIDDEN,	"do_create",		do_create,	line=2	; Runtime ( -- a-addr ) push /;"	l
-DEFWORD	words/10-primitives/DIV.S	/^DEFWORD w_div,			0,		"\/",			f_div			\/\/ ( a b -- a\/b ) divide second by top TODO$/;"	l
-DEFWORD	words/10-primitives/DOES.S	/^DEFWORD w_DOES,		FLG_IMMEDIATE,		"DOES>",		f_DOES			; (  --  ) DOES> runtime part of new word [-/;"	l
-DEFWORD	words/10-primitives/DOES.S	/^DEFWORD ww_does,	FLG_ARG_3,		"(does>)",		f_does			; (  -- addr ) fix new word's CW with DoubleIn/;"	l
-DEFWORD	words/10-primitives/DOT.S	/^DEFWORD w_dot_hex,		0,		".h",			f_dot_hex		; ( x  --  ) print hexa value and space [xxxx]$/;"	l
-DEFWORD	words/10-primitives/DOT_S.S	/^DEFWORD w_DOT_D,		0,		".D",			f_DOT_S			; (  --  ) list data D stack [xxxx]$/;"	l
-DEFWORD	words/10-primitives/DOT_S.S	/^DEFWORD w_DOT_L,		0,		".L",			f_DOT_L			; (  --  ) list secondary L stack [xxxx]$/;"	l
-DEFWORD	words/10-primitives/DOT_S.S	/^DEFWORD w_DOT_R,		0,		".R",			f_DOT_R			; (  --  ) list return R stack [xxxx]$/;"	l
-DEFWORD	words/10-primitives/DOT_S.S	/^DEFWORD w_DOT_S,		0,		".S",			f_DOT_S			; (  --  ) list data Stack [xxxx]$/;"	l
-DEFWORD	words/10-primitives/DROP.S	/^DEFWORD w_2DROP,		0,		"2DROP",		f_2DROP			; ( a a -- ) 2DROP top of stack$/;"	l
-DEFWORD	words/10-primitives/DROP.S	/^DEFWORD w_DROP,			0,		"DROP",			f_DROP			; ( a -- ) DROP top of stack$/;"	l
-DEFWORD	words/10-primitives/DROP.S	/^DEFWORD w_DROPat,		0,		"DROP@",		f_DROPat		; ( xn .. x1 n -- xn-1 .. x1) DROP item at place n (n/;"	l
-DEFWORD	words/10-primitives/DROP.S	/^DEFWORD w_NDROP,		0,		"NDROP",		f_NDROP			; ( xn .. x1 n -- ) DROP N items from top of stack$/;"	l
-DEFWORD	words/10-primitives/DROP.S	/^DEFWORD w_NIP,			0,		"NIP",			f_NIP			; ( a b -- b ) DROP second item in stack$/;"	l
-DEFWORD	words/10-primitives/DUMP.S	/^DEFWORD w_DUMP,			0,		"DUMP",			f_DUMP			; ( addr  --  ) dump memory around addr  [----]$/;"	l
-DEFWORD	words/10-primitives/DUP.S	/^DEFWORD w_2DUP,			0,		"2DUP",			f_2DUP			; ( a b -- a b a b ) duplicate 2 CELLs on top of stack /;"	l
-DEFWORD	words/10-primitives/DUP.S	/^DEFWORD w_DUP,			0,		"DUP",			f_DUP			; ( a -- a a ) duplicate top of stack$/;"	l
-DEFWORD	words/10-primitives/DUP.S	/^DEFWORD w_qDUP,			0,		"?DUP",			f_qDUP			; ( a -- 0 | a a ) duplicate non zero CELL [0630]$/;"	l
-DEFWORD	words/10-primitives/EMIT.S	/^DEFWORD w_EMIT,			0,		"EMIT",			f_EMIT			; ( char -- ) output character to serial$/;"	l
-DEFWORD	words/10-primitives/EQUALS.S	/^DEFWORD w_equals,		0,		"=",			f_equals		; ( x y -- flag ) x == y$/;"	l
-DEFWORD	words/10-primitives/EQUALS.S	/^DEFWORD w_greater,		0,		">",			f_greater		; ( x y -- flag ) x > y$/;"	l
-DEFWORD	words/10-primitives/EQUALS.S	/^DEFWORD w_less,			0,		"<",			f_less			; ( x y -- flag ) x < y$/;"	l
-DEFWORD	words/10-primitives/EQUALS.S	/^DEFWORD w_non_equals,		0,		"<>",			f_non_equals		; ( x y -- flag ) x <> y$/;"	l
-DEFWORD	words/10-primitives/EQUALS.S	/^DEFWORD w_one_equals,		0,		"1=",			f_one_equals		; ( x -- flag ) x == 0$/;"	l
-DEFWORD	words/10-primitives/EQUALS.S	/^DEFWORD w_one_non_equals,	0,		"1<>",			f_one_non_equals	; ( x -- flag ) x <> 0$/;"	l
-DEFWORD	words/10-primitives/EQUALS.S	/^DEFWORD w_zero_equals,		0,		"0=",			f_zero_equals		; ( x -- flag ) x == 0$/;"	l
-DEFWORD	words/10-primitives/EQUALS.S	/^DEFWORD w_zero_non_equals,	0,		"0<>",			f_zero_non_equals	; ( x -- flag ) x <> 0$/;"	l
-DEFWORD	words/10-primitives/EXECUTE.S	/^DEFWORD w_EXECUTE,		0,		"EXECUTE",		f_EXECUTE		; ( xt -- ) execute xt  [1370]$/;"	l
-DEFWORD	words/10-primitives/EXIT.S	/^DEFWORD w_EXIT,			0,		"EXIT",			f_exit			; ( XX ) synonymum exit, not catched by show (for exit /;"	l
-DEFWORD	words/10-primitives/EXIT.S	/^DEFWORD w_exit,			0,		"exit",			f_exit			; ( XX ) exit from word$/;"	l
-DEFWORD	words/10-primitives/INIT.S	/^DEFWORD w_INIT,			0,		"INIT",			f_INIT			; (  -- ) Set stacks and all other data to init values$/;"	l
-DEFWORD	words/10-primitives/KEY.S	/^DEFWORD w_KEY,			0,		"KEY",			f_KEY			; ( -- char ) read character from serial$/;"	l
-DEFWORD	words/10-primitives/LITERAL.S	/^DEFWORD w_LIT1,			FLG_ARG_1,	"LIT1",			f_LIT1			; ( -- value ) push literal value 1B$/;"	l
-DEFWORD	words/10-primitives/LITERAL.S	/^DEFWORD w_LIT2,			FLG_ARG_2,	"LIT2",			f_LIT2			; ( -- value ) push literal value 2B$/;"	l
-DEFWORD	words/10-primitives/LITERAL.S	/^DEFWORD w_LIT3,			FLG_ARG_3,	"LIT3",			f_LIT3			; ( -- value ) push literal value 3B$/;"	l
-DEFWORD	words/10-primitives/LITERAL.S	/^DEFWORD w_LITERAL,		FLG_IMMEDIATE,	"LITERAL",		f_LITERAL		; ( x -- ) compile x to current word 3/;"	l
-DEFWORD	words/10-primitives/MINUS.S	/^DEFWORD w_minus,		0,		"-",			f_minus			; ( a b -- a-b ) subtract top from second$/;"	l
-DEFWORD	words/10-primitives/MOVE.S	/^DEFWORD w_RAM_MOVE,		0,		"RAM-MOVE",		f_RAM_MOVE		; ( addr1 addr2 u -- ) in RAM only, move u byt/;"	l
-DEFWORD	words/10-primitives/NEXTcounter.S	/^DEFWORD w_NEXTcounter,		0,		"NEXTcounter",		f_NEXTcounter		; (  -- x1 x2  ) returns NEXTcounter /;"	l
-DEFWORD	words/10-primitives/NUMBER.S	/^DEFWORD w_NUMBER,		0,		"NUMBER",		f_NUMBER		; ( c-addr u -- 0 | x -1 ) convert string to number /;"	l
-DEFWORD	words/10-primitives/OVER.S	/^DEFWORD w_OVER,			0,		"OVER",			f_OVER			; ( a b -- a b a ) copy second stack item to top$/;"	l
-DEFWORD	words/10-primitives/PARSE_NAME.S	/^DEFWORD w_PARSE_NAME,		0,		"PARSE-NAME",		f_PARSE_NAME		; ( -- c-address u ) parse name from TIB/;"	l
-DEFWORD	words/10-primitives/PLUS.S	/^DEFWORD w_plus,			0,		"+",			f_plus			; ( a b -- a+b ) add top two stack items$/;"	l
-DEFWORD	words/10-primitives/RAT.S	/^DEFWORD w_2R_at,		0,		"2R@",			f_2R_at			; (  -- x y ) ( R: x y -- x y ) copy 2 CELLs from retur/;"	l
-DEFWORD	words/10-primitives/RAT.S	/^DEFWORD w_R_at,			0,		"R@",			f_R_at			; (  -- x ) ( R: x -- x ) copy CELL from return stack to /;"	l
-DEFWORD	words/10-primitives/RDROP.S	/^DEFWORD w_2RDROP,		0,		"2RDROP",		f_2RDROP		; ( -- ) ( R: x y -- ) 2DROP for return stack$/;"	l
-DEFWORD	words/10-primitives/RDROP.S	/^DEFWORD w_RDROP,		0,		"RDROP",		f_RDROP			; ( -- ) ( R: x -- ) DROP for return stack$/;"	l
-DEFWORD	words/10-primitives/RFROM.S	/^DEFWORD w_2Lfrom,		0,		"2L>",			f_2Lfrom		; (  -- x y ) ( L: x y -- ) move 2 CELLs from L stack /;"	l
-DEFWORD	words/10-primitives/RFROM.S	/^DEFWORD w_2Rfrom,		0,		"2R>",			f_2Rfrom		; (  -- x y ) ( R: x y -- ) move 2 CELLs from return s/;"	l
-DEFWORD	words/10-primitives/RFROM.S	/^DEFWORD w_Lfrom,		0,		"L>",			f_Lfrom			; (  -- x ) ( L: x -- ) move CELL from L stack to data s/;"	l
-DEFWORD	words/10-primitives/RFROM.S	/^DEFWORD w_Rfrom,		0,		"R>",			f_Rfrom			; (  -- x ) ( R: x -- ) move CELL from return stack to d/;"	l
-DEFWORD	words/10-primitives/SEMICOLON.S	/^DEFWORD w_SEMICOLON,		FLG_IMMEDIATE,	";",			f_SEMICOLON		; (  --  ) ends colon definition, make /;"	l
-DEFWORD	words/10-primitives/STORE.S	/^DEFWORD w_char_store,		0,		"C!",			f_char_store		; ( byte addr -- )  store byte to address$/;"	l
-DEFWORD	words/10-primitives/STORE.S	/^DEFWORD w_minus_char_store,	0,		"-C!",			f_minus_char_store	; ( byte addr -- )  sub byte from ad/;"	l
-DEFWORD	words/10-primitives/STORE.S	/^DEFWORD w_minus_store,		0,		"-!",			f_minus_store		; ( value addr -- ) sub cell from address$/;"	l
-DEFWORD	words/10-primitives/STORE.S	/^DEFWORD w_minus_word_store,	0,		"-W!",			f_minus_word_store	; ( word addr -- )  sub word from ad/;"	l
-DEFWORD	words/10-primitives/STORE.S	/^DEFWORD w_plus_char_store,	0,		"+C!",			f_plus_char_store	; ( byte addr -- )  add byte to addres/;"	l
-DEFWORD	words/10-primitives/STORE.S	/^DEFWORD w_plus_store,		0,		"+!",			f_plus_store		; ( value addr -- ) add cell to address$/;"	l
-DEFWORD	words/10-primitives/STORE.S	/^DEFWORD w_plus_word_store,	0,		"+W!",			f_plus_word_store	; ( word addr -- )  add word to addres/;"	l
-DEFWORD	words/10-primitives/STORE.S	/^DEFWORD w_store,		0,		"!",			f_store			; ( value addr -- ) store cell to address$/;"	l
-DEFWORD	words/10-primitives/STORE.S	/^DEFWORD w_word_store,		0,		"W!",			f_word_store		; ( word addr -- )  store word to address$/;"	l
-DEFWORD	words/10-primitives/SWAP.S	/^DEFWORD w_SWAP,			0,		"SWAP",			f_SWAP			; ( a b -- b a ) SWAP top two stack items$/;"	l
-DEFWORD	words/10-primitives/TIMES.S	/^DEFWORD w_times,		0,		"*",			f_times			\/\/ ( a b -- a*b ) multiply top two stack items (24-bit /;"	l
-DEFWORD	words/10-primitives/TOR.S	/^DEFWORD w_2toL,			0,		"2>L",			f_2toL			; ( x y  --  )( L: -- x y ) move 2 CELLs from data stack/;"	l
-DEFWORD	words/10-primitives/TOR.S	/^DEFWORD w_2toR,			0,		"2>R",			f_2toR			; ( x y  --  )( R: -- x y ) move 2 CELLs from data stack/;"	l
-DEFWORD	words/10-primitives/TOR.S	/^DEFWORD w_toL,			0,		">L",			f_toL			; ( x  --  )( L: -- x ) move CELL from data stack to L stac/;"	l
-DEFWORD	words/10-primitives/TOR.S	/^DEFWORD w_toR,			0,		">R",			f_toR			; ( x  --  )( R: -- x ) move CELL from data stack to return/;"	l
-DEFWORD	words/10-primitives/TYPE.S	/^DEFWORD w_TYPE,			0,		"TYPE",			f_TYPE			; ( c-addr u --  ) EMITs string [2310]$/;"	l
-DEFWORD	words/15-control_flow/DO_LOOP.S	/^DEFWORD w_DO,			FLG_IMMEDIATE,	"DO",			f_DO			; Compilation ( C: -- 0 do-sys ) compile 'do_do' t/;"	l
-DEFWORD	words/15-control_flow/DO_LOOP.S	/^DEFWORD w_LEAVE, 		FLG_IMMEDIATE,	"LEAVE",		f_LEAVE			; Compilation ( C: backn do-sys  -- backn /;"	l
-DEFWORD	words/15-control_flow/DO_LOOP.S	/^DEFWORD w_LOOP,			FLG_IMMEDIATE,	"LOOP",			f_LOOP			; Compilation ( C: 0 back1 .. backn do-sys -/;"	l
-DEFWORD	words/15-control_flow/DO_LOOP.S	/^DEFWORD w_PLUSLOOP,		FLG_IMMEDIATE,	"+LOOP",		f_PLUSLOOP		; Compilation ( C: 0 back1 .. backn do/;"	l
-DEFWORD	words/15-control_flow/DO_LOOP.S	/^DEFWORD w_UNLOOP,		0,		"UNLOOP",		f_docol, yes		; ( -- ) ( R: limit first -- ) remove one level /;"	l
-DEFWORD	words/15-control_flow/DO_LOOP.S	/^DEFWORD ww_do_do,		FLG_HIDDEN,	"do_do",		do_do,		line=2	; Runtime: ( limit first -- ) ( R:  -- l/;"	l
-DEFWORD	words/15-control_flow/DO_LOOP.S	/^DEFWORD ww_do_leave, 	FLG_HIDDEN + FLG_ARG_3,	"do_leave",		do_leave	line=2	; Runtime: ( -- ) ( R/;"	l
-DEFWORD	words/15-control_flow/DO_LOOP.S	/^DEFWORD ww_do_loop,	FLG_HIDDEN + FLG_ARG_3,	"do_loop",		do_loop,	line=2	; Runtime: ( -- ) ( R: l/;"	l
-DEFWORD	words/15-control_flow/DO_LOOP.S	/^DEFWORD ww_do_plusloop,	FLG_HIDDEN + FLG_ARG_3,	"do_plusloop",		do_plusloop,	line=2	; Runtime: (/;"	l
-DEFWORD	words/15-control_flow/I.S	/^DEFWORD w_I,			0,		"I",			f_I			; (  -- x ) return value of inner loop control variable$/;"	l
-DEFWORD	words/15-control_flow/IF_ELSE_THEN.S	/^DEFWORD w_ELSE,			FLG_IMMEDIATE,	"ELSE",			f_ELSE			; C:( addr  -- addr ) compile do_ELSE, 0,get/;"	l
-DEFWORD	words/15-control_flow/IF_ELSE_THEN.S	/^DEFWORD w_IF,			FLG_IMMEDIATE,	"IF",			f_IF			; C:(  -- addr ) compile do_IF, 0, push addr of 0 /;"	l
-DEFWORD	words/15-control_flow/IF_ELSE_THEN.S	/^DEFWORD w_IFNOT,		FLG_IMMEDIATE,	"IFNOT",		f_IFNOT			; C:(  -- addr ) compile do_IFNOT, 0, push /;"	l
-DEFWORD	words/15-control_flow/IF_ELSE_THEN.S	/^DEFWORD w_THEN,			FLG_IMMEDIATE,	"THEN",			f_THEN			; C:( addr  -- ) get addr from stack and fil/;"	l
-DEFWORD	words/15-control_flow/IF_ELSE_THEN.S	/^DEFWORD ww_do_ELSE,		FLG_ARG_3,	"do_ELSE",		f_BRANCH,	line=2	; (  --  ) jump  [----]$/;"	l
-DEFWORD	words/15-control_flow/IF_ELSE_THEN.S	/^DEFWORD ww_do_IF,		FLG_ARG_3,	"do_IF",		f_0BRANCH,	line=2	; ( flag --  ) jump if ZERO [----]$/;"	l
-DEFWORD	words/15-control_flow/IF_ELSE_THEN.S	/^DEFWORD ww_do_IFNOT,		FLG_ARG_3,	"do_IFNOT",		f_1BRANCH,	line=2	; ( flag --  ) jump if NOT ZERO /;"	l
-DEFWORD	words/20-phrases/ARITM.S	/^DEFWORD w_one_minus,		0,		"1-",			f_one_minus		; ( a -- b ) b = a - 1 [xxxx]$/;"	l
-DEFWORD	words/20-phrases/ARITM.S	/^DEFWORD w_one_plus,		0,		"1+",			f_one_plus		; ( a -- b ) b = a + 1 [0290]$/;"	l
-DEFWORD	words/20-phrases/COMPARE.S	/^DEFWORD w_COMPARE,		0,		"COMPARE",		f_COMPARE		; ( c-addr1 u1 c-addr2 u2 -- n ) compare 2 string/;"	l
-DEFWORD	words/20-phrases/EXPORT.S	/^DEFWORD w_EXPORT,		0,		"EXPORT",		f_EXPORT		; ( xt --  ) exports word [xxxx]$/;"	l
-DEFWORD	words/20-phrases/STREQU.S	/^DEFWORD w_strequ,		0,		"STR=",			f_strequ		; ( c-addr1 u1 c-addr2 u2 -- flag ) compare 2 strings/;"	l
-DEFWORD	words/20-phrases/STREQU.S	/^DEFWORD w_strnonequ,		0,		"STR<>",		f_strnonequ		; ( c-addr1 u1 c-addr2 u2 -- flag ) compare 2 s/;"	l
-DEFWORD	words/20-phrases/WORDS.S	/^DEFWORD w_WORDS,		0,		"WORDS",		f_WORDS			; (  --  ) print all words [xxxx]$/;"	l
-DEFWORD	words/20-phrases/ZERO.S	/^DEFWORD w_minus_one,		0,		"-1",			f_minus_one		; (  -- 0 ) push minus one on stack : -1 -1 ;$/;"	l
-DEFWORD	words/20-phrases/ZERO.S	/^DEFWORD w_one,			0,		"1",			f_one			; (  -- 0 ) push one on stack : 1 1 ;$/;"	l
-DEFWORD	words/20-phrases/ZERO.S	/^DEFWORD w_zero,			0,		"0",			f_zero			; (  -- 0 ) push zero on stack : 0 0 ;$/;"	l
-DEFWORD	words/30-compounds/ACCEPT.S	/^DEFWORD w_ACCEPT,		0,		"ACCEPT",		f_docol, yes		; ( c-addr max -- n ) (  --  ) move INPUT to add/;"	l
-DEFWORD	words/30-compounds/ACCEPT.S	/^DEFWORD w_AIB_BACKSPACE,	0,		"AIB_BACKSPACE",	f_docol, yes		; (  -- ) backspace$/;"	l
-DEFWORD	words/30-compounds/ACCEPT.S	/^DEFWORD w_AIB_CLEAR,		0,		"AIB_CLEAR",		f_docol, yes		; (  -- ) clear buffer$/;"	l
-DEFWORD	words/30-compounds/ACCEPT.S	/^DEFWORD w_AIB_DELETE,		0,		"AIB_DELETE",		f_docol, yes		; (  -- ) delete char$/;"	l
-DEFWORD	words/30-compounds/ACCEPT.S	/^DEFWORD w_AIB_INSERT,		0,		"AIB_INSERT",		f_docol, yes		; ( c -- ) insert char$/;"	l
-DEFWORD	words/30-compounds/ACCEPT.S	/^DEFWORD w_BEEP,			0,		"BEEP",			f_docol, yes		; ( -- ) BEEP$/;"	l
-DEFWORD	words/30-compounds/ACCEPT.S	/^DEFWORD w_CURSOR_LEFT,		0,		"CURSOR_LEFT",		f_docol, yes		; ( -- ) $/;"	l
-DEFWORD	words/30-compounds/ACCEPT.S	/^DEFWORD w_CURSOR_RIGHT,		0,		"CURSOR_RIGHT",		f_docol, yes		; ( -- ) $/;"	l
-DEFWORD	words/30-compounds/ACCEPT.S	/^DEFWORD w_DRAW_AIB,		0,		"DRAW_AIB",		f_docol, yes		; ( -- ) draw current data$/;"	l
-DEFWORD	words/30-compounds/ACCEPT.S	/^DEFWORD w_PLACE_CURSOR,		0,		"PLACE_CURSOR",		f_docol, yes		; ( -- ) set cursor pos$/;"	l
-DEFWORD	words/30-compounds/CERROR.S	/^DEFWORD w_CERROR,		0,		"CERROR",		f_docol, yes		; ( c-address u  -- ) reports error with string /;"	l
-DEFWORD	words/30-compounds/CLS.S	/^DEFWORD w_CLS,			0,		"CLS",			f_docol, yes		; (  --  ) CLear Screan [xxxx]$/;"	l
-DEFWORD	words/30-compounds/INTERPRET.S	/^DEFWORD w_INTERPRET,		0,		"INTERPRET",		f_docol, yes		; ( -- )  : INTERPRET ... ; $/;"	l
-DEFWORD	words/30-compounds/QUIT.S	/^DEFWORD w_QUIT,			0,		"QUIT",			f_docol, yes		; Main loop,  : QUIT INIT BEGIN BEGIN TIB TIB.max /;"	l
-DEFWORD	words/30-compounds/TEST.S	/^DEFWORD w_TEST,			0,		"TEST",			f_docol, yes		; ( -- ) \/\/ just test$/;"	l
-DEFWORD	words/33-FORTH83/TICK.S	/^DEFWORD w_tick,			0,		"'",			f_docol, yes		; ( "name" -- 0 | xt  ) xt of next word in TIB [----]$/;"	l
-DEFWORD	words/40-bios/CURSOR_XY.S	/^DEFWORD w_CURSOR_XY,		0,		"CURSOR_XY",		f_CURSOR_XY		; ( x y --  ) move cursor to x,y [xxxx]$/;"	l
-DEFWORD	words/99-epilog/zzz_last_word.S	/^DEFWORD w_zzz_eol_1,		0,		"zzz_eol_1",		f_zzz_eol_1		; (  -- h ) return its head [----]$/;"	l
-DEFWORD	words/99-epilog/zzz_last_word.S	/^DEFWORD ww_zzz_eol_2,		0,		"zzz_eol_2",		f_zzz_eol_2, line=2	; (  -- h ) return its head [----]$/;"	l
 DEFWORD w_0BRANCH,		FLG_ARG_3,	"0BRANCH",		f_0BRANCH		; ( -- ) branch if zero - add following P24 to IP and NEXT there; -3 is endless loop, else skip, eat stack [----]
 DEFWORD w_1BRANCH,		FLG_ARG_3,	"1BRANCH",		f_1BRANCH		; ( -- ) branch if NOT zero - add following P24 to IP and NEXT there; -3 is endless loop, else skip, eat stack [xxxx]
 DEFWORD w_2DROP,		0,		"2DROP",		f_2DROP			; ( a a -- ) 2DROP top of stack
@@ -234,7 +64,7 @@ DEFWORD w_CURSOR_RIGHT,		0,		"CURSOR_RIGHT",		f_docol, yes		; ( -- )
 DEFWORD w_CURSOR_XY,		0,		"CURSOR_XY",		f_CURSOR_XY		; ( x y --  ) move cursor to x,y [xxxx]
 DEFWORD w_DEFINITIONS,		0,		"DEFINITIONS",		f_DEFINITIONS		; ( -- ) set CURRENT to first WL in ORDER
 DEFWORD w_DO,			FLG_IMMEDIATE,	"DO",			f_DO			; Compilation ( C: -- 0 do-sys ) compile 'do_do' to definition
-DEFWORD w_DOES,		FLG_IMMEDIATE,		"DOES>",		f_DOES			; (  --  ) DOES> runtime part of new word [----]
+DEFWORD w_DOES,			FLG_IMMEDIATE,	"DOES>",		f_DOES			; (  --  ) DOES> runtime part of new word [----]
 DEFWORD w_DOT_D,		0,		".D",			f_DOT_S			; (  --  ) list data D stack [xxxx]
 DEFWORD w_DOT_L,		0,		".L",			f_DOT_L			; (  --  ) list secondary L stack [xxxx]
 DEFWORD w_DOT_R,		0,		".R",			f_DOT_R			; (  --  ) list return R stack [xxxx]
@@ -342,5 +172,5 @@ DEFWORD ww_do_do,		FLG_HIDDEN,	"do_do",		do_do,		line=2	; Runtime: ( limit first
 DEFWORD ww_do_leave, 	FLG_HIDDEN + FLG_ARG_3,	"do_leave",		do_leave	line=2	; Runtime: ( -- ) ( R: limit first -- ) leave loop, jump after LOOP
 DEFWORD ww_do_loop,	FLG_HIDDEN + FLG_ARG_3,	"do_loop",		do_loop,	line=2	; Runtime: ( -- ) ( R: limit first -- | limit first+1 ) inc 'first' and maybe loop
 DEFWORD ww_do_plusloop,	FLG_HIDDEN + FLG_ARG_3,	"do_plusloop",		do_plusloop,	line=2	; Runtime: ( x -- ) ( R: limit first -- | limit first+x ) inc 'first' by 'x' and maybe loop
-DEFWORD ww_does,	FLG_ARG_3,		"(does>)",		f_does			; (  -- addr ) fix new word's CW with DoubleIndirect address of runtime part [----]
-DEFWORD ww_zzz_eol_2,		0,		"zzz_eol_2",		f_zzz_eol_2, line=2	; (  -- h ) return its head [----]
+DEFWORD ww_does,		FLG_ARG_3,	"(does>)",		f_does,		line=2	; (  -- addr ) fix new word's CW with DoubleIndirect address of runtime part [----]
+DEFWORD ww_zzz_eol_2,		0,		"zzz_eol_2",		f_zzz_eol_2,	line=2	; (  -- h ) return its head [----]

@@ -135,7 +135,7 @@ TODO:
 	@grep  --color=always -r "TODO\|FIXME"
 
 WORDS:
-	@grep -rh "^DEF"|sort>WORDS.list
+	@find -name "*.S" -exec grep -h "^DEF" {} \;|sort>WORDS.list
 
 monitor:
 	picocom -b 115200 --flow n --noreset --quiet $(PORT)

@@ -1,8 +1,8 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
 
-DEFWORD w_DOES,		FLG_IMMEDIATE,		"DOES>",		f_DOES			; (  --  ) DOES> runtime part of new word [----]
-DEFWORD ww_does,	FLG_ARG_3,		"(does>)",		f_does			; (  -- addr ) fix new word's CW with DoubleIndirect address of runtime part [----]
+DEFWORD w_DOES,			FLG_IMMEDIATE,	"DOES>",		f_DOES			; (  --  ) DOES> runtime part of new word [----]
+DEFWORD ww_does,		FLG_ARG_3,	"(does>)",		f_does,		line=2	; (  -- addr ) fix new word's CW with DoubleIndirect address of runtime part [----]
 ; do_does receive DoubleIndirect call, push addr to stack and does ~ f_docol 
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
