@@ -1,4 +1,4 @@
-DEFWORD w_KEY,			0,		"KEY",			f_KEY			; ( -- char ) read character from serial
+DEFWORD w_KEY,			0,		"KEY",			f_KEY			; ( -- 0 | char ) read character from serial (\0 if not avaiable)
 
 ; KEY - read character from serial
 ; ( -- char )

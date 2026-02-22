@@ -1,0 +1,51 @@
+#include <stdint.h>
+#include "sd_spi.h"
+#include "../../../Serial.RTS/usart0/usart0.h"
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <stdlib.h>
+
+uint8_t buf[512];
+void buf_dump(){
+TX0_WriteStr("\r\n");
+for (uint16_t i=0;i<512;i++) {
+    TX0_WriteHex8(buf[i]);
+    TX0_Write(' ');
+    if ((i & 15) == 15) TX0_WriteStr("\r\n");
+};
+TX0_WriteStr("\r\n");
+}
+
+int main() {
+	usart0_setup();
+	sei();
+	DDRB |= (1<<PB0);   // SS output
+	PORTB |= (1<<PB0);  // SS high
+	TX0_WriteStr("Test na sd init\r\n");
+
+	if (sd_init() == 0) {
+		TX0_WriteStr("sd_init == 0\r\n");
+		if (sd_read_block(0, buf) == 0) {
+			TX0_WriteStr("sd_read_block(0) == 0\r\n");
+			buf_dump();
+		};
+		if (sd_read_block(32, buf) == 0) {
+			TX0_WriteStr("sd_read_block(32) == 0\r\n");
+			buf_dump();
+		};
+for (uint32_t s = 0; s < 4096; s+=512)
+{
+    sd_read_block(s, buf);
+    if (buf[510] == 0x55 && buf[511] == 0xAA)
+    {
+        TX0_WriteStr("Boot sector at LBA=");
+        TX0_WriteHex32(s);
+        TX0_WriteStr("\r\n");
+    }
+}
+	};
+	TX0_WriteStr("The END\r\n");
+for (uint8_t i=0;i<32;i++) { TX0_Write('#'); }; TX0_Write('\r');TX0_Write('\n');
+	while(1){};
+	return 0;
+}

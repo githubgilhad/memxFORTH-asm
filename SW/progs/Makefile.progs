@@ -132,7 +132,7 @@ reset:
 	if [ -x $(dir $(realpath $(lastword $(MAKEFILE_LIST))))ard-reset-arduino ] ; then $(dir $(realpath $(lastword $(MAKEFILE_LIST))))ard-reset-arduino  $(PORT); fi
 
 TODO:
-	@grep  --color=always -r "TODO\|FIXME"
+	@grep  --color=always -r "TODO\|FIXME"|grep -v "^.\[[[:digit:]][[:digit:]]m.\[Ktags.\[m.\[K.\[[[:digit:]][[:digit:]]m.\[K:"
 
 WORDS:
 	@find -name "*.S" -exec grep -h "^DEF" {} \;|sort>WORDS.list
