@@ -1,0 +1,13 @@
+// vim: ft=cpp showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list: tabstop=8 linebreak
+// ,,g = gcc, exactly one space after "set"
+
+#pragma once
+
+#define TextRCA_LINES 25
+#define TextRCA_ROWS 35
+#define TextRCA_SUBLINES 8
+#define TextRCA_FIRST_SCAN_LINE 13
+#define TextRCA_ACTIVE_SCAN_LINES TextRCA_SUBLINES*TextRCA_LINES
+#define TextRCA_LAST_SCAN_LINE (TextRCA_FIRST_SCAN_LINE + TextRCA_ACTIVE_SCAN_LINES)
+
+

@@ -1,0 +1,2 @@
+LIB_SRC  += $(ROOT_DIR)/libs/MHF-002/MHF-002/src/MHF-002.S
+INC_DIRS += $(ROOT_DIR)/libs/MHF-002/MHF-002/include

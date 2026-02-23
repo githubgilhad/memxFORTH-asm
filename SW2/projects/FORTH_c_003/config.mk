@@ -1,0 +1,20 @@
+PROJECT_NAME :=  FORTH_c_003
+F_CPU := 16000000UL
+
+include $(ROOT_DIR)/mk/mcu/atmega2560.mk
+include $(ROOT_DIR)/mk/toolchain.mk
+
+PROJECT_SRC := \
+    $(wildcard src/*.c) \
+    $(wildcard src/*.S) \
+    src/words/all_words.S
+
+# vyber varianty knihoven zde
+LIBS += Serial.RTS/usart0
+LIBS += FORTH/FORTH-Engine
+LIBS += FORTH/FORTH-Memory
+LIBS += FORTH/FORTH-Macros
+LIBS += FORTH/FORTH-Defines
+LIBS += FORTH/C_Bats
+LIBS += SD/SD
+# LIBS += uart/fake
