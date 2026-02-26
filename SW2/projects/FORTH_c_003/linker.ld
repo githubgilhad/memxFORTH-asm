@@ -19,6 +19,7 @@ MEMORY
   text   (rx)   : ORIGIN = __TEXT_REGION_ORIGIN__, LENGTH = __TEXT_REGION_LENGTH__
   flashdata (r) : ORIGIN = __TEXT_REGION_ORIGIN__, LENGTH = __TEXT_REGION_LENGTH__ /* flashdata is placed over text, but setion FORTH_data set its start to right place later */
   data   (rw!x) : ORIGIN = __DATA_REGION_ORIGIN__, LENGTH = __DATA_REGION_LENGTH__
+  highram (rw!x) : ORIGIN = 0x802200,   LENGTH = 0xDE00    /* 55.5kB = 64kB - 8kB RAM - 0x200 registers */
   eeprom (rw!x) : ORIGIN = 0x810000, LENGTH = __EEPROM_REGION_LENGTH__
   fuse      (rw!x) : ORIGIN = 0x820000, LENGTH = __FUSE_REGION_LENGTH__
   lock      (rw!x) : ORIGIN = 0x830000, LENGTH = __LOCK_REGION_LENGTH__
@@ -185,6 +186,16 @@ SECTIONS
      _edata = . ;
      PROVIDE (__data_end = .) ;
   }  > data AT> text
+
+    /* --- Vlastní sekce: HIGHRAM --- */
+
+    .highram (NOLOAD) :
+    {
+     PROVIDE (__highram_start = .) ;
+        *(.highram*)
+        *(.highmem*)
+     PROVIDE (__highram_end = .) ;
+    } > highram
   .bss  ADDR(.data) + SIZEOF (.data)   : AT (ADDR (.bss))
   {
      PROVIDE (__bss_start = .) ;

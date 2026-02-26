@@ -25,6 +25,7 @@ endif
 # zdroje
 # ----------------------------------------------------
 
+PORT ?=  $(firstword $(wildcard /dev/ttyA-* /dev/ttyAr* /dev/ttyTot* /dev/ttyUSB* /dev/ttyACM* /dev/null) )
 SRC_ABS := $(PROJECT_SRC) $(LIB_SRC)
 
 # převedeme na absolutní cesty
@@ -95,7 +96,7 @@ clean:
 
 $(TARGET).dis: $(TARGET).elf $(MK_DEP)
 	$(HEAD)
-	$(Q)$(OBJDUMP)   --disassemble --source --line-numbers --demangle -z --section=.text  --section=.data --section=.bss  --section=.rodata --section=.FORTH_data $< > $@
+	$(Q)$(OBJDUMP)   --disassemble --source --line-numbers --demangle -z --section=.text  --section=.data   --section=.highram --section=.bss  --section=.rodata --section=.FORTH_data $< > $@
 	$(Q)if ( $(OBJDUMP) -h $< | grep -q "\.FORTH_data") ; then \
 		$(OBJDUMP) -s -j .FORTH_data  $< >> $@ ; \
 	fi
@@ -113,14 +114,15 @@ sizecheck: $(TARGET).dis
 			printf "FLASH used: %d / 262144 bytes\n", total \
 		} \
 	}'
-#	$(Q)avr-size  -A $(TARGET).elf | awk '/text/ {if($$2 > 262144) { \
-#		printf "Program too big: 256 kB FLASH <  %d bytes\n", $$2; \
-#			exit 1 \
-#		} else { \
-#			printf "Program size OK: %d bytes\n", $$2 \
-#		} \
-#	}'
 	$(Q)avr-size $(TARGET).elf $(TARGET).hex |myavrsize.py 
+	$(Q)avr-objdump -h $(TARGET).elf | grep -E '\.lowram|\.highram|\.data|\.bss|\.FORTH'|sort -k 2 | awk ' { \
+		name = $$2; \
+		size_hex = $$3; \
+		gsub(/^0x/, "", size_hex); \
+		size_dec = strtonum("0x" size_hex); \
+		print "\t" size_dec " bytes\t" name; \
+		}'
+
 
 upload: $(TARGET).hex reset sizecheck
 	/usr/bin/avrdude -v -V -p $(MCU) -D -c wiring -b 115200 -P $(PORT) -U flash:w:$<:i

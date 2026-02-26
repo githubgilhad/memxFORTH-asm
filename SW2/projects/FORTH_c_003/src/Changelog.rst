@@ -15,6 +15,11 @@ Changelog
 --------------------------------------------------------------------------------
 
 %START%
+* 2026.02.26 09:25:18 - uint8_t input_getc(input_stack_t *s, char *out); 	//  FORTH will use this to get next character (cheat* for rst )
+* 2026.02.26 09:21:22 - void C_SD_LOAD(char * C_filename);	// word SD.LOAD, call with C string in RAM
+
+reorganization of project, into SW2 tree
+
 * 2026.02.20 22:54:37 - DEFWORD w_DUMP,			0,		"DUMP",			f_DUMP			; ( addr  --  ) dump memory around addr  [----]
 * 2026.02.20 14:43:17 - DEFWORD w_DOES,		FLG_IMMEDIATE,		"DOES>",		f_DOES			; (  --  ) DOES> runtime part of new word [----]
 * 2026.02.20 14:42:58 - DEFWORD ww_does,	FLG_ARG_3,		"(does>)",		f_does			; (  -- addr ) fix new word's CW with DoubleIndirect address of runtime part [----]

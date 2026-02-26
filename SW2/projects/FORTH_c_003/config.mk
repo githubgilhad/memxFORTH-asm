@@ -7,7 +7,9 @@ include $(ROOT_DIR)/mk/toolchain.mk
 PROJECT_SRC := \
     $(wildcard src/*.c) \
     $(wildcard src/*.S) \
-    src/words/all_words.S
+    src/words/all_words.S \
+    $(wildcard src/tools/*.c) \
+    $(wildcard src/tools/*.S) \
 
 # vyber varianty knihoven zde
 LIBS += Serial.RTS/usart0

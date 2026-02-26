@@ -10,7 +10,7 @@
 	ldi Tx, hi8(\member)
 	adc ZH, Tx
 .endm	; }}}
-#include "TCB_offsets.inc"
+#include "../TCB_offsets.inc"
 
 C2FORTH:	; {{{ C2FORTH(User *data, void (*fn)(void));
 .global C2FORTH

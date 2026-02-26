@@ -11,9 +11,9 @@
 #include "FORTH-Engine.h"
 #include "C_Bats.h"
 #include "TCB_offsets.h"
-#include "C2forth.h"
+#include "tools/C2forth.h"
 #include "flags.h"
-#include "debug.h"
+#include "tools/debug.h"
 
 #define TEXT __attribute__((section(".text")))
 TEXT void write_char(char c){	// {{{
@@ -104,7 +104,7 @@ TEXT void c_cursor_xy(uint8_t x, uint8_t y) {	// {{{
 	write_char('H');
 }	// }}}
 
-Thread_Controll_Block TCB_test;
+Thread_Controll_Block TCB_test __attribute__((section(".highram")));
 extern uint8_t TX0_WriteHex8(uint8_t h);  
 extern uint8_t TX0_WriteHex16(uint16_t h);
 extern uint8_t TX0_WriteHex24(uint32_t h);
@@ -130,8 +130,18 @@ extern xC w_docol_cw;
 extern const __memx uint32_t	val_of_w_exit_cw;
 extern const __memx uint32_t	val_of_f_docol;
 
+extern uint8_t __data_start;
+extern uint8_t __data_end;
+extern uint8_t __highram_start;
+extern uint8_t __highram_end;
+extern uint8_t __bss_start;
+extern uint8_t __bss_end;
+extern uint8_t __noinit_start;
+extern uint8_t __noinit_end;
+extern uint8_t __heap_start;
+
 #define HERE_SIZE 0x300
-uint8_t HERE1[HERE_SIZE];
+uint8_t HERE1[HERE_SIZE] __attribute__((section(".highram")));
 #include <avr/pgmspace.h>
 
 
@@ -478,6 +488,34 @@ TEXT int main(void) {
 	TX0_Write('\n');
 	TX0_Write('#');
 	TX0_Write('>');
+TX0_WriteStr("__data_start ");
+TX0_WriteHex24((uint32_t)&__data_start);
+TX0_Write('+');
+TX0_WriteHex24(&__data_end - &__data_start);
+TX0_Write('\r'); TX0_Write('\n');
+
+TX0_WriteStr("&__highram_start ");
+TX0_WriteHex24((uint32_t)&__highram_start);
+TX0_Write('+');
+TX0_WriteHex24(&__highram_end - &__highram_start);
+TX0_Write('\r'); TX0_Write('\n');
+
+TX0_WriteStr("&__bss_start ");
+TX0_WriteHex24((uint32_t)&__bss_start);
+TX0_Write('+');
+TX0_WriteHex24(&__bss_end - &__bss_start);
+TX0_Write('\r'); TX0_Write('\n');
+
+TX0_WriteStr("&__noinit_start ");
+TX0_WriteHex24((uint32_t)&__noinit_start);
+TX0_Write('+');
+TX0_WriteHex24(&__noinit_end - &__noinit_start);
+TX0_Write('\r'); TX0_Write('\n');
+
+TX0_WriteStr("&__heap_start ");
+TX0_WriteHex24((uint32_t)&__heap_start);
+TX0_Write('\r'); TX0_Write('\n');
+
 	
 	WL_all	.ptr = &w_zzz_eol_1;
 	WL_all_2.ptr = &ww_zzz_eol_2;
