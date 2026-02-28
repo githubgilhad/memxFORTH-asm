@@ -536,12 +536,12 @@ TX0_Write('\r'); TX0_Write('\n');
 	for (uint8_t i=0; i<ORDER_SIZE;++i)	TCB_test.WL_ORDER[i]	= u32_to_p24(P24_Canary);
 	*/
 	
-	for (uint8_t i=0; i<DST_SIZE;++i)	TCB_test.DataStack[i] 	= u32_to_p24(0x444444);
-	for (uint8_t i=0; i<RST_SIZE;++i)	TCB_test.ReturnStack[i]	= u32_to_p24(0x525252);
-	for (uint8_t i=0; i<LST_SIZE;++i)	TCB_test.LStack[i]	= u32_to_p24(0x4C4C4C);
+	for (uint8_t i=0; i<DST_SIZE;++i)	TCB_test.DataStack[i] 	= u32_to_p24(0x444444); // 'DDD'
+	for (uint8_t i=0; i<RST_SIZE;++i)	TCB_test.ReturnStack[i]	= u32_to_p24(0x525252); // 'RRR'
+	for (uint8_t i=0; i<LST_SIZE;++i)	TCB_test.LStack[i]	= u32_to_p24(0x4C4C4C); // 'LLL'
 	for (uint8_t i=0; i<TIB_SIZE;++i)	TCB_test.TIB[i]	= 'T';
 	for (uint8_t i=0; i<AIB_SIZE;++i)	TCB_test.AIB[i]	= 'A';
-	for (uint8_t i=0; i<ORDER_SIZE;++i)	TCB_test.WL_ORDER[i]	= u32_to_p24(0x4f4f4f);
+	for (uint8_t i=0; i<ORDER_SIZE;++i)	TCB_test.WL_ORDER[i]	= u32_to_p24(0x4f4f4f); // 'OOO'
 	for (uint16_t i=0; i<HERE_SIZE;++i)	HERE1[i]	= 'H';
 	
 	// For now, just echo serial input
