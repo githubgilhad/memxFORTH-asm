@@ -43,15 +43,17 @@ fill_high_ram_pattern:
 	ldi r30, lo8(0x2200)
 	ldi r31, hi8(0x2200)
 	
-	clr r26
+	ldi r26, 0xFF
+	ldi r27, 0xFF
 	
 	ldi r24, 'H'
 	
 1:
 	cp  r30, r26
-	cpc r31, r26
-	breq 2f		; overflow from 64kB to 0x0000
+	cpc r31, r27
+	breq 2f		; just before overflow from 64kB to 0x0000
 	
 	st  Z+, r24
 	rjmp 1b
 2:
+	st  Z, r24	; fill 0xFFFF address

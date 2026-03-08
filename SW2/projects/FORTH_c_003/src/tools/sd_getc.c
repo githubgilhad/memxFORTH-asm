@@ -91,8 +91,10 @@ void C_SD_LOAD(char * C_filename)
 {
     sd_input_t *ctx = sd_alloc();
 
-    if (f_open(&ctx->fil, C_filename, FA_READ) != FR_OK)
+    if (f_open(&(ctx->fil), C_filename, FA_READ) != FR_OK) {
+        sd_free(ctx);
         return;
+	};
 
     ctx->bytes_in_buf = 0;
     ctx->index = 0;

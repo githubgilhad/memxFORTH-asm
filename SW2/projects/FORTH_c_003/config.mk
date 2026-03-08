@@ -12,8 +12,8 @@ PROJECT_SRC := \
     $(wildcard src/tools/*.S) \
 
 # vyber varianty knihoven zde
-# LIBS += Serial.RTS/usart0
-LIBS += Serial.none/usart0
+LIBS += Serial.RTS/usart0
+# LIBS += Serial.none/usart0
 LIBS += FORTH/FORTH-Engine
 LIBS += FORTH/FORTH-Memory
 LIBS += FORTH/FORTH-Macros

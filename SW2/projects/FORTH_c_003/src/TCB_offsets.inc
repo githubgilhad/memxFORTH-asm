@@ -15,17 +15,18 @@
 	.equ TCB_AIB_cur, 30
 	.equ TCB_WL_ORDER_len, 32
 	.equ TCB_WL_CURRENT, 33
-	.equ TCB_DataStackFirst, 36
-	.equ TCB_DataStackLast, 38
-	.equ TCB_ReturnStackFirst, 40
-	.equ TCB_ReturnStackLast, 42
-	.equ TCB_LStackFirst, 44
-	.equ TCB_LStackLast, 46
-	.equ TCB_DataStack, 48
-	.equ TCB_ReturnStack, 138
-	.equ TCB_LStack, 228
-	.equ TCB_TIB, 318
-	.equ TCB_AIB, 398
-	.equ TCB_WL_ORDER, 478
-	.equ TCB_something_else, 526
-	.equ TCB_SIZE, 530
+	.equ TCB_GETC_CTX, 36
+	.equ TCB_DataStackFirst, 38
+	.equ TCB_DataStackLast, 40
+	.equ TCB_ReturnStackFirst, 42
+	.equ TCB_ReturnStackLast, 44
+	.equ TCB_LStackFirst, 46
+	.equ TCB_LStackLast, 48
+	.equ TCB_DataStack, 50
+	.equ TCB_ReturnStack, 140
+	.equ TCB_LStack, 230
+	.equ TCB_TIB, 320
+	.equ TCB_AIB, 400
+	.equ TCB_WL_ORDER, 480
+	.equ TCB_something_else, 528
+	.equ TCB_SIZE, 532

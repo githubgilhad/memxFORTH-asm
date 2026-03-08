@@ -32,7 +32,8 @@ typedef struct __attribute__((packed)) {
 	P16 AIB_max;	// AIB.max - max allowed len for ACCEPT
 	P16 AIB_cur;	// >AIN - offset to first unread char in AIB
 	uint8_t WL_ORDER_len;	// number of WLs in ORDER (255 is too much anyway)
-	P24 WL_CURRENT;	// current wordlit
+	P24 WL_CURRENT;	// current wordlist
+	P16 getc_ctx;	// input_stack_t *s, for getc input chain stack parameter; pointer to RAM
 	P16 DataStackFirst;
 	P16 DataStackLast;
 	P16 ReturnStackFirst;
@@ -77,6 +78,7 @@ void gen_offsets(void)		// this is envelope for our generated text, it will NOT 
 	GEN(TCB_AIB_cur,		offsetof(Thread_Controll_Block, AIB_cur));
 	GEN(TCB_WL_ORDER_len,		offsetof(Thread_Controll_Block, WL_ORDER_len));
 	GEN(TCB_WL_CURRENT,		offsetof(Thread_Controll_Block, WL_CURRENT));
+	GEN(TCB_GETC_CTX,		offsetof(Thread_Controll_Block, getc_ctx));
 	GEN(TCB_DataStackFirst,		offsetof(Thread_Controll_Block, DataStackFirst));
 	GEN(TCB_DataStackLast,		offsetof(Thread_Controll_Block, DataStackLast));
 	GEN(TCB_ReturnStackFirst,	offsetof(Thread_Controll_Block, ReturnStackFirst));

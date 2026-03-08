@@ -14,6 +14,7 @@
 #include "tools/C2forth.h"
 #include "flags.h"
 #include "tools/debug.h"
+#include "tools/getc.h"
 
 #define TEXT __attribute__((section(".text")))
 TEXT void write_char(char c){	// {{{
@@ -105,7 +106,7 @@ TEXT void c_cursor_xy(uint8_t x, uint8_t y) {	// {{{
 }	// }}}
 
 Thread_Controll_Block TCB_test __attribute__((section(".highram")));
-extern uint8_t TX0_WriteHex8(uint8_t h);  
+extern uint8_t TX0_WriteHex8(uint8_t h);
 extern uint8_t TX0_WriteHex16(uint16_t h);
 extern uint8_t TX0_WriteHex24(uint32_t h);
 
@@ -198,7 +199,7 @@ TEXT void C_Tracer(uint32_t DT,uint16_t IP,uint16_t RST,uint16_t DST,uint32_t TO
 	write_char(' ');
 	write_num8(c);
 	write_char(' ');
-	if (c<32) for (uint8_t i=0; i<c;i++) { 
+	if (c<32) for (uint8_t i=0; i<c;i++) {
 		a++;
 		cc = C_B1at(a);
 		write_char(cc);
@@ -209,9 +210,9 @@ TEXT void C_Tracer(uint32_t DT,uint16_t IP,uint16_t RST,uint16_t DST,uint32_t TO
 	write_num8(80+1);
 	write_char('G');
 	write_num8(depth_D);
-	for (uint16_t i=2;i< depth_D+1; i++) { 
-		write_char(' '); 
-		TX0_WriteHex24(p24_to_u32(TCB_test.DataStack[DST_SIZE-2-i])); 
+	for (uint16_t i=2;i< depth_D+1; i++) {
+		write_char(' ');
+		TX0_WriteHex24(p24_to_u32(TCB_test.DataStack[DST_SIZE-2-i]));
 	};
 	write_char(':');
 	TX0_WriteHex24(TOS);
@@ -222,9 +223,9 @@ TEXT void C_Tracer(uint32_t DT,uint16_t IP,uint16_t RST,uint16_t DST,uint32_t TO
 	write_char('G');
 	write_num8(depth_R);
 	write_char(' ');
-	for (uint16_t i=1;i< depth_R+1; i++) { 
-		TX0_WriteHex24(p24_to_u32(TCB_test.ReturnStack[RST_SIZE-1-i])); 
-		write_char(' '); 
+	for (uint16_t i=1;i< depth_R+1; i++) {
+		TX0_WriteHex24(p24_to_u32(TCB_test.ReturnStack[RST_SIZE-1-i]));
+		write_char(' ');
 	};
 	write_char('|');
 	write_char(' ');
@@ -288,7 +289,7 @@ TEXT void C_words() {	// {{{
 			if (att & FLG_IMMEDIATE)	{ TX0_Write('I'); };
 			if (att & FLG_HIDDEN)		{ TX0_Write('H'); };
 			if (att & FLG_FOG)		{ TX0_Write('F'); };
-			if (att & FLG_ADDR)		{ TX0_Write('A'); } 
+			if (att & FLG_ADDR)		{ TX0_Write('A'); }
 			else
 			switch (att & FLG_ARG_MASK) {
 				case FLG_ARG_1:		{ TX0_Write('1'); break;};
@@ -309,6 +310,12 @@ TEXT void C_words() {	// {{{
 TEXT void C_dump(uint32_t MEM) {	// {{{
 	nodebug=false;
 	debug_dump (MEM,F("DEBUG"));
+}	// }}}
+uint8_t serial_getc(void *state, char *out_char) {	// {{{
+	(void)state;	// state UNUSED, no compiler complains
+	uint16_t ch = RX0_Read();
+	*out_char = (ch & 0xFF);
+	return (ch >> 8)? GETC_OK:GETC_AGAIN;
 }	// }}}
 
 // {{{ old FORTH
@@ -477,10 +484,11 @@ static inline uint16_t p16_to_u16(P16 p)
     return  ((uint16_t)p.lo) |
             ((uint16_t)p.hi  << 8);
 }
-// static 
+// static
 P24 WL_all;
 P24 WL_all_2;
 P24 WL_all_3;
+input_stack_t input_stack_serial;
 TEXT int main(void) {
 	setup();
 //	C_words();
@@ -489,34 +497,36 @@ TEXT int main(void) {
 	TX0_Write('#');
 	TX0_Write('>');
 TX0_WriteStr("__data_start ");
-TX0_WriteHex24((uint32_t)&__data_start);
+TX0_WriteHex16((uint16_t)&__data_start);
 TX0_Write('+');
 TX0_WriteHex24(&__data_end - &__data_start);
 TX0_Write('\r'); TX0_Write('\n');
 
 TX0_WriteStr("&__highram_start ");
-TX0_WriteHex24((uint32_t)&__highram_start);
+TX0_WriteHex16((uint16_t)&__highram_start);
 TX0_Write('+');
-TX0_WriteHex24(&__highram_end - &__highram_start);
+TX0_WriteHex16(&__highram_end - &__highram_start);
 TX0_Write('\r'); TX0_Write('\n');
 
 TX0_WriteStr("&__bss_start ");
-TX0_WriteHex24((uint32_t)&__bss_start);
+TX0_WriteHex16((uint16_t)&__bss_start);
 TX0_Write('+');
-TX0_WriteHex24(&__bss_end - &__bss_start);
+TX0_WriteHex16(&__bss_end - &__bss_start);
 TX0_Write('\r'); TX0_Write('\n');
 
 TX0_WriteStr("&__noinit_start ");
-TX0_WriteHex24((uint32_t)&__noinit_start);
+TX0_WriteHex16((uint16_t)&__noinit_start);
 TX0_Write('+');
-TX0_WriteHex24(&__noinit_end - &__noinit_start);
+TX0_WriteHex16(&__noinit_end - &__noinit_start);
 TX0_Write('\r'); TX0_Write('\n');
 
 TX0_WriteStr("&__heap_start ");
-TX0_WriteHex24((uint32_t)&__heap_start);
+TX0_WriteHex16((uint16_t)&__heap_start);
 TX0_Write('\r'); TX0_Write('\n');
 
 	
+	input_getc_init(&input_stack_serial);
+	add_getc(&input_stack_serial, serial_getc, NULL);
 	WL_all	.ptr = &w_zzz_eol_1;
 	WL_all_2.ptr = &ww_zzz_eol_2;
 	WL_all_3.ptr = &FORTH_WORDS_START;
@@ -546,18 +556,19 @@ TX0_Write('\r'); TX0_Write('\n');
 	
 	// For now, just echo serial input
 	TCB_test.	STATE			= F_INTERPRETING ;
-	TCB_test.	BASE			= 10 ; 
+	TCB_test.	BASE			= 10 ;
 	TCB_test.	HERE		.ptr	= & HERE1;
-	TCB_test.	TIB_len		.u16	= 0 ;  
-	TCB_test.	TIB_cur		.u16	= 1 ;  
-	TCB_test.	AIB_len		.u16	= 0 ;  
-	TCB_test.	AIB_max		.u16	= 0 ;  
-	TCB_test.	AIB_cur		.u16	= 1 ;  
+	TCB_test.	TIB_len		.u16	= 0 ;
+	TCB_test.	TIB_cur		.u16	= 1 ;
+	TCB_test.	AIB_len		.u16	= 0 ;
+	TCB_test.	AIB_max		.u16	= 0 ;
+	TCB_test.	AIB_cur		.u16	= 1 ;
 	TCB_test.	WL_ORDER_len		= 3 ;
 	TCB_test.	WL_ORDER[0]	.ptr	= & WL_all;
 	TCB_test.	WL_ORDER[1]	.ptr	= & WL_all_2;
 	TCB_test.	WL_ORDER[2]	.ptr	= & WL_all_3;
 	TCB_test.	WL_CURRENT	.ptr	= & WL_all_3;
+	TCB_test.	getc_ctx	.ptr	= & input_stack_serial;
 	// Set this to your word
 	TCB_test.	IP		.ptr	= & w_TEST_cw;
 	TCB_test.	DST		.ptr	= & TCB_test.DataStack		[DST_SIZE - 2];

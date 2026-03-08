@@ -23,7 +23,7 @@ typedef struct {
 
 typedef struct {
 	input_source_t stack[GETC_MAX_SOURCES];
-	int8_t top;
+	int8_t count;
 } input_stack_t;
 
 
@@ -33,4 +33,4 @@ void add_getc(input_stack_t *s,getc_fn fn, void *state) ;
 
 extern input_stack_t get_STK;
 
-void input_getc_init();
+void input_getc_init(input_stack_t *s);
