@@ -7,6 +7,7 @@
 ;	#include "FORTH-Engine.h"
 
 #include "../../TCB_offsets.inc"
+#include "../../getc.inc"
 
 ; External memory functions
 .extern W1at

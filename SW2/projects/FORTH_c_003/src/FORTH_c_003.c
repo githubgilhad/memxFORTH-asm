@@ -525,7 +525,7 @@ TX0_WriteHex16((uint16_t)&__heap_start);
 TX0_Write('\r'); TX0_Write('\n');
 
 	
-	input_getc_init(&input_stack_serial);
+	C_getc_init(&input_stack_serial);
 	add_getc(&input_stack_serial, serial_getc, NULL);
 	WL_all	.ptr = &w_zzz_eol_1;
 	WL_all_2.ptr = &ww_zzz_eol_2;

@@ -15,7 +15,7 @@ Changelog
 --------------------------------------------------------------------------------
 
 %START%
-* 2026.02.26 09:25:18 - uint8_t input_getc(input_stack_t *s, char *out); 	//  FORTH will use this to get next character (cheat* for rst )
+* 2026.02.26 09:25:18 - uint8_t C_getc(input_stack_t *s, char *out); 	//  FORTH will use this to get next character (cheat* for rst )
 * 2026.02.26 09:21:22 - void C_SD_LOAD(char * C_filename);	// word SD.LOAD, call with C string in RAM
 
 reorganization of project, into SW2 tree

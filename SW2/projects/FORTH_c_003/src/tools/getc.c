@@ -5,14 +5,15 @@
 
 
 
-uint8_t input_getc(input_stack_t *s, char *out) {	// {{{ FORTH will use this to get next character
+uint8_t C_getc(input_stack_t *s, char *out) {	// {{{ FORTH will use this to get next character
 	while (s->count > 0) {
 		input_source_t src = s->stack[s->count-1];
 		uint8_t r = src.getc(src.state, out);
 
 		if (r == GETC_EOF) {
 			s->count--;	// zdroj vyčerpán
-			continue;
+			return GETC_EOF_MET;	// signal non-fatal EOF
+			// continue;
 		}
 /*
 		if (r == GETC_OK)
@@ -38,6 +39,6 @@ void add_getc(input_stack_t *s,getc_fn fn, void *state) {	// {{{
 
 input_stack_t get_STK;
 
-void input_getc_init(input_stack_t *s){	// {{{
+void C_getc_init(input_stack_t *s){	// {{{
 	s->count=0;
 }	// }}}

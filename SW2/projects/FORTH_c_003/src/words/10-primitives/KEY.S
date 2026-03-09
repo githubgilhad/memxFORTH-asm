@@ -13,7 +13,7 @@ gfunc f_KEY	; {{{ #
 		RB3at			; state
 	Set2 Cpar1, Parsx2	;
 	Ldi2 Cpar2, scratch_byte
-	call input_getc
+	call C_getc
 	lds TOS_lo, scratch_byte
 ;	mov TOS_hi, Cpar1_hi
 	clr TOS_hi

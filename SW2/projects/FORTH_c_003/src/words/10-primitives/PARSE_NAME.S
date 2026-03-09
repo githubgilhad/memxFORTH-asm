@@ -1,63 +1,113 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
 
-DEFWORD w_PARSE_NAME,		0,		"PARSE-NAME",		f_PARSE_NAME		; ( -- c-address u ) parse name from TIB [xxxx]
+DEFWORD w_PARSE_NAME,		0,		"PARSE-NAME",		f_PARSE_NAME		; ( -- c-address u ) parse name from getc, save it to AIB with len prefix and C-zero after end  [xxxx]
 
-#define t_max r20, r21
-#define t_in r22, r23
-
+#define AIB_MIN_FREE	10
+#define t_min r2, r3		//; start of AIB
+#define t_start r4, r5		//; start to fill from here
+#define t_in r6, r7		//; actual position of filling
+#define t_max r8, r9		//; address after  end of AIB, do not fill here
+#define ctx r10, r11		//; data for getC
+#define range 2,11
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc func_PARSE_NAME	; {{{ #
 	PushST	TOS
+;	PUSHX range
+	PUSHX(2,11)
+	
 	mov	r0,r1
-	inc	r0		; r0 = 1
-	TCB_member	TCB_TIB_len   ; #TIB
-		ld r20, Z+
-		ld r21, Z+
-	TCB_member	TCB_TIB_cur   ; >IN 
-		ld r22, Z+
-		ld r23, Z+
-	TCB_member	TCB_TIB       ;  TIB
-		movw XL, ZL
-		;
-		add XL, r22
-		adc XH, r23
-		;
-		ZERO	TOS
-		; search start of word
-.f_PARSE_NAME.loop1:
-		Cmp2	t_in, t_max
-		breq	.f_PARSE_NAME.loop1.end
-		Add21	t_in, r0	; >IN move, we consume the char
-;		Add31	TOS,r0
-		ld	Tx, X+
+	inc	r0		; r0 = 1 for incrementing pairs of lower registers
+	
+						; read input values {{{
+	TCB_memberR2	TCB_GETC_CTX, ctx	; CTX for getC
+	TCB_member	TCB_AIB
+		Set2		t_min, Zx2	; start of AIB
+	TCB_memberR2	TCB_AIB_cur, t_start	; AIB - where start to fill
+		Add2	t_start, t_min
+	TCB_memberR2	TCB_AIB_len, t_max	; AIB - top
+		Add2	t_max, t_min
+		Sub2	t_max, r1, r0		; have one byte free for C-zero
+						; test, if there is at least AIB_MIN_FREE bytes
+		Ldi2	Parsx2, AIB_MIN_FREE
+		Set2	Temp2, t_max
+		Sub2	Temp2, t_start
+		Cmp2	Temp2, Parsx2
+		brsh	2f
+		Set2	t_start, t_min
+		2:
+	;					; t_start is offset, where to start filling }}}
+	Set2	t_in, t_start
+	Set2	Zx2, t_in
+	st	Z+, r1				; zero len for p string
+	Set2	t_in, Zx2
+	;					; now we are ready to start read
+		2:				; loop to skip spaces {{{
+		Set2	Cpar1, ctx
+		Set2	Cpar2, t_in
+		call	C_getc
+		tst	Cpar1_lo	; GETC_OK=0
+		breq 3f
+			call func_yield
+			rjmp 2b
+		3:
+		Set2	Zx2,t_in
+		ld	Tx, Z+
 		cpi	Tx, ' ' + 1
-		brsh	.f_PARSE_NAME.found_start       ; c > ' '
-		rjmp	.f_PARSE_NAME.loop1
-.f_PARSE_NAME.loop1.end:
-	PushST	TOS	; do not care
-	rjmp .f_PARSE_NAME.end
-.f_PARSE_NAME.found_start:
-		movw	r24, XL
-		Sub21	r24,r25, r0
-		ldi	Tx, 0x80
-		PushST	r24,r25, Tx
-		Add31	TOS,r0
-.f_PARSE_NAME.loop2:
-		Cmp2	t_in, t_max
-		breq	.f_PARSE_NAME.end
-		Add21	t_in, r0
-		ld	Tx, X+
-		cpi	Tx, ' ' + 1
-		brlo	.f_PARSE_NAME.end       ; c <= ' '
-		Add31	TOS,r0
-		rjmp	.f_PARSE_NAME.loop2
+		brlo 2b				; }}}
 		
-.f_PARSE_NAME.end:
-	TCB_member	TCB_TIB_cur
-		st	Z+, r22
-		st	Z+, r23
+		Set2	t_in, Zx2
+	;					; we are on first non-space
+		2:				; loop over non-spaces {{{
+		Set2	Cpar1, ctx
+		Set2	Cpar2, t_in
+		call	C_getc
+		tst	Cpar1_lo		; GETC_OK=0
+		breq 3f
+			cp	Cpar1_lo, GETC_EOF_MET
+			breq 6f			; not char, but end of word
+			call func_yield
+			rjmp 2b
+		3:
+		Set2	Zx2,t_in
+		ld	Tx, Z+
+		Set2	t_in, Zx2
+		Cmp2	t_in, t_max
+		brne 4f
+			;			; too long, move it down
+			Set2	DT2, t_min
+			Set2	Zx2, t_start
+			5:
+				ld	Ty, Z+
+				st	X+, Ty
+				Cmp2	Zx2, t_max
+				brne 5b
+			Set2	t_in, DT2
+			Set2	t_start, t_min
+		4:
+		cpi	Tx, ' ' + 1
+		brsh 2b				; }}}
+		6:				; end of word
+		Set2	Zx2, t_in
+		st	Z+, r1			; C-zero
+		Sub2	Zx2, t_min
+		Set2	Cpar1, Zx2
+		TCB_memberW2	TCB_AIB_cur, Cpar1
+		;				; Calculate length
+		Set2	DT2, t_in
+		Sub2	DT2, t_start
+		Sub2	DT2, r1, r0
+		Set2	Zx2, t_start
+		st	Z+, DT_lo
+						; DT2=len, Zx2 = c-address
+;	POPX	range
+	POPX(11,2)
+	Set3	TOS, DT2, r1
+	Set2	DT2, Zx2
+	ldi	Tx, 0x80
+	mov	DT_hlo, Tx
+	PushST	DT
 	ret
 ; }}}
 gfunc f_PARSE_NAME	; {{{ #
