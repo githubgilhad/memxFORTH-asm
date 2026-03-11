@@ -28,6 +28,7 @@ typedef struct __attribute__((packed)) {
 	P24 HERE;	// place in RAM for next word (or external RAM)
 	P16 TIB_len;	// #TIB - offset to last char in TIB now
 	P16 TIB_cur;	// >IN - offset to first unread char in TIB
+	P16 TIB_max;	// TIB.max -size of TIB
 	P16 AIB_len;	// #AIB - offset to last char in AIB now
 	P16 AIB_max;	// AIB.max - max allowed len for ACCEPT
 	P16 AIB_cur;	// >AIN - offset to first unread char in AIB
@@ -73,6 +74,7 @@ void gen_offsets(void)		// this is envelope for our generated text, it will NOT 
 	GEN(TCB_HERE,			offsetof(Thread_Controll_Block, HERE));
 	GEN(TCB_TIB_len,		offsetof(Thread_Controll_Block, TIB_len));
 	GEN(TCB_TIB_cur,		offsetof(Thread_Controll_Block, TIB_cur));
+	GEN(TCB_TIB_max,		offsetof(Thread_Controll_Block, TIB_max));
 	GEN(TCB_AIB_len,		offsetof(Thread_Controll_Block, AIB_len));
 	GEN(TCB_AIB_max,		offsetof(Thread_Controll_Block, AIB_max));
 	GEN(TCB_AIB_cur,		offsetof(Thread_Controll_Block, AIB_cur));

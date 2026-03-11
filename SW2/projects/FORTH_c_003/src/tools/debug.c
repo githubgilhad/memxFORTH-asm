@@ -55,9 +55,9 @@ void write_hex32(uint32_t w) {
 }
 // }}}
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
-#define RAM_START     ((uint32_t)0x800100)
+#define RAM_START     ((uint32_t)0x800200)
 #define RAM_END       ((uint32_t)0x810000)
-#define FLASH_START   ((uint32_t)0x000100)
+#define FLASH_START   ((uint32_t)0x000001)
 #define FLASH_END     ((uint32_t)0x040000)
 
 bool is_in_range(uint32_t addr) {	 // {{{

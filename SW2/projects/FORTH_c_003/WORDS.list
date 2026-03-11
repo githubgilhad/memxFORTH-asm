@@ -32,6 +32,7 @@ DEFWORD w_1BRANCH,		FLG_ARG_3,	"1BRANCH",		f_1BRANCH		; ( -- ) branch if NOT zer
 DEFWORD w_2DROP,		0,		"2DROP",		f_2DROP			; ( a a -- ) 2DROP top of stack
 DEFWORD w_2DUP,			0,		"2DUP",			f_2DUP			; ( a b -- a b a b ) duplicate 2 CELLs on top of stack [0380]
 DEFWORD w_2Lfrom,		0,		"2L>",			f_2Lfrom		; (  -- x y ) ( L: x y -- ) move 2 CELLs from L stack to data stack (in order)
+DEFWORD w_2RAMSTR,			0,		">RAMSTR",			f_2RAMSTR			; ( addr u  -- addr u  ) copy string to temporary RAM in TIB as multistring [xxxx]
 DEFWORD w_2RDROP,		0,		"2RDROP",		f_2RDROP		; ( -- ) ( R: x y -- ) 2DROP for return stack
 DEFWORD w_2R_at,		0,		"2R@",			f_2R_at			; (  -- x y ) ( R: x y -- x y ) copy 2 CELLs from return stack to data stack (same order)
 DEFWORD w_2Rfrom,		0,		"2R>",			f_2Rfrom		; (  -- x y ) ( R: x y -- ) move 2 CELLs from return stack to data stack (in order)
@@ -85,6 +86,7 @@ DEFWORD w_GET_ORDER,		0,		"GET-ORDER",		f_docol, yes		; ( -- wid_n .. wid_1 n ) 
 DEFWORD w_I,			0,		"I",			f_I			; (  -- x ) return value of inner loop control variable
 DEFWORD w_IF,			FLG_IMMEDIATE,	"IF",			f_IF			; C:(  -- addr ) compile do_IF, 0, push addr of 0 to stack [----]
 DEFWORD w_IFNOT,		FLG_IMMEDIATE,	"IFNOT",		f_IFNOT			; C:(  -- addr ) compile do_IFNOT, 0, push addr of 0 to stack [----]
+DEFWORD w_INCLUDE,	FLG_IMMEDIATE,		"INCLUDE",		f_INCLUDE		; ( "filename" --  ) include text from filename; C:( "filename" --  ) compile reading file to actual word  [----]
 DEFWORD w_INIT,			0,		"INIT",			f_INIT			; (  -- ) Set stacks and all other data to init values
 DEFWORD w_INTERPRET,		0,		"INTERPRET",		f_docol, yes		; ( -- )  : INTERPRET ... ; 
 DEFWORD w_KEY,			0,		"KEY",			f_KEY			; ( -- 0 | char ) read character from serial (\0 if not avaiable)
@@ -100,9 +102,10 @@ DEFWORD w_NEXTcounter,		0,		"NEXTcounter",		f_NEXTcounter		; (  -- x1 x2  ) retu
 DEFWORD w_NIP,			0,		"NIP",			f_NIP			; ( a b -- b ) DROP second item in stack
 DEFWORD w_NUMBER,		0,		"NUMBER",		f_NUMBER		; ( c-addr u -- 0 | x -1 ) convert string to number (using TCB_AIB) [xxxx]
 DEFWORD w_OVER,			0,		"OVER",			f_OVER			; ( a b -- a b a ) copy second stack item to top
-DEFWORD w_PARSE_NAME,		0,		"PARSE-NAME",		f_PARSE_NAME		; ( -- c-address u ) parse name from getc, save it to AIB with len prefix and C-zero after end  [xxxx]
+DEFWORD w_PARSE_NAME,		0,		"PARSE-NAME",		f_PARSE_NAME		; ( -- c-address u ) parse name from getc, save it to TIB with len prefix and C-zero after end  [xxxx]
 DEFWORD w_PLACE_CURSOR,		0,		"PLACE_CURSOR",		f_docol, yes		; ( -- ) set cursor pos
 DEFWORD w_PLUSLOOP,		FLG_IMMEDIATE,	"+LOOP",		f_PLUSLOOP		; Compilation ( C: 0 back1 .. backn do-sys --  ) compile 'do_plusloop' to definition
+DEFWORD w_QUIT,			0,		"QUIT",			f_docol, yes		; Main loop,  : QUIT INIT BEGIN BEGIN TIB TIB.max ACCEPT UNTIL INTERPRET REPEAT ;  
 DEFWORD w_QUIT,			0,		"QUIT",			f_docol, yes		; Main loop,  : QUIT INIT BEGIN BEGIN TIB TIB.max ACCEPT UNTIL INTERPRET REPEAT ;  
 DEFWORD w_RAM_MOVE,		0,		"RAM-MOVE",		f_RAM_MOVE		; ( addr1 addr2 u -- ) in RAM only, move u bytes to addr2 (in right direction)
 DEFWORD w_RDROP,		0,		"RDROP",		f_RDROP			; ( -- ) ( R: x -- ) DROP for return stack
@@ -168,6 +171,7 @@ DEFWORD w_zzz_eol_1,		0,		"zzz_eol_1",		f_zzz_eol_1		; (  -- h ) return its head
 DEFWORD ww_do_ELSE,		FLG_ARG_3,	"do_ELSE",		f_BRANCH,	line=2	; (  --  ) jump  [----]
 DEFWORD ww_do_IF,		FLG_ARG_3,	"do_IF",		f_0BRANCH,	line=2	; ( flag --  ) jump if ZERO [----]
 DEFWORD ww_do_IFNOT,		FLG_ARG_3,	"do_IFNOT",		f_1BRANCH,	line=2	; ( flag --  ) jump if NOT ZERO [----]
+DEFWORD ww_do_INCLUDE,	FLG_PSTRING,		"do_INCLUDE",		f_do_INCLUDE	line=2	; ( <filename> --  ) interpret text from filename [----]
 DEFWORD ww_do_create,		FLG_HIDDEN,	"do_create",		do_create,	line=2	; Runtime ( -- a-addr ) push address of datafield for name  [1000]
 DEFWORD ww_do_do,		FLG_HIDDEN,	"do_do",		do_do,		line=2	; Runtime: ( limit first -- ) ( R:  -- limit first ) set loop params
 DEFWORD ww_do_leave, 	FLG_HIDDEN + FLG_ARG_3,	"do_leave",		do_leave	line=2	; Runtime: ( -- ) ( R: limit first -- ) leave loop, jump after LOOP

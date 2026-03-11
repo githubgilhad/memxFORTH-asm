@@ -9,12 +9,12 @@ DEFWORD w_NIP,			0,		"NIP",			f_NIP			; ( a b -- b ) DROP second item in stack
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_DROP	; {{{ #
 	PopST TOS
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_2DROP	; {{{ #
 	PopST TOS
 	PopST TOS
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_NDROP	; {{{ #
 	Set3  Parsx, TOS
@@ -25,7 +25,7 @@ gfunc f_NDROP	; {{{ #
 	Sub31 Parsx,Tx
 	brne 2b
 3:
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_DROPat	; {{{ #
 
@@ -73,11 +73,11 @@ gfunc f_DROPat	; {{{ #
 	
 	PopST TOS ; get new TOS, move DST up again
 	
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_NIP	; {{{ #
 	PopST Parsx
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 
 

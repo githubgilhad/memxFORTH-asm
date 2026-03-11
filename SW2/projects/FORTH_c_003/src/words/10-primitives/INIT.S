@@ -4,12 +4,12 @@ DEFWORD w_INIT,			0,		"INIT",			f_INIT			; (  -- ) Set stacks and all other data
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_INIT	; {{{ #         DT2 = X, Z needed for elpm
-	Ldi2	DT2, PROMPT_X
-	ldi	Tx, 5
-	st	X, Tx
-	Ldi2	DT2, PROMPT_Y
-	ldi	Tx, 10
-	st	X, Tx
+;;		Ldi2	DT2, PROMPT_X
+;;		ldi	Tx, 5
+;;		st	X, Tx
+;;		Ldi2	DT2, PROMPT_Y
+;;		ldi	Tx, 10
+;;		st	X, Tx
 	;
 	Ldi2	DT2, RX0_Count
 	Ldi3	Zx, f_INIT.len

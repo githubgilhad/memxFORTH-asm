@@ -112,8 +112,12 @@
 .endm
 	; }}}
 
+.macro	Set1 a_lo,  b_lo ; {{{ #  "a" = "b", 1B
+	mov \a_lo, \b_lo
+.endm			; }}}
 .macro	Set2 a_lo, a_hi,  b_lo, b_hi ; {{{ #  "a" = "b", 2B
-	movw \a_lo, \b_lo
+	mov \a_lo, \b_lo
+	mov \a_hi, \b_hi
 .endm			; }}}
 .macro	Set3 a_lo, a_hi, a_hlo,  b_lo, b_hi, b_hlo ; {{{ #  "a" = "b", 3B
 	mov \a_lo, \b_lo

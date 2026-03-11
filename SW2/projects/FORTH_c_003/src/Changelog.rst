@@ -15,6 +15,9 @@ Changelog
 --------------------------------------------------------------------------------
 
 %START%
+* 2026.03.11 15:45:53 - DEFWORD w_PARSE_NAME,		0,		"PARSE-NAME",		f_PARSE_NAME		; ( -- c-address u ) parse name from getc, save it to TIB with len prefix and C-zero after end  [xxxx]
+* 2026.03.11 15:45:25 - DEFWORD w_2RAMSTR,		0,		">RAMSTR",		f_2RAMSTR		; ( addr u  -- addr u  ) copy string to temporary RAM in TIB as multistring [xxxx]
+* 2026.03.10 05:15:51 - DEFWORD w_INCLUDE,	FLG_IMMEDIATE,		"INCLUDE",		f_INCLUDE		; ( "filename" --  ) include text from filename; C:( "filename" --  ) compile reading file to actual word  [----]
 * 2026.02.26 09:25:18 - uint8_t C_getc(input_stack_t *s, char *out); 	//  FORTH will use this to get next character (cheat* for rst )
 * 2026.02.26 09:21:22 - void C_SD_LOAD(char * C_filename);	// word SD.LOAD, call with C string in RAM
 
