@@ -11,7 +11,7 @@ DEFWORD w_2RAMSTR,		0,		">RAMSTR",		f_2RAMSTR		; ( addr u  -- addr u  ) copy str
 #define range 2,11
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
-gfunc func_2RAMSTR	; {{{ # FIXME
+gfunc func_2RAMSTR	; {{{ 
 	PUSHX(2,11)
 	
 	mov	r0,r1

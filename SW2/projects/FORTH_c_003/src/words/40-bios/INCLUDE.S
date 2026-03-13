@@ -1,8 +1,8 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
 
-DEFWORD w_INCLUDE,	FLG_IMMEDIATE,		"INCLUDE",		f_INCLUDE		; ( "filename" --  ) include text from filename; C:( "filename" --  ) compile reading file to actual word  [----]
-DEFWORD ww_do_INCLUDE,	FLG_PSTRING,		"do_INCLUDE",		f_do_INCLUDE	line=2	; ( <filename> --  ) interpret text from filename [----]
+DEFWORD w_INCLUDE,		FLG_IMMEDIATE,	"INCLUDE",		f_INCLUDE		; ( "filename" --  ) include text from filename; C:( "filename" --  ) compile reading file to actual word  [----]
+DEFWORD ww_do_INCLUDE,		FLG_PSTRING,	"do_INCLUDE",		f_do_INCLUDE	line=2	; ( <filename> --  ) interpret text from filename [----]
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_INCLUDE	; {{{ # 
@@ -37,7 +37,7 @@ f_INCLUDE.interpretting:
 	PopST	TOS
 	jmp	NEXT
 ; }}}
-gfunc f_do_INCLUDE	; {{{ # FIXME 
+gfunc f_do_INCLUDE	; {{{ 
 	PushST	TOS
 	Set3	Zx, IP
 	call	B1at

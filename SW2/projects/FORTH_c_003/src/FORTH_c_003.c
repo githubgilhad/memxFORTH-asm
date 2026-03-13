@@ -15,6 +15,7 @@
 #include "flags.h"
 #include "tools/debug.h"
 #include "tools/getc.h"
+#include "DebugLEDs.h"
 
 #define TEXT __attribute__((section(".text")))
 TEXT void write_char(char c){	// {{{
@@ -463,6 +464,7 @@ void C_export(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition o
 // }}}
 TEXT void setup(void) {
 	usart0_setup();
+	DebugLEDs_init();
 	sei();
 	/*
 	TX0_WriteHex24(xpC_U32(&f_docol));	// vyjde to stejne obema zpusoby

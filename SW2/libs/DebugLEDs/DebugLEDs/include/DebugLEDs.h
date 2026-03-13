@@ -15,4 +15,3 @@ rgb_color *get_rgb_color(uint8_t r, uint8_t g, uint8_t b) {
   c = (struct rgb_color){r, g, b};
   return &c;
 };
-void DebugLEDs_setRGBc(uint8_t led, rgb_color *col);

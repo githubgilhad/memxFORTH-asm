@@ -20,4 +20,5 @@ LIBS += FORTH/FORTH-Macros
 LIBS += FORTH/FORTH-Defines
 LIBS += FORTH/C_Bats
 LIBS += SD/SD
+LIBS += DebugLEDs/DebugLEDs
 # LIBS += uart/fake

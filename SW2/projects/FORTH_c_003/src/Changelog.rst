@@ -15,6 +15,8 @@ Changelog
 --------------------------------------------------------------------------------
 
 %START%
+* 2026.03.13 22:55:32 - DEFWORD w_LEDS_get,		0,		"LEDS@",		f_LEDS_get		; ( num  -- RGB  ) get LED # num  RGB value [xxxx]
+* 2026.03.13 22:55:21 - DEFWORD w_LEDS_set,		0,		"LEDS!",		f_LEDS_set		; ( RGB num  --  ) set LED # num to RGB and shine it [xxxx]
 * 2026.03.11 15:45:53 - DEFWORD w_PARSE_NAME,		0,		"PARSE-NAME",		f_PARSE_NAME		; ( -- c-address u ) parse name from getc, save it to TIB with len prefix and C-zero after end  [xxxx]
 * 2026.03.11 15:45:25 - DEFWORD w_2RAMSTR,		0,		">RAMSTR",		f_2RAMSTR		; ( addr u  -- addr u  ) copy string to temporary RAM in TIB as multistring [xxxx]
 * 2026.03.10 05:15:51 - DEFWORD w_INCLUDE,	FLG_IMMEDIATE,		"INCLUDE",		f_INCLUDE		; ( "filename" --  ) include text from filename; C:( "filename" --  ) compile reading file to actual word  [----]

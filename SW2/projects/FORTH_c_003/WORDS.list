@@ -86,11 +86,13 @@ DEFWORD w_GET_ORDER,		0,		"GET-ORDER",		f_docol, yes		; ( -- wid_n .. wid_1 n ) 
 DEFWORD w_I,			0,		"I",			f_I			; (  -- x ) return value of inner loop control variable
 DEFWORD w_IF,			FLG_IMMEDIATE,	"IF",			f_IF			; C:(  -- addr ) compile do_IF, 0, push addr of 0 to stack [----]
 DEFWORD w_IFNOT,		FLG_IMMEDIATE,	"IFNOT",		f_IFNOT			; C:(  -- addr ) compile do_IFNOT, 0, push addr of 0 to stack [----]
-DEFWORD w_INCLUDE,	FLG_IMMEDIATE,		"INCLUDE",		f_INCLUDE		; ( "filename" --  ) include text from filename; C:( "filename" --  ) compile reading file to actual word  [----]
+DEFWORD w_INCLUDE,		FLG_IMMEDIATE,	"INCLUDE",		f_INCLUDE		; ( "filename" --  ) include text from filename; C:( "filename" --  ) compile reading file to actual word  [----]
 DEFWORD w_INIT,			0,		"INIT",			f_INIT			; (  -- ) Set stacks and all other data to init values
 DEFWORD w_INTERPRET,		0,		"INTERPRET",		f_docol, yes		; ( -- )  : INTERPRET ... ; 
 DEFWORD w_KEY,			0,		"KEY",			f_KEY			; ( -- 0 | char ) read character from serial (\0 if not avaiable)
 DEFWORD w_LEAVE, 		FLG_IMMEDIATE,	"LEAVE",		f_LEAVE			; Compilation ( C: backn do-sys  -- backn backn+1 do-sys ) compile 'do_leave' to definition
+DEFWORD w_LEDS_get,		0,		"LEDS@",		f_LEDS_get		; ( num  -- RGB  ) get LED # num  RGB value [xxxx]
+DEFWORD w_LEDS_set,		0,		"LEDS!",		f_LEDS_set		; ( RGB num  --  ) set LED # num to RGB and shine it [xxxx]
 DEFWORD w_LIT1,			FLG_ARG_1,	"LIT1",			f_LIT1			; ( -- value ) push literal value 1B
 DEFWORD w_LIT2,			FLG_ARG_2,	"LIT2",			f_LIT2			; ( -- value ) push literal value 2B
 DEFWORD w_LIT3,			FLG_ARG_3,	"LIT3",			f_LIT3			; ( -- value ) push literal value 3B
@@ -163,7 +165,7 @@ DEFWORD w_toR,			0,		">R",			f_toR			; ( x  --  )( R: -- x ) move CELL from data
 DEFWORD w_wid_item,		0,		"wid[]",		f_wid_item		; ( i -- wid_i ) get i.th order wordlist (1 most actual) [xxx]
 DEFWORD w_word_at,		0,		"W@",			f_word_at		; ( addr -- word ) fetch word (2bytes) from address
 DEFWORD w_word_store,		0,		"W!",			f_word_store		; ( word addr -- )  store word to address
-DEFWORD w_yield,			0,		"yield",			f_yield			; (  --  ) yields MCU [----]
+DEFWORD w_yield,		0,		"yield",		f_yield			; (  --  ) yields MCU [----]
 DEFWORD w_zero,			0,		"0",			f_zero			; (  -- 0 ) push zero on stack : 0 0 ;
 DEFWORD w_zero_equals,		0,		"0=",			f_zero_equals		; ( x -- flag ) x == 0
 DEFWORD w_zero_non_equals,	0,		"0<>",			f_zero_non_equals	; ( x -- flag ) x <> 0
@@ -171,7 +173,7 @@ DEFWORD w_zzz_eol_1,		0,		"zzz_eol_1",		f_zzz_eol_1		; (  -- h ) return its head
 DEFWORD ww_do_ELSE,		FLG_ARG_3,	"do_ELSE",		f_BRANCH,	line=2	; (  --  ) jump  [----]
 DEFWORD ww_do_IF,		FLG_ARG_3,	"do_IF",		f_0BRANCH,	line=2	; ( flag --  ) jump if ZERO [----]
 DEFWORD ww_do_IFNOT,		FLG_ARG_3,	"do_IFNOT",		f_1BRANCH,	line=2	; ( flag --  ) jump if NOT ZERO [----]
-DEFWORD ww_do_INCLUDE,	FLG_PSTRING,		"do_INCLUDE",		f_do_INCLUDE	line=2	; ( <filename> --  ) interpret text from filename [----]
+DEFWORD ww_do_INCLUDE,		FLG_PSTRING,	"do_INCLUDE",		f_do_INCLUDE	line=2	; ( <filename> --  ) interpret text from filename [----]
 DEFWORD ww_do_create,		FLG_HIDDEN,	"do_create",		do_create,	line=2	; Runtime ( -- a-addr ) push address of datafield for name  [1000]
 DEFWORD ww_do_do,		FLG_HIDDEN,	"do_do",		do_do,		line=2	; Runtime: ( limit first -- ) ( R:  -- limit first ) set loop params
 DEFWORD ww_do_leave, 	FLG_HIDDEN + FLG_ARG_3,	"do_leave",		do_leave	line=2	; Runtime: ( -- ) ( R: limit first -- ) leave loop, jump after LOOP
