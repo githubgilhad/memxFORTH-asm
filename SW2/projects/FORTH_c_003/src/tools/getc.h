@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include "../getc.inc"
+#include "usart0.h"
 
 
 typedef uint8_t (*getc_fn)(void *state, char *out_char);	// universal funkction to get characters

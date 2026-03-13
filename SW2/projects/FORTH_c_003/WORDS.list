@@ -32,7 +32,7 @@ DEFWORD w_1BRANCH,		FLG_ARG_3,	"1BRANCH",		f_1BRANCH		; ( -- ) branch if NOT zer
 DEFWORD w_2DROP,		0,		"2DROP",		f_2DROP			; ( a a -- ) 2DROP top of stack
 DEFWORD w_2DUP,			0,		"2DUP",			f_2DUP			; ( a b -- a b a b ) duplicate 2 CELLs on top of stack [0380]
 DEFWORD w_2Lfrom,		0,		"2L>",			f_2Lfrom		; (  -- x y ) ( L: x y -- ) move 2 CELLs from L stack to data stack (in order)
-DEFWORD w_2RAMSTR,			0,		">RAMSTR",			f_2RAMSTR			; ( addr u  -- addr u  ) copy string to temporary RAM in TIB as multistring [xxxx]
+DEFWORD w_2RAMSTR,		0,		">RAMSTR",		f_2RAMSTR		; ( addr u  -- addr u  ) copy string to temporary RAM in TIB as multistring [xxxx]
 DEFWORD w_2RDROP,		0,		"2RDROP",		f_2RDROP		; ( -- ) ( R: x y -- ) 2DROP for return stack
 DEFWORD w_2R_at,		0,		"2R@",			f_2R_at			; (  -- x y ) ( R: x y -- x y ) copy 2 CELLs from return stack to data stack (same order)
 DEFWORD w_2Rfrom,		0,		"2R>",			f_2Rfrom		; (  -- x y ) ( R: x y -- ) move 2 CELLs from return stack to data stack (in order)

@@ -41,6 +41,7 @@ gfunc func_2RAMSTR	; {{{ # FIXME
 	2:
 		tst	Tx
 		breq	3f
+		dec	Tx
 		call	B1at
 		st	X+, Parsx_lo
 		rjmp	2b

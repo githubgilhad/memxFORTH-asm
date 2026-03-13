@@ -35,7 +35,10 @@ f_INIT.data:
 ;	.ascii " : foo 1 2 3  ; foo .S ' foo EXPORT \r "
 ;	.ascii " : foo 10 0 DO I .h I 5 = IF LEAVE THEN $123 .h LOOP ; ' foo EXPORT \r "
 ;	.ascii " $900 HERE W! : CONSTANT CREATE , DOES> @ ; 10 CONSTANT TEN TEN \r "
-	.ascii " 1 2 3 4 5 >L .L \r "
+;	.ascii " 1 2 3 4 5 >L .L \r "
+;	.ascii " INCLUDE test.4th \r "
+	.ascii " : foobar  INCLUDE TEST.4TH 1 2 + ; ' foobar EXPORT foobar "
+
 2:
 .balign 2
 

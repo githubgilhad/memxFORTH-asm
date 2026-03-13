@@ -275,15 +275,22 @@ TEXT void C_words() {	// {{{
 		while (head) {
 		if (! count--) { count=10; TX0_Write('\r');TX0_Write('\n');};
 		TX0_Write('<');
-		// TX0_WriteHex24(head);
-		// TX0_Write(':');
+		/*
+		TX0_WriteHex24(head);
+		TX0_Write(':');
+		*/
 		a=head;
 		b1=C_B1at(a++);
 		b2=C_B1at(a++);
 		b3=C_B1at(a++);
-		head= b1+0x100*b2+0x10000*b3;
-		// TX0_WriteHex24(head);
-		// TX0_Write(':');
+//		head= b1+0x100UL*b2+0x10000UL*b3;
+		head = (uint32_t)b1
+			| ((uint32_t)b2 << 8)
+			| ((uint32_t)b3 << 16);
+		/*
+		TX0_WriteHex24(head);
+		TX0_Write(':');
+		*/
 		att=C_B1at(a++);//attrib
 		if (att){
 			if (att & FLG_IMMEDIATE)	{ TX0_Write('I'); };
@@ -305,6 +312,8 @@ TEXT void C_words() {	// {{{
 		TX0_Write('>');
 		TX0_Write(' ');
 		};
+	TX0_Write('\r');
+	TX0_Write('\n');
 	};
 }	// }}}
 TEXT void C_dump(uint32_t MEM) {	// {{{
@@ -433,7 +442,7 @@ void C_export(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition o
 			TX0_WriteHex8(val);
 			val=0;
 		}
-		else if ((flags & FLG_PSTRING) && (C_B3at(cw)<128)) { // too long strings probabely are not arguments
+		else if ((flags & FLG_PSTRING) && (C_B1at(cw)<128)) { // too long strings probabely are not arguments
 			val=C_B1at(cw);
 			cw+=1;
 			TX0_WriteStr(" \\'0x");
@@ -488,7 +497,7 @@ static inline uint16_t p16_to_u16(P16 p)
 P24 WL_all;
 P24 WL_all_2;
 P24 WL_all_3;
-input_stack_t input_stack_serial;
+// input_stack_t input_stack_serial; get_STK
 TEXT int main(void) {
 	setup();
 //	C_words();
@@ -496,6 +505,7 @@ TEXT int main(void) {
 	TX0_Write('\n');
 	TX0_Write('#');
 	TX0_Write('>');
+/*
 TX0_WriteStr("__data_start ");
 TX0_WriteHex16((uint16_t)&__data_start);
 TX0_Write('+');
@@ -523,10 +533,10 @@ TX0_Write('\r'); TX0_Write('\n');
 TX0_WriteStr("&__heap_start ");
 TX0_WriteHex16((uint16_t)&__heap_start);
 TX0_Write('\r'); TX0_Write('\n');
-
+*/
 	
-	C_getc_init(&input_stack_serial);
-	add_getc(&input_stack_serial, serial_getc, NULL);
+	C_getc_init(&get_STK);
+	add_getc(&get_STK, serial_getc, NULL);
 	WL_all	.ptr = &w_zzz_eol_1;
 	WL_all_2.ptr = &ww_zzz_eol_2;
 	WL_all_3.ptr = &FORTH_WORDS_START;
@@ -569,7 +579,7 @@ TX0_Write('\r'); TX0_Write('\n');
 	TCB_test.	WL_ORDER[1]	.ptr	= & WL_all_2;
 	TCB_test.	WL_ORDER[2]	.ptr	= & WL_all_3;
 	TCB_test.	WL_CURRENT	.ptr	= & WL_all_3;
-	TCB_test.	getc_ctx	.ptr	= & input_stack_serial;
+	TCB_test.	getc_ctx	.ptr	= & get_STK;
 	// Set this to your word
 	TCB_test.	IP		.ptr	= & w_TEST_cw;
 	TCB_test.	DST		.ptr	= & TCB_test.DataStack		[DST_SIZE - 2];

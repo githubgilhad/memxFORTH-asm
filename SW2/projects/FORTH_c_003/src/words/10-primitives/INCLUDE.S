@@ -38,5 +38,19 @@ f_INCLUDE.interpretting:
 	jmp	NEXT
 ; }}}
 gfunc f_do_INCLUDE	; {{{ # FIXME 
+	PushST	TOS
+	Set3	Zx, IP
+	call	B1at
+	Set3	TOS, Parsx_lo, r1, r1
+	mov	r0, r1
+	inc	r0
+	Add31	IP, r0
+	PushST	IP
+	Add31	IP, Parsx_lo
+	call	func_2RAMSTR
+	PopST	Cpar1, Tx
+	call	C_SD_LOAD
+	PopST	TOS
+	jmp	NEXT
 	
 ; }}}
