@@ -28,7 +28,7 @@ gfunc f_INIT	; {{{ #         DT2 = X, Z needed for elpm
 	jmp	NEXT
 ; }}}
 f_INIT.len:
-	.byte 2f - . - 1
+	.word 2f - . - 2
 f_INIT.data:
 ;	.ascii "CLS : foo $123456 .h ; foo \r"	; "CLS $123456 .h 10 EMIT TEST \r"
 ;	.ascii " : foo 1 2 3  ; WORDS \r "	; "CLS $123456 .h 10 EMIT TEST \r"
@@ -37,8 +37,9 @@ f_INIT.data:
 ;	.ascii " $900 HERE W! : CONSTANT CREATE , DOES> @ ; 10 CONSTANT TEN TEN \r "
 ;	.ascii " 1 2 3 4 5 >L .L \r "
 ;	.ascii " INCLUDE test.4th \r "
-	.ascii " : foobar  INCLUDE TEST.4TH 1 2 + ; ' foobar EXPORT foobar "
-
+;	.ascii " : foobar  INCLUDE TEST.4TH 1 2 + ; ' foobar EXPORT foobar "
+	.ascii ".L $123456 >L .L   .L 123  "
 2:
+	.byte 1
 .balign 2
 

@@ -7,7 +7,7 @@ DEFWORD ww_do_create,		FLG_HIDDEN,	"do_create",		do_create,	line=2	; Runtime ( -
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_CREATE	; {{{ # 
 	call func_CREATE
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 gfunc func_CREATE	; {{{ # 
 	TCB_member TCB_WL_CURRENT	; &TCB_WL_CURRENT
@@ -62,7 +62,7 @@ gfunc func_CREATE	; {{{ #
 gfunc do_create	; {{{ # ( -- addr ) return DT
 	PushST TOS
 	Set3 TOS, DT
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 

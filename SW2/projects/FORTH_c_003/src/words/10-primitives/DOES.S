@@ -17,7 +17,7 @@ gfunc f_DOES	; {{{ # zakompiluje adresy f_does a do_does do noveho slova
 		Set3	Parsx, Zx
 	TCB_member	TCB_HERE
 			RW3at
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 gfunc f_does	; {{{ #  do CW noveho slova da DoubleIndirect odkaz na do_does
@@ -38,7 +38,7 @@ gfunc f_does	; {{{ #  do CW noveho slova da DoubleIndirect odkaz na do_does
 	Add31 Zx, Parsx_lo		; Zx -> CW
 	Set3 Parsx, DT
 	call	W3at
-	rjmp EXIT
+	jmp EXIT
 ; }}}
 gfunc do_does	; {{{ # po DoubleIndirect zavolani ulozi parametry a provede runtime slova ve stylu f_docol
 	PushST		TOS

@@ -39,6 +39,10 @@ DEFWORD w_2Rfrom,		0,		"2R>",			f_2Rfrom		; (  -- x y ) ( R: x y -- ) move 2 CEL
 DEFWORD w_2toL,			0,		"2>L",			f_2toL			; ( x y  --  )( L: -- x y ) move 2 CELLs from data stack to L stack (in order)
 DEFWORD w_2toR,			0,		"2>R",			f_2toR			; ( x y  --  )( R: -- x y ) move 2 CELLs from data stack to return stack (in order)
 DEFWORD w_ACCEPT,		0,		"ACCEPT",		f_docol, yes		; ( c-addr max -- n ) (  --  ) move INPUT to addr, limited to max chars, return actual number TODO [0695]
+DEFWORD w_ADDR_D,		0,		"&D",			f_ADDR_S		; (  -- &D ) data D stack address [xxxx]
+DEFWORD w_ADDR_L,		0,		"&L",			f_ADDR_L		; (  -- &L ) secondary L stack address [xxxx]
+DEFWORD w_ADDR_R,		0,		"&R",			f_ADDR_R		; (  -- &R ) return R stack address [xxxx]
+DEFWORD w_ADDR_S,		0,		"&S",			f_ADDR_S		; (  -- &S ) data Stack address [xxxx]
 DEFWORD w_AIB_BACKSPACE,	0,		"AIB_BACKSPACE",	f_docol, yes		; (  -- ) backspace
 DEFWORD w_AIB_CLEAR,		0,		"AIB_CLEAR",		f_docol, yes		; (  -- ) clear buffer
 DEFWORD w_AIB_DELETE,		0,		"AIB_DELETE",		f_docol, yes		; (  -- ) delete char
@@ -116,6 +120,7 @@ DEFWORD w_Rfrom,		0,		"R>",			f_Rfrom			; (  -- x ) ( R: x -- ) move CELL from r
 DEFWORD w_SEARCH_WORDLIST,	0,		"SEARCH_WORDLIST",	f_docol, yes		; ( c-addr u wid -- 0 | xt 1 | xt -1 ) search name, return xt 
 DEFWORD w_SEMICOLON,		FLG_IMMEDIATE,	";",			f_SEMICOLON		; (  --  ) ends colon definition, make word visible [----]
 DEFWORD w_SET_CURRENT,		0,		"SET-CURRENT",		f_docol, yes		; ( wid -- ) set current wordlist : SET-CURRENT ( wid -- ) TCB_WL_CURRENT ! ;
+DEFWORD w_SHOW,			0,		"SHOW",			f_SHOW			; ( xt --  ) shows word [xxxx]
 DEFWORD w_SWAP,			0,		"SWAP",			f_SWAP			; ( a b -- b a ) SWAP top two stack items
 DEFWORD w_TEST,			0,		"TEST",			f_docol, yes		; ( -- ) // just test
 DEFWORD w_THEN,			FLG_IMMEDIATE,	"THEN",			f_THEN			; C:( addr  -- ) get addr from stack and fill offset here [----]

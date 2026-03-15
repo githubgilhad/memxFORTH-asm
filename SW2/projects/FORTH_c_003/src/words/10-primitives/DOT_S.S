@@ -14,7 +14,7 @@ gfunc f_DOT_S	; {{{ #
 	TCB_member	TCB_DataStackLast
 		RB2at
 	Set2		dst_ptr, Parsx2
-	ldi		Tx, 6
+	ldi		Tx, 3
 	Sub21		dst_ptr, Tx
 	Cmp2		dst_ptr, DST
 	brlo	.f_DOT_S.noTOS
@@ -46,8 +46,8 @@ gfunc f_DOT_R	; {{{ #
 	Set2		dst_ptr, Parsx2
 ;	ldi		Tx, 4
 ;	Sub21		dst_ptr, Tx
-	Cmp2		dst_ptr, RST
-	brlo	.f_DOT_R.end
+	Cmp2		RST, dst_ptr	; RST - dst_ptr
+	brsh	.f_DOT_R.end		; branch if RST was Same or Higher (stack empty/underflown)
 2:
 	ld	r24, -X
 	call TX0_WriteHex8
@@ -70,8 +70,8 @@ gfunc f_DOT_L	; {{{ #
 	Set2		dst_ptr, Parsx2
 ;	ldi		Tx, 3
 ;	Sub21		dst_ptr, Tx
-	Cmp2		dst_ptr, LST
-	brlo	.f_DOT_L.end
+	Cmp2		LST, dst_ptr	; LST - dst_ptr
+	brsh	.f_DOT_L.end		; branch if LST was Same or Higher (stack empty/underflown)
 2:
 	ld	r24, -X
 	call TX0_WriteHex8
@@ -82,7 +82,7 @@ gfunc f_DOT_L	; {{{ #
 	ldi	r24, ' '
 	call TX0_Write
 	Cmp2	LST,dst_ptr
-	brlo	2b ; branch if DST< dst_ptr
+	brlo	2b ; branch if LST< dst_ptr
 .f_DOT_L.end:
 	POP_R2_R17
 	jmp NEXT

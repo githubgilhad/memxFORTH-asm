@@ -11,7 +11,7 @@ gfunc f_dot_hex	; {{{ #
 	ldi Cpar1_lo, ' '
 	call TX0_Write
 	PopST TOS
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 

@@ -19,7 +19,7 @@ gfunc f_div	; {{{ #
 	mov TOS_lo, r21
 	mov TOS_hi, r21
 	mov TOS_hlo, r21
-	rjmp NEXT
+	jmp NEXT
 	
 f_div.not_zero:
 	; Save registers
@@ -87,6 +87,6 @@ f_div.skip:
 	pop r18
 	pop r17
 	pop r16
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 

@@ -151,6 +151,7 @@ uint8_t HERE1[HERE_SIZE] __attribute__((section(".highram")));
 #pragma GCC push_options
 #pragma GCC optimize ("no-strict-aliasing")
 
+static inline P16 U16_P16(uint16_t x){ return *(P16*)&x;  }
 static inline P24 U32_P24(uint32_t x){ return *(P24*)&x;  }
 static inline uint32_t P24_U32(P24 x) { uint32_t r; __asm__ ( "clr %D0" : "=r" (r) : "0" (x)); return r; }
 static inline uint32_t xpC_U32(xpC x) { uint32_t r; __asm__ ( "clr %D0" : "=r" (r) : "0" (x)); return r; }
@@ -380,6 +381,109 @@ uint8_t name_to_buf(DOUBLE_t cw) {	// {{{ fill name into global buf codeword - r
 void C_export(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition of WORD
 	uint32_t val;
 	uint8_t flags;
+	bool new;
+	if ( ! cw2h(cw)) { TX0_WriteStr("Not valid CW."); return;};
+	TX0_Write('\r');
+	TX0_Write('\n');
+	TX0_WriteStr("DEFWORD	w_");
+	flags = name_to_buf(cw);
+	TX0_WriteStr(buf);
+	TX0_WriteStr(",	0");
+	if (flags & FLG_IMMEDIATE) TX0_WriteStr("+ FLG_IMMEDIATE");
+	if (flags & FLG_HIDDEN) TX0_WriteStr("+ FLG_HIDDEN");
+	if (flags & FLG_FOG) TX0_WriteStr("+ FLG_FOG");
+	if ((flags & FLG_ARG_MASK) == FLG_ARG_1 ) TX0_WriteStr("+ FLG_ARG_1");
+	if ((flags & FLG_ARG_MASK) == FLG_ARG_2 ) TX0_WriteStr("+ FLG_ARG_2");
+	if ((flags & FLG_ARG_MASK) == FLG_ARG_3 ) TX0_WriteStr("+ FLG_ARG_3");
+	if ((flags & FLG_ARG_MASK) == FLG_ARG_4 ) TX0_WriteStr("+ FLG_ARG_4");
+	if (flags & FLG_PSTRING) TX0_WriteStr("+ FLG_PSTRING");
+	if (flags & FLG_ADDR) TX0_WriteStr("+ FLG_ADDR");
+	if (val_of_f_docol != C_B3at(cw)) {
+		TX0_WriteStr(" NOT_DOCOL definition ");
+		return;	// neumim rozepsat
+		};
+	TX0_WriteStr(",	\"");
+	TX0_WriteStr(buf);
+	TX0_WriteStr("\",	f_docol\r\n	P24s	");
+	new=true;
+	cw+=3;
+	do {
+		val=C_B3at(cw);
+		cw+=3;
+		if (val == val_of_w_exit_cw) break;
+		if (! new) TX0_WriteStr(", ");
+		new=false;
+		flags=name_to_buf(val);
+		TX0_WriteStr("w_");
+		TX0_WriteStr(buf);
+		TX0_WriteStr("_cw");
+		if ( ((flags & FLG_ARG_MASK)==FLG_ARG_3) || ((flags & FLG_ADDR)==FLG_ADDR)) {
+			val=C_B3at(cw);
+			cw+=3;
+			uint32_t h1=cw2h(val);
+				if (h1) {	// it points to cw of existing word
+					TX0_WriteStr(", w_");
+					name_to_buf(val);
+					TX0_WriteStr(buf);
+					TX0_WriteStr("_cw");
+				} else {
+					TX0_WriteStr(", 0x");
+					TX0_WriteHex24(val);
+				};
+			val=0;
+		}
+		else if ( ((flags & FLG_ARG_MASK)==FLG_ARG_4)) {
+			val=C_B2at(cw);
+			cw+=2;
+			TX0_WriteStr("\r\n		.long	0x");
+			TX0_WriteHex16(val);
+			val=C_B2at(cw);
+			cw+=2;
+			TX0_WriteHex16(val);
+			TX0_WriteStr("\"\r\n	P24s	");
+			new=true;
+			val=0;
+		}
+		else if ( ((flags & FLG_ARG_MASK)==FLG_ARG_2)) {
+			val=C_B2at(cw);
+			cw+=2;
+			TX0_WriteStr("\r\n		.word	0x");
+			TX0_WriteHex16(val);
+			TX0_WriteStr("\"\r\n	P24s	");
+			new=true;
+			val=0;
+		}
+		else if ( ((flags & FLG_ARG_MASK)==FLG_ARG_1)) {
+			val=C_B1at(cw);
+			cw+=1;
+			TX0_WriteStr("\r\n		.byte	0x");
+			TX0_WriteHex8(val);
+			TX0_WriteStr("\"\r\n	P24s	");
+			new=true;
+			val=0;
+		}
+		else if ((flags & FLG_PSTRING) && (C_B1at(cw)<128)) { // too long strings probabely are not arguments
+			val=C_B1at(cw);
+			cw+=1;
+			TX0_WriteStr("\r\n		.byte	0x");
+			TX0_WriteHex8(val);
+			TX0_WriteStr("\r\n		.ascii \"");
+			while (val--) TX0_WriteA(C_B1at(cw++));
+			TX0_WriteStr("\"\r\n	P24s	");
+			new=true;
+			val=0;
+		};
+	} while (1);
+//	} while (val != val_of_w_exit_cw);
+	if (! new) TX0_WriteStr(",	");
+	TX0_WriteStr(" w_exit_cw");
+	TX0_Write('\r');
+	TX0_Write('\n');
+
+}	// }}}
+void C_show(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition of WORD
+	uint32_t val;
+	uint8_t flags;
 	if ( ! cw2h(cw)) { TX0_WriteStr("Not valid CW."); return;};
 	TX0_Write('\r');
 	TX0_Write('\n');
@@ -390,6 +494,12 @@ void C_export(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition o
 	if (flags & FLG_IMMEDIATE) TX0_WriteStr(" IMMEDIATE");
 	if (flags & FLG_HIDDEN) TX0_WriteStr(" ( HIDDEN )");
 	if (flags & FLG_FOG) TX0_WriteStr(" ( FOG )");
+	if ((flags & FLG_ARG_MASK) == FLG_ARG_1 ) TX0_WriteStr(" ( FLG_ARG_1 )");
+	if ((flags & FLG_ARG_MASK) == FLG_ARG_2 ) TX0_WriteStr(" ( FLG_ARG_2 )");
+	if ((flags & FLG_ARG_MASK) == FLG_ARG_3 ) TX0_WriteStr(" ( FLG_ARG_3 )");
+	if ((flags & FLG_ARG_MASK) == FLG_ARG_4 ) TX0_WriteStr(" ( FLG_ARG_4 )");
+	if (flags & FLG_PSTRING) TX0_WriteStr(" ( FLG_PSTRING )");
+	if (flags & FLG_ADDR) TX0_WriteStr(" ( FLG_ADDR )");
 	if (val_of_f_docol != C_B3at(cw)) {
 		TX0_WriteStr(" NOT_DOCOL definition ");
 		return;	// neumim rozepsat
@@ -410,11 +520,11 @@ void C_export(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition o
 				if (h1) {	// it points to cw of existing word
 					name_to_buf(val);
 					TX0_WriteStr(buf);
-					TX0_WriteStr(" ( \\'0x");
+					TX0_WriteStr(" ( $");
 					TX0_WriteHex24(val);
 					TX0_WriteStr(" )");
 				} else {
-					TX0_WriteStr("\\'0x");
+					TX0_WriteStr("$");
 					TX0_WriteHex24(val);
 				};
 			val=0;
@@ -422,7 +532,7 @@ void C_export(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition o
 		else if ( ((flags & FLG_ARG_MASK)==FLG_ARG_4)) {
 			val=C_B2at(cw);
 			cw+=2;
-			TX0_WriteStr(" \\'0x");
+			TX0_WriteStr(" $");
 			TX0_WriteHex16(val);
 			val=C_B2at(cw);
 			cw+=2;
@@ -432,22 +542,22 @@ void C_export(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition o
 		else if ( ((flags & FLG_ARG_MASK)==FLG_ARG_2)) {
 			val=C_B2at(cw);
 			cw+=2;
-			TX0_WriteStr(" \\'0x");
+			TX0_WriteStr(" $");
 			TX0_WriteHex16(val);
 			val=0;
 		}
 		else if ( ((flags & FLG_ARG_MASK)==FLG_ARG_1)) {
 			val=C_B1at(cw);
 			cw+=1;
-			TX0_WriteStr(" \\'0x");
+			TX0_WriteStr(" $");
 			TX0_WriteHex8(val);
 			val=0;
 		}
 		else if ((flags & FLG_PSTRING) && (C_B1at(cw)<128)) { // too long strings probabely are not arguments
 			val=C_B1at(cw);
 			cw+=1;
-			TX0_WriteStr(" \\'0x");
-			TX0_WriteHex24(val);
+			TX0_WriteStr(" $");
+			TX0_WriteHex8(val);
 			TX0_WriteStr(" \\\"");
 			while (val--) TX0_WriteA(C_B1at(cw++));
 			TX0_WriteStr("\"");
@@ -544,11 +654,11 @@ TX0_Write('\r'); TX0_Write('\n');
 	WL_all_3.ptr = &FORTH_WORDS_START;
 	TCB_test.	TCB_cur 	.ptr	= & TCB_test;
 	TCB_test.	DataStackFirst	.ptr	= & TCB_test.DataStack		[0];
-	TCB_test.	DataStackLast	.ptr	= & TCB_test.DataStack		[DST_SIZE - 1];
+	TCB_test.	DataStackLast	.ptr	= & TCB_test.DataStack		[DST_SIZE];
 	TCB_test.	ReturnStackFirst.ptr	= & TCB_test.ReturnStack	[0];
-	TCB_test.	ReturnStackLast	.ptr	= & TCB_test.ReturnStack	[RST_SIZE - 1];
+	TCB_test.	ReturnStackLast	.ptr	= & TCB_test.ReturnStack	[RST_SIZE];
 	TCB_test.	LStackFirst	.ptr	= & TCB_test.LStack		[0];
-	TCB_test.	LStackLast	.ptr	= & TCB_test.LStack		[LST_SIZE - 1];
+	TCB_test.	LStackLast	.ptr	= & TCB_test.LStack		[LST_SIZE];	// just AFTER range, first "st -Z, \a_hlo" will write last byte of array
 	
 	/*
 	for (uint8_t i=0; i<DST_SIZE;++i)	TCB_test.DataStack[i] 	= u32_to_p24(P24_Canary);
@@ -584,9 +694,9 @@ TX0_Write('\r'); TX0_Write('\n');
 	TCB_test.	getc_ctx	.ptr	= & get_STK;
 	// Set this to your word
 	TCB_test.	IP		.ptr	= & w_TEST_cw;
-	TCB_test.	DST		.ptr	= & TCB_test.DataStack		[DST_SIZE - 2];
-	TCB_test.	RST		.ptr	= & TCB_test.ReturnStack	[RST_SIZE - 1];
-	TCB_test.	LST		.ptr	= & TCB_test.LStack		[LST_SIZE - 1];
+	TCB_test.	DST			= TCB_test.DataStackLast;
+	TCB_test.	RST			= TCB_test.ReturnStackLast;
+	TCB_test.	LST			= TCB_test.LStackLast;
 	TCB_test.	TOS			=   u32_to_p24( P24_Canary );
 	TCB_test.	DT			=   u32_to_p24( P24_Canary );
 /*
