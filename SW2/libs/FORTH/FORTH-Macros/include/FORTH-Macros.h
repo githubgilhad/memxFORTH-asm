@@ -73,7 +73,7 @@
 .macro	ReadST_N N, a_lo, a_hi, a_hlo	; {{{ # read N-th item from real Data Stack into registers (N=>0, no TOS) (a b -- a b ; N=0 => a fetched)
 	movw ZL, DST_lo
 	.if \N != 0
-		addiw ZL, (\N-1)*3
+		adiw ZL, \N*3
 	.endif
 	ld \a_lo, Z+
 	ld \a_hi, Z+
@@ -83,7 +83,7 @@
 .macro	WriteST_N N, a_lo, a_hi, a_hlo	; {{{ # write from registers into N-th item on real Data Stack (N=>0, no TOS) (a b -- c b ; c in registers, N=0 )
 	movw ZL, DST_lo
 	.if \N != 0
-		addiw ZL, (\N-1)*3
+		adiw ZL, \N*3
 	.endif
 	st  Z+, \a_lo 
 	st  Z+, \a_hi 

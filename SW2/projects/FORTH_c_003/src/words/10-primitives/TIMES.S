@@ -1,11 +1,10 @@
-DEFWORD w_times,		0,		"*",			f_times			// ( a b -- a*b ) multiply top two stack items (24-bit result, may overflow) TODO
+DEFWORD w_TIMES,		0,		"*",			f_TIMES			// ( a b -- a*b ) multiply top two stack items (24-bit result, may overflow) 
 
 ; * - multiply top two stack items (24-bit result, may overflow)
 ; ( a b -- a*b )
 ; Full 24-bit multiplication: Parsx * TOS -> TOS
 .section CURRENT_TEXT_SECTION,"ax",@progbits
-.global f_times
-f_times:	; {{{ #
+gfunc f_TIMES	; {{{ #
 	PopST Parsx		; Pop second item (a) to Parsx
 	; 24-bit × 24-bit multiplication
 	; Result can be up to 48 bits, but we only keep 24 bits

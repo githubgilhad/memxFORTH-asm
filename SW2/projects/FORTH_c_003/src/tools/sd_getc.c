@@ -35,17 +35,17 @@ static void sd_close(void *ptr);	// internal, close used file
 
 static sd_input_t* sd_alloc(void)
 {
-TX0_WriteStr("sd_alloc");
+// TX0_WriteStr("sd_alloc");
 for (int i = 0; i < SD_MAX_STCK; i++)
     {
         if (!(sd_used_mask & (1 << i)))
         {
             sd_used_mask |= (1 << i);
-	    TX0_WriteStr(" OK ");
+//	    TX0_WriteStr(" OK ");
             return &sd_stack[i];
         }
     }
-	    TX0_WriteStr(" FAIL ");
+//	    TX0_WriteStr(" FAIL ");
     return NULL;
 }
 void sd_free(sd_input_t* ptr)
@@ -58,20 +58,20 @@ void sd_free(sd_input_t* ptr)
 }
 static uint8_t sd_refill(void *ctx)
 {
-	    TX0_WriteStr(" sd_refill ");
+//	    TX0_WriteStr(" sd_refill ");
     sd_input_t *in = (sd_input_t*)ctx;
     UINT br;
 
     if (f_read(&in->fil, in->buffer, 512, &br) != FR_OK || br == 0) {
 
-	    TX0_WriteStr(" EOF ");
+//	    TX0_WriteStr(" EOF ");
         return 1; // EOF
 	}
 
     in->bytes_in_buf = br;
     in->index = 0;
-    	TX0_WriteHex16(br);
-	    TX0_WriteStr(" OK ");
+//    	TX0_WriteHex16(br);
+//	    TX0_WriteStr(" OK ");
     return 0;
 }
 

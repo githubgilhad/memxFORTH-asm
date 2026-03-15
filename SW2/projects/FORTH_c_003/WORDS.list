@@ -68,6 +68,8 @@ DEFWORD w_CURSOR_LEFT,		0,		"CURSOR_LEFT",		f_docol, yes		; ( -- )
 DEFWORD w_CURSOR_RIGHT,		0,		"CURSOR_RIGHT",		f_docol, yes		; ( -- ) 
 DEFWORD w_CURSOR_XY,		0,		"CURSOR_XY",		f_CURSOR_XY		; ( x y --  ) move cursor to x,y [xxxx]
 DEFWORD w_DEFINITIONS,		0,		"DEFINITIONS",		f_DEFINITIONS		; ( -- ) set CURRENT to first WL in ORDER
+DEFWORD w_DIV,			0,		"/",			f_DIV			// ( a b -- div ) divide second by top, get quotient [xxxx]
+DEFWORD w_DIVMOD,		0,		"DIVMOD",		f_DIVMOD		// ( a b -- mod div ) divide second by top, get remainder and quotient [xxxx]
 DEFWORD w_DO,			FLG_IMMEDIATE,	"DO",			f_DO			; Compilation ( C: -- 0 do-sys ) compile 'do_do' to definition
 DEFWORD w_DOES,			FLG_IMMEDIATE,	"DOES>",		f_DOES			; (  --  ) DOES> runtime part of new word [----]
 DEFWORD w_DOT_D,		0,		".D",			f_DOT_S			; (  --  ) list data D stack [xxxx]
@@ -103,6 +105,7 @@ DEFWORD w_LIT3,			FLG_ARG_3,	"LIT3",			f_LIT3			; ( -- value ) push literal valu
 DEFWORD w_LITERAL,		FLG_IMMEDIATE,	"LITERAL",		f_LITERAL		; ( x -- ) compile x to current word 3B (as LIT3 x)
 DEFWORD w_LOOP,			FLG_IMMEDIATE,	"LOOP",			f_LOOP			; Compilation ( C: 0 back1 .. backn do-sys --  ) compile 'do_loop' to definition
 DEFWORD w_Lfrom,		0,		"L>",			f_Lfrom			; (  -- x ) ( L: x -- ) move CELL from L stack to data stack
+DEFWORD w_MOD,			0,		"%",			f_MOD			// ( a b -- mod ) divide second by top, get remainder (modulo)  [xxxx]
 DEFWORD w_NDROP,		0,		"NDROP",		f_NDROP			; ( xn .. x1 n -- ) DROP N items from top of stack
 DEFWORD w_NEXTcounter,		0,		"NEXTcounter",		f_NEXTcounter		; (  -- x1 x2  ) returns NEXTcounter as Double (# of jumps to NEXT)  [xxxx]
 DEFWORD w_NIP,			0,		"NIP",			f_NIP			; ( a b -- b ) DROP second item in stack
@@ -115,6 +118,7 @@ DEFWORD w_QUIT,			0,		"QUIT",			f_docol, yes		; Main loop,  : QUIT INIT BEGIN BE
 DEFWORD w_QUIT,			0,		"QUIT",			f_docol, yes		; Main loop,  : QUIT INIT BEGIN BEGIN TIB TIB.max ACCEPT UNTIL INTERPRET REPEAT ;  
 DEFWORD w_RAM_MOVE,		0,		"RAM-MOVE",		f_RAM_MOVE		; ( addr1 addr2 u -- ) in RAM only, move u bytes to addr2 (in right direction)
 DEFWORD w_RDROP,		0,		"RDROP",		f_RDROP			; ( -- ) ( R: x -- ) DROP for return stack
+DEFWORD w_ROT,			0,		"ROT",			f_ROT			; ( a b c -- b c a ) rotate 3. item up [----]
 DEFWORD w_R_at,			0,		"R@",			f_R_at			; (  -- x ) ( R: x -- x ) copy CELL from return stack to data stack
 DEFWORD w_Rfrom,		0,		"R>",			f_Rfrom			; (  -- x ) ( R: x -- ) move CELL from return stack to data stack
 DEFWORD w_SEARCH_WORDLIST,	0,		"SEARCH_WORDLIST",	f_docol, yes		; ( c-addr u wid -- 0 | xt 1 | xt -1 ) search name, return xt 
@@ -124,6 +128,7 @@ DEFWORD w_SHOW,			0,		"SHOW",			f_SHOW			; ( xt --  ) shows word [xxxx]
 DEFWORD w_SWAP,			0,		"SWAP",			f_SWAP			; ( a b -- b a ) SWAP top two stack items
 DEFWORD w_TEST,			0,		"TEST",			f_docol, yes		; ( -- ) // just test
 DEFWORD w_THEN,			FLG_IMMEDIATE,	"THEN",			f_THEN			; C:( addr  -- ) get addr from stack and fill offset here [----]
+DEFWORD w_TIMES,		0,		"*",			f_TIMES			// ( a b -- a*b ) multiply top two stack items (24-bit result, may overflow) 
 DEFWORD w_TYPE,			0,		"TYPE",			f_TYPE			; ( c-addr u --  ) EMITs string [2310]
 DEFWORD w_UNLOOP,		0,		"UNLOOP",		f_docol, yes		; ( -- ) ( R: limit first -- ) remove one level of DO..LOOP to eventually enable EXIT
 DEFWORD w_WORDLIST,		0,		"WORDLIST",		f_docol, yes		; ( -- wid ) create wordlist : WORDLIST ( -- wid ) HERE 0 , ; \ reserve CELL, store zeroes there, return its address
@@ -132,7 +137,6 @@ DEFWORD w_at,			0,		"@",			f_at			; ( addr -- value ) fetch cell from address
 DEFWORD w_char_at,		0,		"C@",			f_char_at		; ( addr -- byte ) fetch byte from address
 DEFWORD w_char_store,		0,		"C!",			f_char_store		; ( byte addr -- )  store byte to address
 DEFWORD w_comma,		0,		",",			f_comma			; ( x --  ) compile x at HERE
-DEFWORD w_div,			0,		"/",			f_div			// ( a b -- a/b ) divide second by top TODO
 DEFWORD w_dot_hex,		0,		".h",			f_dot_hex		; ( x  --  ) print hexa value and space [xxxx]
 DEFWORD w_equals,		0,		"=",			f_equals		; ( x y -- flag ) x == y
 DEFWORD w_exit,			0,		"exit",			f_exit			; ( XX ) exit from word
@@ -159,12 +163,12 @@ DEFWORD w_plus_char_store,	0,		"+C!",			f_plus_char_store	; ( byte addr -- )  ad
 DEFWORD w_plus_store,		0,		"+!",			f_plus_store		; ( value addr -- ) add cell to address
 DEFWORD w_plus_word_store,	0,		"+W!",			f_plus_word_store	; ( word addr -- )  add word to address
 DEFWORD w_qDUP,			0,		"?DUP",			f_qDUP			; ( a -- 0 | a a ) duplicate non zero CELL [0630]
+DEFWORD w_revROT,		0,		"-ROT",			f_revROT		; ( a b c -- c a b ) rotate 1. item to 3. [----]
 DEFWORD w_right_bracket,	0,		"]",			f_right_bracket		; (  --  ) leave interpretation, (re)enter compilation [2540]
 DEFWORD w_store,		0,		"!",			f_store			; ( value addr -- ) store cell to address
 DEFWORD w_strequ,		0,		"STR=",			f_strequ		; ( c-addr1 u1 c-addr2 u2 -- flag ) compare 2 strings  flag=-1 identical, flag=0 different
 DEFWORD w_strnonequ,		0,		"STR<>",		f_strnonequ		; ( c-addr1 u1 c-addr2 u2 -- flag ) compare 2 strings  flag=0 identical, flag=-1 different
 DEFWORD w_tick,			0,		"'",			f_docol, yes		; ( "name" -- 0 | xt  ) xt of next word in TIB [----]
-DEFWORD w_times,		0,		"*",			f_times			// ( a b -- a*b ) multiply top two stack items (24-bit result, may overflow) TODO
 DEFWORD w_toL,			0,		">L",			f_toL			; ( x  --  )( L: -- x ) move CELL from data stack to L stack
 DEFWORD w_toR,			0,		">R",			f_toR			; ( x  --  )( R: -- x ) move CELL from data stack to return stack
 DEFWORD w_wid_item,		0,		"wid[]",		f_wid_item		; ( i -- wid_i ) get i.th order wordlist (1 most actual) [xxx]

@@ -15,6 +15,12 @@ Changelog
 --------------------------------------------------------------------------------
 
 %START%
+* 2026.03.15 22:11:39 - DEFWORD w_revROT,		0,		"-ROT",			f_revROT		; ( a b c -- c a b ) rotate 1. item to 3. [----]
+* 2026.03.15 22:11:00 - DEFWORD w_ROT,			0,		"ROT",			f_ROT			; ( a b c -- b c a ) rotate 3. item up [----]
+* 2026.03.15 21:51:35 - DEFWORD w_TIMES,		0,		"*",			f_times			; ( a b -- a*b ) multiply top two stack items (24-bit result, may overflow) 
+* 2026.03.15 21:46:13 - DEFWORD w_DIVMOD,		0,		"DIVMOD",		f_DIVMOD		; ( a b -- mod div ) divide second by top, get remainder and quotient [xxxx]
+* 2026.03.15 21:46:08 - DEFWORD w_DIV,			0,		"/",			f_DIV			; ( a b -- div ) divide second by top, get quotient [xxxx]
+* 2026.03.15 21:46:03 - DEFWORD w_MOD,			0,		"%",			f_MOD			; ( a b -- mod ) divide second by top, get remainder (modulo)  [xxxx]
 * 2026.03.13 22:55:32 - DEFWORD w_LEDS_get,		0,		"LEDS@",		f_LEDS_get		; ( num  -- RGB  ) get LED # num  RGB value [xxxx]
 * 2026.03.13 22:55:21 - DEFWORD w_LEDS_set,		0,		"LEDS!",		f_LEDS_set		; ( RGB num  --  ) set LED # num to RGB and shine it [xxxx]
 * 2026.03.11 15:45:53 - DEFWORD w_PARSE_NAME,		0,		"PARSE-NAME",		f_PARSE_NAME		; ( -- c-address u ) parse name from getc, save it to TIB with len prefix and C-zero after end  [xxxx]

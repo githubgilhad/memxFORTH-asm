@@ -1,92 +1,117 @@
-DEFWORD w_div,			0,		"/",			f_div			// ( a b -- a/b ) divide second by top TODO
+DEFWORD w_DIVMOD,		0,		"DIVMOD",		f_DIVMOD		// ( a b -- mod div ) divide second by top, get remainder and quotient [xxxx]
+DEFWORD w_DIV,			0,		"/",			f_DIV			// ( a b -- div ) divide second by top, get quotient [xxxx]
+DEFWORD w_MOD,			0,		"%",			f_MOD			// ( a b -- mod ) divide second by top, get remainder (modulo)  [xxxx]
 
-; / - divide second by top
-; ( a b -- a/b )
-; Full 24-bit unsigned division: Parsx / TOS -> TOS
+
+
 .section CURRENT_TEXT_SECTION,"ax",@progbits
-gfunc f_div	; {{{ #
-	PopST Parsx		; Pop dividend (a) to Parsx
-	
-	; Check for division by zero
-	tst TOS_lo
-	brne f_div.not_zero
-	tst TOS_hi
-	brne f_div.not_zero
-	tst TOS_hlo
-	brne f_div.not_zero
-	; Division by zero - set result to maximum
-	ser r21
-	mov TOS_lo, r21
-	mov TOS_hi, r21
-	mov TOS_hlo, r21
-	jmp NEXT
-	
-f_div.not_zero:
-	; Save registers
-	push r16
-	push r17
-	push r18
-	push r19
-	push r20
-	push r21
-	push r22
-	
-	; Initialize quotient to 0
-	clr r16		; quotient_lo
-	clr r17		; quotient_hi
-	clr r18		; quotient_hlo
-	
-	; Initialize remainder to dividend
-	mov r19, Parsx_lo	; remainder_lo
-	mov r20, Parsx_hi	; remainder_hi
-	mov r21, Parsx_hlo	; remainder_hlo
-	
-	; 24-bit division using shift and subtract algorithm
-	; We'll do 24 iterations (one per bit)
-	ldi r22, 24		; counter
-	
-f_div.loop:
-	; Shift quotient left
-	lsl r16
-	rol r17
-	rol r18
-	
-	; Shift remainder left
-	lsl r19
-	rol r20
-	rol r21
-	
-	; Compare remainder with divisor
-	cp r19, TOS_lo
-	cpc r20, TOS_hi
-	cpc r21, TOS_hlo
-	brlo f_div.skip	; remainder < divisor, skip
-	
-	; Subtract divisor from remainder
-	sub r19, TOS_lo
-	sbc r20, TOS_hi
-	sbc r21, TOS_hlo
-	
-	; Set least significant bit of quotient
-	ori r16, 1
-	
-f_div.skip:
-	dec r22
-	brne f_div.loop
-	
-	; Move quotient to TOS
-	mov TOS_lo, r16
-	mov TOS_hi, r17
-	mov TOS_hlo, r18
-	
-	; Restore registers
-	pop r22
-	pop r21
-	pop r20
-	pop r19
-	pop r18
-	pop r17
-	pop r16
-	jmp NEXT
-	; }}}
+gfunc func_DIVMOD	; {{{
+	PUSHX(16,18)	; r0,r1 destroyed too
 
+	PopST	Parsx
+	Set3	Zx,Parsx
+			; r30:r31:r25 = dividend = Zx
+			; r4:r5:r6    = divisor  = TOS
+			; result:
+			; r18:r19:r20 = quotient
+			; r21:r22:r23 = remainder
+
+
+;--------------------------------
+; check division by zero
+;--------------------------------
+
+	mov r16,r4
+	or  r16,r5
+	or  r16,r6
+	brne div24_start
+
+			; divisor == 0 => FFFF rem. all
+	PushST Parsx
+	ser	Tx
+	Set3	TOS, Tx,Tx,Tx
+	ret
+
+;--------------------------------
+div24_start:
+
+	; quotient = 0
+	clr r18
+	clr r19
+	clr r20
+
+	; remainder = 0
+	clr r21
+	clr r22
+	clr r23
+
+	; loop counter
+	ldi r17,24
+
+div24_loop:		; {{{
+
+	; shift dividend left -> carry
+	lsl r30
+	rol r31
+	rol r25
+
+	; shift remainder left + bring bit
+	rol r21
+	rol r22
+	rol r23
+
+	; remainder - divisor
+	mov r0,r21
+	mov r1,r22
+	mov r16,r23
+
+	sub r0,r4
+	sbc r1,r5
+	sbc r16,r6
+
+	brcs div24_skip
+
+	; remainder >= divisor
+	mov r21,r0
+	mov r22,r1
+	mov r23,r16
+
+	; quotient |= 1
+	lsl r18
+	rol r19
+	rol r20
+	ori r18,1
+	rjmp div24_next
+
+div24_skip:
+
+	; quotient <<= 1
+	lsl r18
+	rol r19
+	rol r20
+
+div24_next:
+
+	dec r17
+	brne div24_loop		; }}}
+
+	clr	r1
+	PushST	r21, r22, r23		; r21:r22:r23 = remainder
+	Set3	TOS, r18,r19,r20	; r18:r19:r20 = quotient
+	POPX(18,16)
+	ret
+; }}}
+gfunc f_DIVMOD		; {{{
+	call	func_DIVMOD
+	jmp	NEXT
+; }}}
+gfunc f_DIV		; {{{
+	call	func_DIVMOD
+	PopST	Temp
+	jmp	NEXT
+; }}}
+gfunc f_MOD		; {{{
+	call	func_DIVMOD
+	PopST	TOS
+	jmp	NEXT
+; }}}

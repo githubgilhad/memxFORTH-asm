@@ -15,11 +15,11 @@ uint8_t C_getc(input_stack_t *s, char *out) {	// {{{ FORTH will use this to get 
 TX0_Write(*out);
 if (*out==13){
 	TX0_Write(10);
-	TX0_WriteStr(" C_getc ");TX0_WriteHex8(s->count);TX0_Write(':');
+//	TX0_WriteStr(" C_getc ");TX0_WriteHex8(s->count);TX0_Write(':');
 	};
 if (*out==10){
 	TX0_Write(13);
-	TX0_WriteStr(" C_getc ");TX0_WriteHex8(s->count);TX0_Write(';');
+//	TX0_WriteStr(" C_getc ");TX0_WriteHex8(s->count);TX0_Write(';');
 	};
 
 		if (r == GETC_EOF) {
@@ -42,18 +42,18 @@ if (*out==10){
 }	// }}}
 
 void add_getc(input_stack_t *s,getc_fn fn, void *state) {	// {{{
-TX0_WriteStr(" add_getc("); TX0_WriteHex16((uint16_t)s);TX0_Write(',');TX0_WriteHex16((uint16_t)fn); TX0_Write(',');TX0_WriteHex16((uint16_t)state);TX0_WriteStr(" ) ");
+//TX0_WriteStr(" add_getc("); TX0_WriteHex16((uint16_t)s);TX0_Write(',');TX0_WriteHex16((uint16_t)fn); TX0_Write(',');TX0_WriteHex16((uint16_t)state);TX0_WriteStr(" ) ");
 	if( s->count < GETC_MAX_SOURCES) {
 		s->stack[s->count].getc=fn;
 		s->stack[s->count].state=state;
 		s->count++;
-		TX0_WriteHex8(s->count);
+//		TX0_WriteHex8(s->count);
 	};
 }	// }}}
 
 input_stack_t get_STK;
 
 void C_getc_init(input_stack_t *s){	// {{{
-TX0_WriteStr(" C_getc_init("); TX0_WriteHex16((uint16_t)s);TX0_WriteStr(" ) ");
+//TX0_WriteStr(" C_getc_init("); TX0_WriteHex16((uint16_t)s);TX0_WriteStr(" ) ");
 	s->count=0;
 }	// }}}

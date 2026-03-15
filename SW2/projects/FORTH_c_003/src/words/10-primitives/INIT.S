@@ -38,7 +38,8 @@ f_INIT.data:
 ;	.ascii " 1 2 3 4 5 >L .L \r "
 ;	.ascii " INCLUDE test.4th \r "
 ;	.ascii " : foobar  INCLUDE TEST.4TH 1 2 + ; ' foobar EXPORT foobar "
-	.ascii " : x IF 5 ELSE 6 THEN 7 ; ' x EXPORT  "
+;	.ascii " : x IF 5 ELSE 6 THEN 7 ; ' x EXPORT  "
+	.ascii " 12 3 DIVMOD .h .h "
 2:
 	.byte 1
 .balign 2

@@ -139,7 +139,8 @@ bootloader:
 	/usr/bin/avrdude -v -p atmega2560 -c usbasp -b 115200 -U flash:w:/usr/share/arduino/hardware/arduino/avr/bootloaders//stk500v2/stk500boot_v2_mega2560.hex:i
 
 reset:
-	if [ -x $(dir $(realpath $(lastword $(MAKEFILE_LIST))))ard-reset-arduino ] ; then $(dir $(realpath $(lastword $(MAKEFILE_LIST))))ard-reset-arduino  $(PORT); fi
+	$(HEAD)
+	$(Q) ard-reset-arduino  $(PORT) || true
 
 TODO: $(TARGET).dis  sizecheck WORDS
 	$(HEAD)
