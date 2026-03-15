@@ -50,10 +50,11 @@ gfunc f_ELSE	; {{{ #
 	Set3		Zx, Parsx
 	Ldi3		Parsx, ww_do_ELSE_cw
 	call	 W3at			; compile do_ELSE (=0BRANCH)
-	PopL		DT		; need to owerwrite this addr with offset to next P24
 	Set3		Temp, Zx	; here we need overwrite jump distance
+	PopL		DT		; need to owerwrite this addr with offset to next P24
 	PushL		Temp
 	ZERO		Parsx
+	Set3		Zx,Temp
 	call	 W3at			; compile do_ELSE (=0BRANCH)
 	Set3		Parsx,Zx
 	TCB_member	TCB_HERE	; &HERE

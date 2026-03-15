@@ -38,7 +38,7 @@ f_INIT.data:
 ;	.ascii " 1 2 3 4 5 >L .L \r "
 ;	.ascii " INCLUDE test.4th \r "
 ;	.ascii " : foobar  INCLUDE TEST.4TH 1 2 + ; ' foobar EXPORT foobar "
-	.ascii ".L $123456 >L .L   .L 123  "
+	.ascii " : x IF 5 ELSE 6 THEN 7 ; ' x EXPORT  "
 2:
 	.byte 1
 .balign 2

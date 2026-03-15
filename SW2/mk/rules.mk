@@ -92,7 +92,10 @@ clean:
 
 -include $(OBJ:.o=.d)
 
-.PHONY: all nums clean 
+.PHONY: all nums clean sizecheck ispload bootloader reset TODO WORDS upload_monitor upload monitor tags debug
+
+
+
 
 $(TARGET).dis: $(TARGET).elf $(MK_DEP)
 	$(HEAD)
@@ -150,6 +153,10 @@ monitor:
 	picocom -b 115200 --flow n --noreset --quiet $(PORT)
 
 upload_monitor: upload monitor
+
+debug: $(TARGET).dis
+	$(HEAD)
+	$(Q)AVRe -e  $(TARGET).elf || true
 
 tags:
 	ctags -R .
