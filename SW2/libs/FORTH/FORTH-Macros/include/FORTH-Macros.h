@@ -14,14 +14,12 @@
 	st -Y, \a_hlo
 	st -Y, \a_hi
 	st -Y, \a_lo
-.endm
-	; }}}
+.endm			; }}}
 .macro	PopST a_lo, a_hi, a_hlo	; {{{ #  pop  "a" from DST, 3B (no TOS)
 	ld \a_lo, Y+
 	ld \a_hi, Y+
 	ld \a_hlo, Y+
-.endm
-	; }}}
+.endm			; }}}
 .macro	PopSTn a_lo, a_hi, a_hlo, n	; {{{ #  n * pop  "a" from DST, 3B (no TOS)
 	movw ZL, DST_lo
 	adiw ZL, 3*(n-1)
@@ -29,8 +27,7 @@
 	ld \a_hi, Z+
 	ld \a_hlo, Z+
 	movw DST_lo, ZL
-.endm
-	; }}}
+.endm			; }}}
 
 .macro	PushR a_lo, a_hi, a_hlo	; {{{ # push "a" to RST, 3B
 	movw ZL, RST_lo
@@ -38,8 +35,7 @@
 	st -Z, \a_hi
 	st -Z, \a_lo
 	movw RST_lo,ZL
-.endm	
-	; }}}
+.endm			; }}}
 .macro	PopR a_lo, a_hi, a_hlo	; {{{ # pop "a" from RST, 3B
 	movw ZL, RST_lo
 	ld \a_lo,  Z+

@@ -49,6 +49,7 @@ static void sd_send_clock_train(void)
         spi_txrx(0xFF);
 }
 
+/*
 static uint8_t sd_wait_ready(void)
 {
     uint16_t timeout = 50000;
@@ -60,7 +61,7 @@ static uint8_t sd_wait_ready(void)
 
     return (timeout ? 0 : 1);
 }
-
+*/
 static uint8_t sd_command(uint8_t cmd, uint32_t arg, uint8_t crc)
 {
     uint8_t r;

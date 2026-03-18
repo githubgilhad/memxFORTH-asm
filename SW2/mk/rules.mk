@@ -44,7 +44,7 @@ TARGET := $(BUILD_DIR)/$(PROJECT_NAME)
 LD_SCRIPT := $(wildcard linker.ld)
 
 # Common flags
-LDFLAGS_COMMON = 
+LDFLAGS_COMMON ?= -Wl,--relax
 #
 # If linker.ld exists → add -T linker.ld
 ifneq ($(LD_SCRIPT),)
