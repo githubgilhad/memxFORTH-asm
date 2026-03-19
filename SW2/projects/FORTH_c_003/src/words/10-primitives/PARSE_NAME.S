@@ -49,6 +49,8 @@ gfunc func_PARSE_NAME	; {{{ #
 		call	C_getc
 		tst	Cpar1_lo	; GETC_OK=0
 		breq 3f
+; nop
+; nop
 			call func_yield
 			rjmp 2b
 		3:

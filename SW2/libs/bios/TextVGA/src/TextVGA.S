@@ -3,7 +3,7 @@
 #define __SFR_OFFSET 0x00		// set the Special Function Register Offset from 0x20 to 0x00 in order to use AVR PORT definitions
 #include <avr/io.h>			// include PORTB, DDRD, ... symbols for easier register access
 
-#include "MHF-002/MHF-002/MHF-002.h"
+#include "MHF-002.h"
 #include "TextVGA.def"
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -81,7 +81,7 @@ TextVGA_subline_ptr:	.word 0 	; start of current subline in Flash - 24bit, but l
 
 TextVGA_TIMER1_OVF_vect_handler:	; {{{ VGA Hsync
 .type TextVGA_TIMER1_OVF_vect_handler, @function
-	eor r0,r0
+;	eor r0,r0	; in main handler
 	lds r24, TextVGA_scanline
 	lds r25, TextVGA_scanline + 1
 	adiw r24,1
@@ -99,6 +99,40 @@ TextVGA_TIMER1_OVF_vect_handler:	; {{{ VGA Hsync
 	ret	; PS/2 will be handled separately
 ;	rjmp .TextVGA_TIMER1_OVF_vect_handler_end_after
 1:
+	lds r20, TCNT1L	; synchronise
+;	lds r21, TCNT1H	; synchronise ; not needed
+
+	; if we are too late, do not show line at all
+	cpi r20, 0x60
+	brlo 1f
+		rjmp .L_TextVGA_TIMER1_OVF_vect_handler__end
+	1:
+	
+	andi r20, 7
+	check 7
+	check 6
+	check 5
+	check 4
+	check 3
+	check 2
+	check 1
+/*	
+	lds ZL,TextVGA_VRAM_ptr 
+	lds ZH,TextVGA_VRAM_ptr+1
+	adiw ZL,5
+;	lds r18, TextVGA_subline
+;	add ZL,r18
+;	adc ZH,r1
+	mov r21,r20
+	swap r20
+	andi r20, 0x0F
+	ori r20, 0x40
+	andi r21, 0x0F
+	ori r21, 0x40
+	st Z+,r20
+	st Z+,r21
+*/
+	
 	set_output_all(VGA_COLOR,sts)	; output COLORs
 	lds ZL,TextVGA_CRAM_ptr
 	lds ZH,TextVGA_CRAM_ptr+1
@@ -116,16 +150,6 @@ TextVGA_TIMER1_OVF_vect_handler:	; {{{ VGA Hsync
 	lds XL, TextVGA_VRAM_ptr
 	lds XH, TextVGA_VRAM_ptr+1
 	
-	lds r20, TCNT1	; synchronise
-	andi r20, 7
-	check 7
-	check 6
-	check 5
-	check 4
-	check 3
-	check 2
-	check 1
-	
 	set_output(VGA_LATCH)
 	out_hi(VGA_LATCH)		; hi=get data, low=clock out
 	ldi r24, 1<<VGA_LATCH_PIN
@@ -135,7 +159,7 @@ TextVGA_TIMER1_OVF_vect_handler:	; {{{ VGA Hsync
 	out   XCAT(PORT,VGA_DATA_PORT), r21	// 1CP put data to shift register's parallel input
 	
 	out   XCAT(PIN,VGA_LATCH_PORT), r24	// 1CP flip B7 LOW
-	out_lo(VGA_ENABLE)
+	out_lo(VGA_ENABLE)			// this doubles first column of pixels, moving it down instead eats this column and left space on first character, which is worse
 	out   XCAT(PIN,VGA_LATCH_PORT), r24	// 1CP flip B7 HIGH
 
 .rept TextVGA_ROWS -1
@@ -150,6 +174,7 @@ nop
 ; VGA_ENABLE hi must be 8 clocks after last ONECHAR
 	out_hi(VGA_ENABLE)
 ;
+.L_TextVGA_TIMER1_OVF_vect_handler__end:
 	;
 	inc_mem2 TextVGA_subline_ptr
 	lds r24, TextVGA_subline

@@ -12,14 +12,14 @@ gfunc f_INIT	; {{{ #         DT2 = X, Z needed for elpm
 ;;		st	X, Tx
 	;
 	Ldi2	DT2, RX0_Count
-	Ldi3	Zx, f_INIT.len
+	Ldi3	Zx, .L_f_INIT__len
 	out	_SFR_IO_ADDR(EIND), Z_hlo
 	elpm	Tx, Z+
 	st	X, Tx
 	Ldi2i	DT2, RX0_Head
 	st	X, Tx
 	Ldi2i	DT2, RX0_Buffer
-;				Ldi3	Zx, f_INIT.data	; DT2 = X
+;				Ldi3	Zx, .L_f_INIT__data	; DT2 = X
 2:
 	elpm	Temp_lo, Z+
 	st	X+, Temp_lo
@@ -27,9 +27,10 @@ gfunc f_INIT	; {{{ #         DT2 = X, Z needed for elpm
 	brne	2b
 	jmp	NEXT
 ; }}}
-f_INIT.len:
+.section CURRENT_DATA_SECTION,"a"
+obj .L_f_INIT__len
 	.word 2f - . - 2
-f_INIT.data:
+.L_f_INIT__data:
 ;	.ascii "CLS : foo $123456 .h ; foo \r"	; "CLS $123456 .h 10 EMIT TEST \r"
 ;	.ascii " : foo 1 2 3  ; WORDS \r "	; "CLS $123456 .h 10 EMIT TEST \r"
 ;	.ascii " : foo 1 2 3  ; foo .S ' foo EXPORT \r "

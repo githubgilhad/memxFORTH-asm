@@ -21,4 +21,7 @@ LIBS += FORTH/FORTH-Defines
 LIBS += FORTH/C_Bats
 LIBS += SD/SD
 LIBS += DebugLEDs/DebugLEDs
+LIBS += bios/StdTextCharDef
+LIBS += bios/TextVGA
+LIBS += MHF-002/MHF-002
 # LIBS += uart/fake

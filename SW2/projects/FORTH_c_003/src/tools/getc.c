@@ -11,16 +11,16 @@ uint8_t C_getc(input_stack_t *s, char *out) {	// {{{ FORTH will use this to get 
 //		TX0_WriteHex8(s->count);
 		input_source_t src = s->stack[s->count-1];
 		uint8_t r = src.getc(src.state, out);
-
-TX0_Write(*out);
-if (*out==13){
-	TX0_Write(10);
-//	TX0_WriteStr(" C_getc ");TX0_WriteHex8(s->count);TX0_Write(':');
-	};
-if (*out==10){
-	TX0_Write(13);
-//	TX0_WriteStr(" C_getc ");TX0_WriteHex8(s->count);TX0_Write(';');
-	};
+		
+		if (r == GETC_OK) { 		// ECHO 
+			TX0_Write(*out);
+			if (*out==13){
+				TX0_Write(10);
+			};
+			if (*out==10){
+				TX0_Write(13);
+			};
+		};
 
 		if (r == GETC_EOF) {
 			s->count--;	// zdroj vyčerpán

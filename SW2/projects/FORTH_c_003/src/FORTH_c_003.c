@@ -1,3 +1,7 @@
+/* vim: ft=cpp showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list: tabstop=8 linebreak  tags=./tags;,tags;
+ * */
+// ,,g = gcc, exactly one space after "set"
+//
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
@@ -16,6 +20,8 @@
 #include "tools/debug.h"
 #include "tools/getc.h"
 #include "DebugLEDs.h"
+#include "TextVGA.h"
+#include "StdTextCharDef.h"
 
 #define TEXT __attribute__((section(".text")))
 TEXT void write_char(char c){	// {{{
@@ -572,9 +578,55 @@ void C_show(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition of 
 }	// }}}
 
 // }}}
+
+// =========================== VGA ===================================
+isr_handler TIMER1_OVF_vect_handler;
+ISR(TIMER1_OVF_vect) { if (TIMER1_OVF_vect_handler) TIMER1_OVF_vect_handler(); }
+
+// VGA VSync:
+isr_handler TIMER3_OVF_vect_handler;
+ISR(TIMER3_OVF_vect) { if (TIMER3_OVF_vect_handler) TIMER3_OVF_vect_handler(); }
+
+volatile uint32_t frames;	// increase after frame displayed
+volatile bool VB_flag;		// set on start of each Vertical Blank
+void VB_handler(){
+	frames++;
+	VB_flag=true;
+}
+
+T_TextVGA_VRAM VRAM;
+T_TextVGA_CRAM CRAM={0xf0, 0x0f, 0x24,0x42,0x9f,0xf9,0xf1,0xf2,0xf3,0xf4,0xf5,0xf6,0xf6,0xf7,0xf8,0xf9,0xfa,0xfb,0xfc,0xfd,0xfe,0xff,0xf0,0xf0,0xf0,};
+// =========================== VGA ===================================
 TEXT void setup(void) {
 	usart0_setup();
 	DebugLEDs_init();
+
+TextVGA_VRAM = &VRAM;
+TextVGA_CRAM = &CRAM;
+TextVGA_CharDef = pgm_get_far_address(StdTextCharDef);
+TIMER1_OVF_vect_handler=TextVGA_TIMER1_OVF_vect_handler;
+TIMER3_OVF_vect_handler=TextVGA_TIMER3_OVF_vect_handler;
+TextVGA_VerticalBlank=VB_handler;
+TextVGA_begin();
+
+char *pt=&VRAM[0][0];
+for (uint8_t j =24;j<TextVGA_LINES;j++) CRAM[j]=0xf4;
+CRAM[49]=0x28;
+CRAM[50]=0x48;
+for (uint16_t i =0;i<TextVGA_ROWS*TextVGA_LINES;i++) *pt++ = i & 0xff;
+
+for (uint16_t i =0 ; i< TextVGA_LINES;i++) {
+	VRAM[i][0] = '0'+(i/10);
+	VRAM[i][1] = '0'+(i%10);
+	};
+for (uint16_t i =0 ; i< TextVGA_ROWS;i++) {
+	VRAM[0][i] = '0'+(i/10);
+	VRAM[1][i] = '0'+(i%10);
+	};
+	VRAM[23][2] = '0'+(TextVGA_LINES/10);
+	VRAM[23][3] = '0'+(TextVGA_LINES%10);
+
+// while (1){;};
 	sei();
 	/*
 	TX0_WriteHex24(xpC_U32(&f_docol));	// vyjde to stejne obema zpusoby
@@ -709,6 +761,7 @@ TX0_Write('\r'); TX0_Write('\n');
 */
 	TCB_test.	IP		.ptr	= & w_QUIT_cw;
 /**/	
+//  while (1){;};
 	C2FORTH(&TCB_test, (uint32_t)(uintptr_t)&run_in_FORTH_xt_in_IP);
 	TX0_Write('\r');
 	TX0_Write('\n');

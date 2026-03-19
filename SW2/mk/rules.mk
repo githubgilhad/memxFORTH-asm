@@ -12,6 +12,11 @@ CFLAGS += $(addprefix -I,$(INC_DIRS))
 CFLAGS_NODEP := $(CFLAGS)
 CFLAGS +=  $(DEPFLAGS)
 
+CXXFLAGS += $(OPT) $(CXXSTD) $(WARN)
+CXXFLAGS += -DF_CPU=$(F_CPU)
+CXXFLAGS += $(addprefix -I,$(INC_DIRS))
+CXXFLAGS +=  $(DEPFLAGS)
+
 VERBOSE ?= 0
 
 HEAD = @echo -e "$(COLORS)$(BRIGHTMAGENTA)m$@$(COLORS)$(RESET)m:"
@@ -38,6 +43,7 @@ SRC_REL := $(patsubst $(ROOT_DIR)/%,%,$(SRC_ABS))
 OBJ := $(addprefix $(OBJ_DIR)/,$(SRC_REL))
 OBJ := $(OBJ:.c=.o)
 OBJ := $(OBJ:.S=.o)
+OBJ := $(OBJ:.cpp=.o)
 
 TARGET := $(BUILD_DIR)/$(PROJECT_NAME)
 
@@ -68,6 +74,15 @@ $(TARGET).elf: $(OBJ)
 $(TARGET).hex: $(TARGET).elf $(MK_DEP)
 	$(HEAD)
 	$(Q)$(OBJCOPY) -O ihex -R .eeprom $< $@
+
+# ----------------------------------------------------
+# kompilace C++
+# ----------------------------------------------------
+
+$(OBJ_DIR)/%.o: $(ROOT_DIR)/%.cpp $(MK_DEP)
+	$(HEAD)
+	$(Q)mkdir -p $(dir $@)
+	$(Q)$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # ----------------------------------------------------
 # kompilace C

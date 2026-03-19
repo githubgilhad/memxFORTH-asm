@@ -17,8 +17,8 @@ gfunc f_DOT_S	; {{{ #
 	ldi		Tx, 3
 	Sub21		dst_ptr, Tx
 	Cmp2		dst_ptr, DST
-	brlo	.f_DOT_S.noTOS
-	breq	.f_DOT_S.end
+	brlo	.L_f_DOT_S__noTOS
+	breq	.L_f_DOT_S__end
 2:
 	ld	r24, -X
 	call TX0_WriteHex8
@@ -30,12 +30,12 @@ gfunc f_DOT_S	; {{{ #
 	call TX0_Write
 	Cmp2	DST,dst_ptr
 	brlo	2b ; branch if DST< dst_ptr
-.f_DOT_S.end:
+.L_f_DOT_S__end:
 	Set3	Parsx,TOS
 	call TX0_WriteHex24
 	ldi	r24, ' '
 	call TX0_Write
-.f_DOT_S.noTOS:
+.L_f_DOT_S__noTOS:
 	POP_R2_R17
 	jmp NEXT
 ; }}}
@@ -47,7 +47,7 @@ gfunc f_DOT_R	; {{{ #
 ;	ldi		Tx, 4
 ;	Sub21		dst_ptr, Tx
 	Cmp2		RST, dst_ptr	; RST - dst_ptr
-	brsh	.f_DOT_R.end		; branch if RST was Same or Higher (stack empty/underflown)
+	brsh	.L_f_DOT_R__end		; branch if RST was Same or Higher (stack empty/underflown)
 2:
 	ld	r24, -X
 	call TX0_WriteHex8
@@ -59,7 +59,7 @@ gfunc f_DOT_R	; {{{ #
 	call TX0_Write
 	Cmp2	RST,dst_ptr
 	brlo	2b ; branch if DST< dst_ptr
-.f_DOT_R.end:
+.L_f_DOT_R__end:
 	POP_R2_R17
 	jmp NEXT
 ; }}}
@@ -71,7 +71,7 @@ gfunc f_DOT_L	; {{{ #
 ;	ldi		Tx, 3
 ;	Sub21		dst_ptr, Tx
 	Cmp2		LST, dst_ptr	; LST - dst_ptr
-	brsh	.f_DOT_L.end		; branch if LST was Same or Higher (stack empty/underflown)
+	brsh	.L_f_DOT_L__end		; branch if LST was Same or Higher (stack empty/underflown)
 2:
 	ld	r24, -X
 	call TX0_WriteHex8
@@ -83,7 +83,7 @@ gfunc f_DOT_L	; {{{ #
 	call TX0_Write
 	Cmp2	LST,dst_ptr
 	brlo	2b ; branch if LST< dst_ptr
-.f_DOT_L.end:
+.L_f_DOT_L__end:
 	POP_R2_R17
 	jmp NEXT
 ; }}}
