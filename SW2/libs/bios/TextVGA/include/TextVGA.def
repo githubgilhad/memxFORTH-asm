@@ -5,7 +5,7 @@
 
 // #define TextVGA_LINES 56
 // #define TextVGA_ROWS 35
-#define TextVGA_LINES 55
+#define TextVGA_LINES 56
 #define TextVGA_ROWS 34
 #define TextVGA_SUBLINES 8
 #define TextVGA_FIRST_SCAN_LINE 50

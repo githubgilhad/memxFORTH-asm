@@ -99,43 +99,33 @@ TextVGA_TIMER1_OVF_vect_handler:	; {{{ VGA Hsync
 	ret	; PS/2 will be handled separately
 ;	rjmp .TextVGA_TIMER1_OVF_vect_handler_end_after
 1:
-	lds r20, TCNT1L	; synchronise
-;	lds r21, TCNT1H	; synchronise ; not needed
 
-	; if we are too late, do not show line at all
-	cpi r20, 0x60
-	brlo 1f
-		rjmp .L_TextVGA_TIMER1_OVF_vect_handler__end
-	1:
-	
-	andi r20, 7
-	check 7
-	check 6
-	check 5
-	check 4
-	check 3
-	check 2
-	check 1
-/*	
-	lds ZL,TextVGA_VRAM_ptr 
-	lds ZH,TextVGA_VRAM_ptr+1
-	adiw ZL,5
-;	lds r18, TextVGA_subline
-;	add ZL,r18
-;	adc ZH,r1
-	mov r21,r20
-	swap r20
-	andi r20, 0x0F
-	ori r20, 0x40
-	andi r21, 0x0F
-	ori r21, 0x40
-	st Z+,r20
-	st Z+,r21
-*/
-	
+
+nop		; <=============== 2 nops are more stable here for synchronise
+nop
+
+
 	set_output_all(VGA_COLOR,sts)	; output COLORs
 	lds ZL,TextVGA_CRAM_ptr
 	lds ZH,TextVGA_CRAM_ptr+1
+
+			lds r20, TCNT1L	; synchronise
+
+			; if we are too late, do not show line at all
+			cpi r20, 0x58	; <=== cut line at this point, depend on everything, too small no screen, too large flying right side
+			brlo 1f
+				rjmp .L_TextVGA_TIMER1_OVF_vect_handler__end
+			1:
+			
+			andi r20, 7
+			check 7
+			check 6
+			check 5
+			check 4
+			check 3
+			check 2
+			check 1
+	
 	ld r20,Z
 	sts XCAT(PORT,VGA_COLOR_PORT),r20
 	
