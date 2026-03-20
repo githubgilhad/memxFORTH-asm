@@ -22,6 +22,7 @@
 #include "DebugLEDs.h"
 #include "TextVGA.h"
 #include "StdTextCharDef.h"
+#include "SnakeCharDef.h"
 
 #define TEXT __attribute__((section(".text")))
 TEXT void write_char(char c){	// {{{
@@ -604,6 +605,7 @@ TEXT void setup(void) {
 TextVGA_VRAM = &VRAM;
 TextVGA_CRAM = &CRAM;
 TextVGA_CharDef = pgm_get_far_address(StdTextCharDef);
+TextVGA_CharDef = pgm_get_far_address(SnakeCharDef);
 TIMER1_OVF_vect_handler=TextVGA_TIMER1_OVF_vect_handler;
 TIMER3_OVF_vect_handler=TextVGA_TIMER3_OVF_vect_handler;
 TextVGA_VerticalBlank=VB_handler;
