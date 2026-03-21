@@ -3,10 +3,10 @@ DEFWORD w_DIV,			0,		"/",			f_DIV			// ( a b -- div ) divide second by top, get 
 DEFWORD w_MOD,			0,		"%",			f_MOD			// ( a b -- mod ) divide second by top, get remainder (modulo)  [xxxx]
 
 
-
+#define range (16,18)
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc func_DIVMOD	; {{{
-	PUSHX(16,18)	; r0,r1 destroyed too
+	PUSHXr(range)	; r0,r1 destroyed too
 
 	PopST	Parsx
 	Set3	Zx,Parsx
@@ -98,7 +98,7 @@ div24_next:
 	clr	r1
 	PushST	r21, r22, r23		; r21:r22:r23 = remainder
 	Set3	TOS, r18,r19,r20	; r18:r19:r20 = quotient
-	POPX(18,16)
+	POPXr(range)
 	ret
 ; }}}
 gfunc f_DIVMOD		; {{{
@@ -115,3 +115,5 @@ gfunc f_MOD		; {{{
 	PopST	TOS
 	jmp	NEXT
 ; }}}
+
+#undef range

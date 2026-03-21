@@ -9,13 +9,12 @@ DEFWORD w_PARSE_NAME,		0,		"PARSE-NAME",		f_PARSE_NAME		; ( -- c-address u ) par
 #define t_in r6, r7		//; actual position of filling
 #define t_max r8, r9		//; address after  end of TIB, do not fill here
 #define ctx r10, r11		//; data for getC
-#define range 2,11
+#define range (2,11)
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc func_PARSE_NAME	; {{{ #
 	PushST	TOS
-;	PUSHX range
-	PUSHX(2,11)
+	PUSHXr(range)
 	
 	mov	r0,r1
 	inc	r0		; r0 = 1 for incrementing pairs of lower registers
@@ -107,8 +106,7 @@ gfunc func_PARSE_NAME	; {{{ #
 		Set2	Zx2, t_start
 		st	Z+, DT_lo
 						; DT2=len, Zx2 = c-address
-;	POPX	range
-	POPX(11,2)
+	POPXr(range)
 	Set3	TOS, DT2, r1
 	Set2	DT2, Zx2
 	ldi	Tx, 0x80

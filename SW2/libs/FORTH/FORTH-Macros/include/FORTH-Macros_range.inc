@@ -141,37 +141,20 @@
 
 
 #define RANGE_UP(a,b) \
-PUSH_REG(a) \
-IF(EQ(a,b))( \
-    , \
-    OBSTRUCT(_RANGE_UP)()(INC(a),b) \
-)
+	push r##a$ \
+	IF(EQ(a,b))( , OBSTRUCT(_RANGE_UP)()(INC(a),b) )
 
 #define RANGE_DOWN(a,b) \
-PUSH_REG(a) \
-IF(EQ(a,b))( \
-    , \
-    OBSTRUCT(_RANGE_DOWN)()(DEC(a),b) \
-)
+	pop r##b$ \
+	IF(EQ(a,b))( , OBSTRUCT(_RANGE_DOWN)()(a, DEC(b)) )
 
 #define _RANGE_UP() RANGE_UP
 #define _RANGE_DOWN() RANGE_DOWN
 
 
-#define PUSHX(a,b) pushm EVAL(RANGE_UP(a,b))
-#define POPX(a,b) popm EVAL(RANGE_DOWN(a,b)) ; try
+#define PUSHX(a,b) EVAL(RANGE_UP(a,b))
+#define POPX(a,b) EVAL(RANGE_DOWN(a,b)) 
 
-
-.macro pushm regs:vararg
-.irp r,\regs
-    push \r
-.endr
-.endm
-
-.macro popm regs:vararg
-.irp r,\regs
-    pop \r
-.endr
-.endm
-
+#define PUSHXr(x) PUSHX x
+#define POPXr(x) POPX x
 

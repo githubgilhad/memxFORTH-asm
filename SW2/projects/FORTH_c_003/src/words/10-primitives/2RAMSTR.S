@@ -8,11 +8,11 @@ DEFWORD w_2RAMSTR,		0,		">RAMSTR",		f_2RAMSTR		; ( addr u  -- addr u  ) copy str
 #define t_in r6, r7		//; actual position of filling
 #define t_max r8, r9		//; address after  end of TIB, do not fill here
 #define t_start r10, r11	//; start to fill from here
-#define range 2,11
+#define range (2,11)
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc func_2RAMSTR	; {{{ 
-	PUSHX(2,11)
+	PUSHXr(range)
 	
 	mov	r0,r1
 	inc	r0		; r0 = 1 for incrementing pairs of lower registers
@@ -50,8 +50,7 @@ gfunc func_2RAMSTR	; {{{
 	Set2	Parsx2, t_in
 	ldi	Parsx_hlo, 0x80
 	PushST	Parsx
-;	POPX	range
-	POPX(11,2)
+	POPXr(range)
 	
 	ret
 ; }}}
