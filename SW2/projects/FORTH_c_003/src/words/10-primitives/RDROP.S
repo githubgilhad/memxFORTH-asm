@@ -4,12 +4,12 @@ DEFWORD w_2RDROP,		0,		"2RDROP",		f_2RDROP		; ( -- ) ( R: x y -- ) 2DROP for ret
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_RDROP	; {{{ #
-	PopR   Parsx
+	PopR_x   Parsx
 	jmp NEXT
 ; }}}
 gfunc f_2RDROP	; {{{ #
-	PopR   Parsx
-	PopR   Parsx
+	PopR_x   Parsx
+	PopR_x   Parsx
 	jmp NEXT
 ; }}}
 

@@ -190,3 +190,4 @@ DEFWORD ww_do_loop,	FLG_HIDDEN + FLG_ARG_3,	"do_loop",		do_loop,	line=2	; Runtim
 DEFWORD ww_do_plusloop,	FLG_HIDDEN + FLG_ARG_3,	"do_plusloop",		do_plusloop,	line=2	; Runtime: ( x -- ) ( R: limit first -- | limit first+x ) inc 'first' by 'x' and maybe loop
 DEFWORD ww_does,		FLG_ARG_3,	"(does>)",		f_does,		line=2	; (  -- addr ) fix new word's CW with DoubleIndirect address of runtime part [----]
 DEFWORD ww_zzz_eol_2,		0,		"zzz_eol_2",		f_zzz_eol_2,	line=2	; (  -- h ) return its head [----]
+DEF_BUFF PS2_input, 16

@@ -33,8 +33,8 @@ gfunc f_DO	; {{{ #
 ; }}}
 gfunc do_do	; {{{
 	PopST Parsx
-	PushR Parsx
-	PushR TOS
+	PushR_x Parsx
+	PushR_x TOS
 	PopST TOS
 	rjmp NEXT
 ; }}}
@@ -56,8 +56,8 @@ gfunc f_LEAVE	; {{{ #
 	rjmp NEXT
 ; }}}
 gfunc do_leave	; {{{ # 
-	PopR	Parsx
-	PopR	Parsx
+	PopR_x	Parsx
+	PopR_x	Parsx
 	Set3 Zx, IP
 	call B3at
 	Add3 IP, Parsx
@@ -92,16 +92,16 @@ f_LOOP.common:
 	rjmp NEXT
 ; }}}
 gfunc do_loop	; {{{
-	PopR	Parsx
+	PopR_x	Parsx
 	ldi 	Tx, 1
 	Add31	Parsx, Tx
-	PushR	Parsx
-	ReadR_N	1, DT
+	PushR_x	Parsx
+	ReadR_N_x	1, DT
 	Sub3	DT,Parsx
 	brne	2f
 			; end of loop
-	PopR	Parsx
-	PopR	Parsx
+	PopR_x	Parsx
+	PopR_x	Parsx
 	ldi	Tx,3
 	Add31	IP,Tx
 	rjmp NEXT
@@ -121,10 +121,10 @@ gfunc f_PLUSLOOP	; {{{ #
 	rjmp	f_LOOP.common
 ; }}}
 gfunc do_plusloop	; {{{
-	PopR	Parsx
+	PopR_x	Parsx
 	Add3	TOS, Parsx
-	PushR	TOS
-	ReadR_N	1, DT		; old=Parsx, new=TOS, limit=DT
+	PushR_x	TOS
+	ReadR_N_x	1, DT		; old=Parsx, new=TOS, limit=DT
 	Cmp3	DT,Parsx
 	breq	do_plusloop.notCross	; same, departing from equal
 	brsh	do_plusloop.oldHigher	; cannot be same, so higher
@@ -142,8 +142,8 @@ do_plusloop.notCross: ; next pass of loop = NOT crossed
 	Add3 IP, Parsx
 	rjmp NEXT
 do_plusloop.Cross: ; end of loop = crossed
-	PopR	Parsx
-	PopR	Parsx
+	PopR_x	Parsx
+	PopR_x	Parsx
 	ldi	Tx,3
 	Add31	IP,Tx
 	rjmp NEXT

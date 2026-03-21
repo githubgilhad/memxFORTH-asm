@@ -19,7 +19,7 @@ gfunc f_IF	; {{{ #
 	Ldi3		Parsx, ww_do_IF_cw
 	call W3at			; compile do_IF (=0BRANCH)
 	Set3		Temp, Zx	; here we need overwrite jump distance
-	PushL		Temp
+	PushL_x		Temp
 	ZERO		Parsx
 	Set3		Zx, Temp
 	call W3at			; compile do_IF (=0BRANCH) offset
@@ -35,7 +35,7 @@ gfunc f_IFNOT	; {{{ #
 	Ldi3		Parsx, ww_do_IFNOT_cw
 	call	W3at			; compile do_IF (=0BRANCH)
 	Set3		Temp, Zx	; here we need overwrite jump distance
-	PushL		Temp
+	PushL_x		Temp
 	ZERO		Parsx
 	Set3		Zx, Temp
 	call	W3at			; compile do_IF (=0BRANCH)
@@ -51,8 +51,8 @@ gfunc f_ELSE	; {{{ #
 	Ldi3		Parsx, ww_do_ELSE_cw
 	call	 W3at			; compile do_ELSE (=0BRANCH)
 	Set3		Temp, Zx	; here we need overwrite jump distance
-	PopL		DT		; need to owerwrite this addr with offset to next P24
-	PushL		Temp
+	PopL_x		DT		; need to owerwrite this addr with offset to next P24
+	PushL_x		Temp
 	ZERO		Parsx
 	Set3		Zx,Temp
 	call	 W3at			; compile do_ELSE (=0BRANCH)
@@ -69,7 +69,7 @@ gfunc f_THEN	; {{{ #
 	TCB_member	TCB_HERE	; &HERE
 		RB3at			; Parsx = value of HERE
 	; compute offset to HERE
-	PopL		Temp
+	PopL_x		Temp
 	Sub3		Parsx, Temp
 	Set3		Zx,Temp
 	call		W3at		; fix value at IF

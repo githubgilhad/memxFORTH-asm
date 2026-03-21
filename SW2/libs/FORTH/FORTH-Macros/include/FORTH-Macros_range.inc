@@ -1,5 +1,5 @@
 // pomocná makra
-#define CAT(a,b) CAT_I(a,b)
+#define CAT_II(a,b) CAT_I(a,b)
 #define CAT_I(a,b) a##b
 
 #define EMPTY()
@@ -17,7 +17,7 @@
 #define EVAL(...) EVAL6(__VA_ARGS__)
 
 // jednoduchý IF
-#define IF(c) CAT(IF_,c)
+#define IF(c) CAT_II(IF_,c)
 #define IF_0(t,f) f
 #define IF_1(t,f) t
 
@@ -26,7 +26,7 @@
 #define SECOND(a,b,...) b
 #define IS_PROBE(...) SECOND(__VA_ARGS__,0)
 
-#define EQ(a,b) IS_PROBE(CAT(EQ_,CAT(a,b)))
+#define EQ(a,b) IS_PROBE(CAT_II(EQ_,CAT_II(a,b)))
 
 // definice rovnosti pro 0..31
 #define EQ_00 PROBE()
@@ -63,7 +63,7 @@
 #define EQ_3131 PROBE()
 
 // inkrementace 0..31
-#define INC(x) CAT(INC_,x)
+#define INC(x) CAT_II(INC_,x)
 #define INC_0 1
 #define INC_1 2
 #define INC_2 3
@@ -99,7 +99,7 @@
 
 
 // dekrementace 0..31
-#define DEC(x) CAT(DEC_,x)
+#define DEC(x) CAT_II(DEC_,x)
 #define DEC_0 0
 #define DEC_1 0
 #define DEC_2 1

@@ -1,0 +1,94 @@
+/* vim: ft=cpp showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list: tabstop=8 linebreak tags=./tags;,tags; 
+ * */
+// ,,g = gcc, exactly one space after "set"
+//
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <stdbool.h>
+
+/*
+pg.111
+EICRB – External Interrupt Control Register B
+• Bits 7:0 – ISC71, ISC70 - ISC41, ISC40: External Interrupt 7 - 4 Sense Control Bits
+The External Interrupts 7 - 4 are activated by the external pins INT7:4 if the SREG I-flag and the corresponding
+interrupt mask in the EIMSK is set. The level and edges on the external pins that activate the interrupts are defined
+in Table 15-3. The value on the INT7:4 pins are sampled before detecting edges. If edge or toggle interrupt is
+selected, pulses that last longer than one clock period will generate an interrupt. Shorter pulses are not guaranteed
+to generate an interrupt. Observe that CPU clock frequency can be lower than the XTAL frequency if the XTAL
+divider is enabled. If low level interrupt is selected, the low level must be held until the completion of the currently
+executing instruction to generate an interrupt. If enabled, a level triggered interrupt will generate an interrupt
+request as long as the pin is held low.
+Table 15-3.
+ISCn? Description
+ 1 0
+ 0 0 The low level of INTn generates an interrupt request
+ 0 1 Any logical change on INTn generates an interrupt request
+ 1 0 The falling edge between two samples of INTn generates an interrupt request
+ 1 1 The rising edge between two samples of INTn generates an interrupt request
+Note:
+15.2.3
+Interrupt Sense Control(1)
+1. n = 7, 6, 5 or 4.
+When changing the ISCn1/ISCn0 bits, the interrupt must be disabled by clearing its Interrupt Enable bit in the
+EIMSK Register. Otherwise an interrupt can occur when the bits are changed.
+EIMSK – External Interrupt Mask Register
+EIMSK
+• Bits 7:0 – INT7:0: External Interrupt Request 7 - 0 Enable
+When an INT7:0 bit is written to one and the I-bit in the Status Register (SREG) is set (one), the corresponding
+external pin interrupt is enabled. The Interrupt Sense Control bits in the External Interrupt Control Registers –
+EICRA and EICRB – defines whether the external interrupt is activated on rising or falling edge or level sensed.
+Activity on any of these pins will trigger an interrupt request even if the pin is enabled as an output. This provides a
+way of generating a software interrupt.
+*/
+
+
+
+void PS2_init(void)
+{
+    // PE6 as INPUT
+    DDRE &= ~(1 << DDE6);
+
+    // maybe with pullup 
+    PORTE |= (1 << PORTE6);
+
+    // disable  INT6 
+    EIMSK &= ~ (1 << INT6);
+    // INT6: falling edge
+    EICRB &= ~((1 << ISC60));   // ISC60 = 0
+    EICRB |=  (1 << ISC61);    // ISC61 = 1
+
+    // clear eventual pending flag */
+    EIFR |= (1 << INTF6);
+
+    // enable INT6
+    EIMSK |= (1 << INT6);
+
+//    // enable interrupt when convenient
+//    sei();
+}
+
+
+
+ISR(INT6_vect)
+{
+   DDRF=0;
+   // PS2-OE = PE2 - enable output, read, disable
+   DDRE |= _BV(2);
+   PORTE &= ~ _BV(2); // LOW
+   // nop
+   uint8_t key;
+    key=PINF;
+    key=PINF;
+    key=PINF;	// with 1k  resistors it seems, that we need 2clocks to stabilise and we can read in 3. clock stable value.
+   PORTE |= _BV(2); //high
+   DDRF=0xff;
+   PORTF=~key;
+   
+// TX0_WriteStr(" [0x");
+// TX0_WriteHex8(key);
+// TX0_WriteStr("] ");
+   
+
+}
+
+

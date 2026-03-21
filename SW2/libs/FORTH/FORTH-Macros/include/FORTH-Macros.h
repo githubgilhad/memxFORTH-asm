@@ -20,7 +20,7 @@
 	ld \a_hi, Y+
 	ld \a_hlo, Y+
 .endm			; }}}
-.macro	PopSTn a_lo, a_hi, a_hlo, n	; {{{ #  n * pop  "a" from DST, 3B (no TOS)
+.macro	PopSTn_x a_lo, a_hi, a_hlo, n	; {{{ #  n * pop  "a" from DST, 3B (no TOS)
 	movw ZL, DST_lo
 	adiw ZL, 3*(n-1)
 	ld \a_lo, Z+
@@ -29,14 +29,14 @@
 	movw DST_lo, ZL
 .endm			; }}}
 
-.macro	PushR a_lo, a_hi, a_hlo	; {{{ # push "a" to RST, 3B
+.macro	PushR_x a_lo, a_hi, a_hlo	; {{{ # push "a" to RST, 3B
 	movw ZL, RST_lo
 	st -Z, \a_hlo
 	st -Z, \a_hi
 	st -Z, \a_lo
 	movw RST_lo,ZL
 .endm			; }}}
-.macro	PopR a_lo, a_hi, a_hlo	; {{{ # pop "a" from RST, 3B
+.macro	PopR_x a_lo, a_hi, a_hlo	; {{{ # pop "a" from RST, 3B
 	movw ZL, RST_lo
 	ld \a_lo,  Z+
 	ld \a_hi,  Z+
@@ -44,7 +44,7 @@
 	movw RST_lo,ZL
 .endm			; }}}
 
-.macro	PushL a_lo, a_hi, a_hlo	; {{{ # push "a" to LST, 3B
+.macro	PushL_x a_lo, a_hi, a_hlo	; {{{ # push "a" to LST, 3B
 	movw ZL, LST_lo
 	st -Z, \a_hlo
 	st -Z, \a_hi
@@ -52,21 +52,21 @@
 	movw LST_lo,ZL
 .endm	
 	; }}}
-.macro	PopL a_lo, a_hi, a_hlo	; {{{ # pop "a" from LST, 3B
+.macro	PopL_x a_lo, a_hi, a_hlo	; {{{ # pop "a" from LST, 3B
 	movw ZL, LST_lo
 	ld \a_lo,  Z+
 	ld \a_hi,  Z+
 	ld \a_hlo, Z+
 	movw LST_lo,ZL
 .endm			; }}}
-.macro	PeekL a_lo, a_hi, a_hlo	; {{{ # peek "a" from LST, 3B
+.macro	PeekL_x a_lo, a_hi, a_hlo	; {{{ # peek "a" from LST, 3B
 	movw ZL, LST_lo
 	ld \a_lo,  Z+
 	ld \a_hi,  Z+
 	ld \a_hlo, Z+
 .endm			; }}}
 
-.macro	ReadST_N N, a_lo, a_hi, a_hlo	; {{{ # read N-th item from real Data Stack into registers (N=>0, no TOS) (a b -- a b ; N=0 => a fetched)
+.macro	ReadST_N_x N, a_lo, a_hi, a_hlo	; {{{ # read N-th item from real Data Stack into registers (N=>0, no TOS) (a b -- a b ; N=0 => a fetched)
 	movw ZL, DST_lo
 	.if \N != 0
 		adiw ZL, \N*3
@@ -76,7 +76,7 @@
 	ld \a_hlo, Z+
 .endm
 	; }}}
-.macro	WriteST_N N, a_lo, a_hi, a_hlo	; {{{ # write from registers into N-th item on real Data Stack (N=>0, no TOS) (a b -- c b ; c in registers, N=0 )
+.macro	WriteST_N_x N, a_lo, a_hi, a_hlo	; {{{ # write from registers into N-th item on real Data Stack (N=>0, no TOS) (a b -- c b ; c in registers, N=0 )
 	movw ZL, DST_lo
 	.if \N != 0
 		adiw ZL, \N*3
@@ -87,7 +87,7 @@
 .endm
 	; }}}
 
-.macro	ReadR_N N, a_lo, a_hi, a_hlo	; {{{ # read N-th item from Return Stack into registers (N=>0) (R: a b -- a b ; N=0 => b fetched)
+.macro	ReadR_N_x N, a_lo, a_hi, a_hlo	; {{{ # read N-th item from Return Stack into registers (N=>0) (R: a b -- a b ; N=0 => b fetched)
 	movw ZL, RST_lo
 	.if \N != 0
 		adiw ZL, \N*3
@@ -97,7 +97,7 @@
 	ld \a_hlo, Z+
 .endm
 	; }}}
-.macro	WriteR_N N, a_lo, a_hi, a_hlo	; {{{ # write from registers into N-th item on Return Stack (N=>0) (a b -- a c ; c in registers, N=0 )
+.macro	WriteR_N_x N, a_lo, a_hi, a_hlo	; {{{ # write from registers into N-th item on Return Stack (N=>0) (a b -- a c ; c in registers, N=0 )
 	movw ZL, RST_lo
 	.if \N != 0
 		addiw ZL, (\N-1)*3
@@ -592,6 +592,30 @@ DEFWORD var_\Cname, 0, "\name", f_dovar, line=\line
 	DEFWORD var_\member,0,"\name",f_push_tcb_member, line=\line
 	P16 \member
 .endm	; }}}
+
+.macro DEF_BUFF name, size	; {{{ create buffer "name" of size 1..255 bytes
+	.pushsection .text
+gobj \name\()_ROM_Size
+		.word \size
+	.popsection
+	gobj \name
+	gobj \name\()_Size
+		.byte 0		; 1..255
+	gobj \name\()_Count
+		.byte 0		; if zero, head==tail means empty, if RX0_BUFFER_SIZE,  head==tail means full
+	gobj \name\()_Head
+		.byte 0		; new character will came here
+	gobj \name\()_Tail
+		.byte 0		; outcoming character will came from here
+	gobj \name\()_Data
+		.zero \size	; data
+.endm				; }}}
+
+#define BUF_Size	0
+#define BUF_Count	1
+#define BUF_Head	2
+#define BUF_Tail	3
+#define BUF_Data	4
 
 .macro	LINE_16 reg
 #ifdef USE_LINE_16

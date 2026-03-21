@@ -6,14 +6,14 @@ DEFWORD w_2R_at,		0,		"2R@",			f_2R_at			; (  -- x y ) ( R: x y -- x y ) copy 2 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_R_at	; {{{ #
 	PushST     TOS
-	ReadR_N 0, TOS
+	ReadR_N_x 0, TOS
 	jmp       NEXT
 ; }}}
 gfunc f_2R_at	; {{{ #
 	PushST     TOS
-	ReadR_N 1, TOS
+	ReadR_N_x 1, TOS
 	PushST     TOS
-	ReadR_N 0, TOS
+	ReadR_N_x 0, TOS
 	jmp       NEXT
 ; }}}
 

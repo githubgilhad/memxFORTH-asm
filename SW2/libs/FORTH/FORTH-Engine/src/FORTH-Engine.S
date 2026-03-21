@@ -32,14 +32,14 @@ gobj NEXTcounter
 .balign 2
 ; === DOCOL enter composed word
 gfunc DOCOL	; pushR(IP);IP=DT;NEXT	{{{
-	PushR IP
+	PushR_x IP
 	Set3 IP, DT
 	rjmp NEXT
 ; ===  === 		}}}
 
 ; === EXIT returns from word (fall thru NEXT)
 gfunc EXIT		;  IP=popR();NEXT	{{{
-	PopR IP
+	PopR_x IP
 ;	rjmp NEXT
 ; === fall thru NEXT === 		}}}
 

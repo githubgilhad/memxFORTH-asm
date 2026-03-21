@@ -6,7 +6,7 @@ DEFWORD w_I,			0,		"I",			f_I			; (  -- x ) return value of inner loop control v
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_I	; {{{ #
 	PushST     TOS
-	ReadR_N 0, TOS
+	ReadR_N_x 0, TOS
 	rjmp NEXT
 ; }}}
 

@@ -10,7 +10,7 @@ gfunc f_DUP	; {{{ #
 	jmp NEXT
 	; }}}
 gfunc f_2DUP	; {{{ #
-	ReadST_N 0, DT
+	ReadST_N_x 0, DT
 	PushST TOS
 	PushST DT
 	jmp NEXT

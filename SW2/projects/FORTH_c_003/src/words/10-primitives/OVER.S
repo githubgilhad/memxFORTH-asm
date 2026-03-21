@@ -4,7 +4,7 @@ DEFWORD w_OVER,			0,		"OVER",			f_OVER			; ( a b -- a b a ) copy second stack it
 ; ( a b -- a b a )
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_OVER	; {{{ #
-	ReadST_N 0, Parsx   ; read (a)
+	ReadST_N_x 0, Parsx   ; read (a)
 	PushST TOS		; Push TOS (b) to stack
 	Set3 TOS, Parsx		; Set TOS to (a)
 	jmp NEXT

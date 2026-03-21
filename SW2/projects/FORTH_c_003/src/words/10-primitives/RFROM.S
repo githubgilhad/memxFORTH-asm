@@ -9,26 +9,26 @@ DEFWORD w_2Lfrom,		0,		"2L>",			f_2Lfrom		; (  -- x y ) ( L: x y -- ) move 2 CEL
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_Rfrom	; {{{ #
 	PushST TOS
-	PopR   TOS
+	PopR_x   TOS
 	jmp   NEXT
 ; }}}
 gfunc f_2Rfrom	; {{{ #
 	PushST     TOS
-	PopR       TOS
-	PopR       Parsx
+	PopR_x       TOS
+	PopR_x       Parsx
 	PushST     Parsx
 	jmp       NEXT
 ; }}}
 
 gfunc f_Lfrom	; {{{ #
 	PushST TOS
-	PopL   TOS
+	PopL_x   TOS
 	jmp   NEXT
 ; }}}
 gfunc f_2Lfrom	; {{{ #
 	PushST     TOS
-	PopL       TOS
-	PopL       Parsx
+	PopL_x       TOS
+	PopL_x       Parsx
 	PushST     Parsx
 	jmp       NEXT
 ; }}}

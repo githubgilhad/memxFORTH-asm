@@ -14,6 +14,8 @@
 #include "usart0.h"
 #include "FORTH-Engine.h"
 #include "C_Bats.h"
+#include "tools/PS2_driver.h"
+#include "tools/buffer.h"
 #include "TCB_offsets.h"
 #include "tools/C2forth.h"
 #include "flags.h"
@@ -331,7 +333,12 @@ TEXT void C_dump(uint32_t MEM) {	// {{{
 }	// }}}
 uint8_t serial_getc(void *state, char *out_char) {	// {{{
 	(void)state;	// state UNUSED, no compiler complains
-	uint16_t ch = RX0_Read();
+	uint16_t ch;
+	ch = BUF_Read_C(&PS2_input);
+	*out_char = (ch & 0xFF);
+	if (ch >> 8) TX0_WriteHex8(ch & 0xFF);
+//	if (ch >> 8) return GETC_OK;
+	ch = RX0_Read();
 	*out_char = (ch & 0xFF);
 	return (ch >> 8)? GETC_OK:GETC_AGAIN;
 }	// }}}
@@ -666,6 +673,7 @@ P24 WL_all_3;
 // input_stack_t input_stack_serial; get_STK
 TEXT int main(void) {
 	setup();
+	PS2_init();
 //	C_words();
 	TX0_Write('\r');
 	TX0_Write('\n');
