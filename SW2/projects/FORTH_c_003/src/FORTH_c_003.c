@@ -21,10 +21,12 @@
 #include "flags.h"
 #include "tools/debug.h"
 #include "tools/getc.h"
+#include "tools/apply_shift.h"
 #include "DebugLEDs.h"
 #include "TextVGA.h"
 #include "StdTextCharDef.h"
 #include "SnakeCharDef.h"
+#include "ScanToASCII.h"
 
 #define TEXT __attribute__((section(".text")))
 TEXT void write_char(char c){	// {{{
@@ -332,36 +334,33 @@ TEXT void C_dump(uint32_t MEM) {	// {{{
 	nodebug=false;
 	debug_dump (MEM,F("DEBUG"));
 }	// }}}
-uint8_t serial_getc(void *state, char *out_char) {	// {{{
-	(void)state;	// state UNUSED, no compiler complains
-	uint16_t ch;
-	ch = BUF_Read_C(&PS2_input);
-	*out_char = (ch & 0xFF);
-	if (ch >> 8) {
-		TX0_Write('[');
-		TX0_WriteHex8(ch & 0xFF);
-		TX0_Write(']');
-		};
-//	if (ch >> 8) return GETC_OK;
-	ch = RX0_Read();
-	*out_char = (ch & 0xFF);
-	return (ch >> 8)? GETC_OK:GETC_AGAIN;
-}	// }}}
 
-uint16_t process_scan_code(uint8_t code) {										// {{{
-//
-	static bool ctrl = false;
-	static bool alt = false;
-	static bool shift = false;
+	static bool Ctrl = false;
+	static bool Alt = false;
+	static bool Shift = false;
 	//
-	static bool caps = false;
-	static bool nums = true;
+	static bool Caps = false;
+	static bool Nums = true;
+	//
+	static bool oCtrl = false;
+	static bool oAlt = false;
+	static bool oShift = false;
+	//
+	static bool oCaps = false;
+	static bool oNums = false;
+	//
+uint8_t process_scan_code(uint8_t code) {										// {{{
+//
 	//
 #define PS2_NONE	0
 #define PS2_E0		1
 #define PS2_F0		2
 #define PS2_E0F0	3
+#define PS2_E1		4
+#define PS2_E1_2	5
+#define PS2_E1F0	6
 	static uint8_t state = PS2_NONE;
+	uint8_t c;
 	if (code == 0xE0) {	// {{{
 		switch (state) { 
 		case PS2_NONE:
@@ -376,6 +375,23 @@ uint16_t process_scan_code(uint8_t code) {										// {{{
 			break;
 		default:
 			state=PS2_E0;
+		};
+		return 0;
+	};	// }}}
+	if (code == 0xE1) {	// {{{
+		switch (state) { 
+		case PS2_NONE:
+			state = PS2_E1;
+			break;
+		case PS2_E1:
+			break;
+		case PS2_F0:
+			state = PS2_E1F0;
+			break;
+		case PS2_E1F0:
+			break;
+		default:
+			state=PS2_E1;
 		};
 		return 0;
 	};	// }}}
@@ -398,15 +414,74 @@ uint16_t process_scan_code(uint8_t code) {										// {{{
 	};	// }}}
 	switch (state) {
 		case PS2_NONE:
+			c=pgm_read_byte_far(&ScanToASCII[0][code & 0x7F]);
+			if (code == 0x83 ) c=kb_F7;
+			switch (c) {
+				case kb_ShiftL: case kb_ShiftR:  Shift=true; return 0; break;
+				case kb_CtrlL: case kb_CtrlR:  Ctrl=true; return 0; break;
+				case kb_AltL: case kb_AltR:  Alt=true; return 0; break;
+				case kb_CapsLck: Caps = !Caps; return 0; break;
+				case kb_NumLck: Nums = !Nums; return 0; break;
+				default: // nothing
+			};
+			if ((c>='a') && (c<='z')) {	// a..z
+				if (Ctrl) return c+kb__Ctrl;
+				if (Alt) return c+kb__Alt;
+				if (Shift ^ Caps) return c+'A'-'a';
+				return c;
+			};
+			if (Shift) c = apply_shift_s(c);	// non a..z
+			;
+			if (Shift ^ Nums) {	// numeric block
+				if ((c >=kb_x0) && (c <= kb_x9)) return c-0x80;
+				if ( c == kb_xDot ) return c-0x80;
+			};
+			if ((c ==kb_xStar) || (c == kb_xMinus) || ( c == kb_xPlus ) ) return c-0x80;		// so far treat it as normal everytime
+			return c;
 			break;
 		case PS2_E0:
+			c=pgm_read_byte_far(&ScanToASCII[1][code & 0x7F]);
+			switch (c) {
+				case kb_ShiftL: case kb_ShiftR:  Shift=true; return 0; break;
+				case kb_CtrlL: case kb_CtrlR:  Ctrl=true; return 0; break;
+				case kb_AltL: case kb_AltR:  Alt=true; return 0; break;
+				default: // nothing
+			};
+			if (( c == kb_xSlash ) || ( c == kb_xEnter ) ) return c-0x80;		// so far treat it as normal everytime
+			return c;
 			break;
 		case PS2_F0:
+			state = PS2_NONE;
+			c=pgm_read_byte_far(&ScanToASCII[0][code & 0x7F]);
+			switch (c) {
+				case kb_ShiftL: case kb_ShiftR:  Shift=false; return 0; break;
+				case kb_CtrlL: case kb_CtrlR:  Ctrl=false; return 0; break;
+				case kb_AltL: case kb_AltR:  Alt=false; return 0; break;
+				default: // nothing
+			};
+			return 0;	// eat code, was released
+			break;
+		case PS2_E1:
+			state = PS2_E1_2;
+			return 0;	// eat code(14), waiting for next(77) for Pause
+			break;
+		case PS2_E1_2:
+			state = PS2_NONE;
+			return kb_Pause;	// eaten code(14), eat code(77), its Pause
+			break;
+		case PS2_E1F0:
 			state = PS2_NONE;
 			return 0;	// eat code, was released
 			break;
 		case PS2_E0F0:
 			state = PS2_NONE;
+			c=pgm_read_byte_far(&ScanToASCII[1][code & 0x7F]);
+			switch (c) {
+				case kb_ShiftL: case kb_ShiftR:  Shift=false; return 0; break;
+				case kb_CtrlL: case kb_CtrlR:  Ctrl=false; return 0; break;
+				case kb_AltL: case kb_AltR:  Alt=false; return 0; break;
+				default: // nothing
+			};
 			return 0;	// eat code, was released
 			break;
 		default:
@@ -414,53 +489,37 @@ uint16_t process_scan_code(uint8_t code) {										// {{{
 	return 0;	// should not came here
 }	// }}}
 
-/*	{	// {{{
-	static bool relea = false;	// indicating that the next key was released
-//	static uint8_t last_char=' ';
-	while( uint8_t scan = BIOS_buffer_get_char())	// are any unread input in the ring buffer?
-	{
-		uint8_t s=0; if (shift || caps) s = 1; else if (altgr) s = 2;	// select bank of lookup according to states of special keys
-		uint16_t key=pgm_read_word_near(&BIOS::ScanToASCII[s][scan & 0x7F]);
-		if (scan==0x83) key=xF7;
-//		{char c; c=scan >> 4; BIOS::vram[0][0]=(c>9?'A'-10+c:'0'+c); c=scan & 0x0F; BIOS::vram[0][1]=((c>9)?'A'-10+c:'0'+c);};
-		switch (scan)
-			{
-			case 0xf0: relea = true; break;	// key release indicator	
-			case 0xe0: break;	// ignore prefix of special keys
-			case 0x11: altgr = !relea; relea = false; break;	// ALT, ALTGR
-			case 0x12: case 0x59: shift = !relea; relea = false; break;	// treat LSHIFT and RSHIFT the same
-//			case 0x76: if (!relea) clear(last_char);break;	//Escape
-			case 0x77: if (!relea) nums = !nums; break;
-			case 0x58: if (!relea) caps = !caps; break;
-			default:	// any other key
-				if (relea == true) relea = false;	// key released => don't emit anything
-				else											// key pressed => emit ASCII code according to lookup table
-				{
-//					last_char=key;
-					if (nums) switch (key){
-						case x1: key='1'; break;
-						case x2: key='2'; break;
-						case x3: key='3'; break;
-						case x4: key='4'; break;
-						case x5: key='5'; break;
-						case x6: key='6'; break;
-						case x7: key='7'; break;
-						case x8: key='8'; break;
-						case x9: key='9'; break;
-						case x0: key='0'; break;
-						case xDot: key='.'; break;
-						case xStar: key='*'; break;
-						case xMinus: key='-'; break;
-						case xPlus: key='+'; break;
-						};
-					return key;
-				}
-				break;
-			}
-		}
-	return 0;
+uint8_t serial_getc(void *state, char *out_char) {	// {{{
+	(void)state;	// state UNUSED, no compiler complains
+	uint16_t ch;
+	while (BUF_Free_C(&PS2_ASCII) && BUF_Used_C(&PS2_input))	{
+		ch = BUF_Read_C(&PS2_input);
+		if (ch >>8) { 
+			ch=process_scan_code(ch&0xFF);
+			if (ch) BUF_Write_C(&PS2_ASCII,ch);
+		};
+	};
+	if ( (Ctrl!=oCtrl) || (Alt!=oAlt) || (Shift!=oShift) || (Caps !=oCaps ) || (Nums !=oNums ) ) {
+		oCtrl=Ctrl;
+		oAlt=Alt;
+		oShift=Shift;
+		oCaps =Caps ;
+		oNums =Nums ;
+		DebugLEDs_setRGB(0,Caps?0x80:0,0,0);
+		DebugLEDs_setRGB(1,0,Nums?0x80:0,0);
+		DebugLEDs_setRGB(2,Ctrl?0x80:0,0,0);
+		DebugLEDs_setRGB(3,0,0,Alt?0x80:0);
+		DebugLEDs_setRGB(4,0,Shift?0x80:0,0);
+		DebugLEDs_show();
+	};
+	ch = BUF_Read_C(&PS2_ASCII);
+	*out_char = (ch & 0xFF);
+	if (ch >> 8) return GETC_OK;
+	ch = RX0_Read();
+	*out_char = (ch & 0xFF);
+	return (ch >> 8)? GETC_OK:GETC_AGAIN;
 }	// }}}
-*/
+
 // {{{ old FORTH
 typedef uint32_t DOUBLE_t;	// 2 cell on data stack 4B
 char buf[32];	// temporary buffer - stack eating structures cannot be in NEXT-chained functions, or stack will overflow !!!

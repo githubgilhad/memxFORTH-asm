@@ -107,3 +107,23 @@ gfunc BUF_Read_C	; {{{ uint16_t BUF_Read_C(uint8_t *Buff);
 	call BUF_Read_ZP
 	movw Cpar1_lo,Parsx_lo
 	ret
+; }}}
+gfunc BUF_Free_C	; {{{ uint8_t BUF_Free_C(uint8_t *Buff);
+	movw ZL, Cpar1_lo
+	call BUF_Free_ZP
+	mov Cpar1_lo,Parsx_lo
+	ret
+; }}}
+gfunc BUF_Used_C	; {{{ uint8_t BUF_Used_C(uint8_t *Buff);
+	movw ZL, Cpar1_lo
+	call BUF_Used_ZP
+	mov Cpar1_lo,Parsx_lo
+	ret
+; }}}
+gfunc BUF_Write_C	; {{{ uint16_t BUF_Write_C(uint8_t *Buff, uint8_t c);
+	movw ZL, Cpar1_lo
+	mov Parsx_lo, Cpar2_lo
+	call BUF_Write_ZP
+	movw Cpar1_lo,Parsx_lo
+	ret
+; }}}

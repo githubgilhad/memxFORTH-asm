@@ -62,6 +62,15 @@ way of generating a software interrupt.
 */
 
 gfunc PS2_init	; {{{
+	Ldi3	Zx,	PS2_ASCII_ROM_Size
+	in	r24,	RAMPZ
+	out	RAMPZ,	Z_hlo
+	elpm	r25,	Z
+	out	RAMPZ,	r24
+	Ldi2	Zx2,	PS2_ASCII
+	st	Z,	r25
+	call	BUF_Init_Z
+	;
 	Ldi3	Zx,	PS2_input_ROM_Size
 	in	r24,	RAMPZ
 	out	RAMPZ,	Z_hlo
@@ -128,6 +137,7 @@ gfunc INT6_vect	; {{{
 
 .section .bss
 DEF_BUFF PS2_input, 16
+DEF_BUFF PS2_ASCII, 16
 
 /*
 ISR(INT6_vect)

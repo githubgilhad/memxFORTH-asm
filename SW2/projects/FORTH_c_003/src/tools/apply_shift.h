@@ -3,8 +3,4 @@
 // ,,g = gcc, exactly one space after "set"
 //
 #pragma once
-
-uint16_t BUF_Read_C(uint8_t *Buff);
-uint8_t BUF_Free_C(uint8_t *Buff);
-uint8_t BUF_Used_C(uint8_t *Buff);
-uint16_t BUF_Write_C(uint8_t *Buff,uint8_t c);
+uint8_t apply_shift_s(uint8_t c); // shift for other chars than a..z

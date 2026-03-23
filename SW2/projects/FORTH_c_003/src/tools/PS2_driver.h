@@ -5,5 +5,6 @@
 #pragma once
 
 void PS2_init();
-extern uint8_t PS2_input;	// BUFFER
+extern uint8_t PS2_input;	// BUFFER raw
+extern uint8_t PS2_ASCII;	// BUFFER translated
 
