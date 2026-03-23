@@ -134,6 +134,7 @@ extern __memx const uint8_t w_TEST_cw;
 extern __memx const uint8_t w_QUIT_cw;
 extern __memx const uint8_t w_zzz_eol_1;
 extern __memx const uint8_t ww_zzz_eol_2;
+extern __memx const uint8_t ww_zzz_eol_3;
 extern xC FORTH_WORDS_START;
 extern xC FORTH_WORDS_END;
 extern xC f_docol;
@@ -787,6 +788,7 @@ static inline uint16_t p16_to_u16(P16 p)
 P24 WL_all;
 P24 WL_all_2;
 P24 WL_all_3;
+P24 WL_all_4;
 // input_stack_t input_stack_serial; get_STK
 TEXT int main(void) {
 	setup();
@@ -830,7 +832,8 @@ TX0_Write('\r'); TX0_Write('\n');
 	add_getc(&get_STK, serial_getc, NULL);
 	WL_all	.ptr = &w_zzz_eol_1;
 	WL_all_2.ptr = &ww_zzz_eol_2;
-	WL_all_3.ptr = &FORTH_WORDS_START;
+	WL_all_3.ptr = &ww_zzz_eol_3;
+	WL_all_4.ptr = &FORTH_WORDS_START;
 	TCB_test.	TCB_cur 	.ptr	= & TCB_test;
 	TCB_test.	DataStackFirst	.ptr	= & TCB_test.DataStack		[0];
 	TCB_test.	DataStackLast	.ptr	= & TCB_test.DataStack		[DST_SIZE];
@@ -865,11 +868,12 @@ TX0_Write('\r'); TX0_Write('\n');
 	TCB_test.	AIB_len		.u16	= 0 ;
 	TCB_test.	AIB_max		.u16	= AIB_SIZE ;
 	TCB_test.	AIB_cur		.u16	= 1 ;
-	TCB_test.	WL_ORDER_len		= 3 ;
+	TCB_test.	WL_ORDER_len		= 4 ;
 	TCB_test.	WL_ORDER[0]	.ptr	= & WL_all;
 	TCB_test.	WL_ORDER[1]	.ptr	= & WL_all_2;
 	TCB_test.	WL_ORDER[2]	.ptr	= & WL_all_3;
-	TCB_test.	WL_CURRENT	.ptr	= & WL_all_3;
+	TCB_test.	WL_ORDER[3]	.ptr	= & WL_all_4;
+	TCB_test.	WL_CURRENT	.ptr	= & WL_all_4;
 	TCB_test.	getc_ctx	.ptr	= & get_STK;
 	// Set this to your word
 	TCB_test.	IP		.ptr	= & w_TEST_cw;

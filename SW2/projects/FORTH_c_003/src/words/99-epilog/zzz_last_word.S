@@ -1,6 +1,7 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
 
+DEFWORD ww_zzz_eol_3,		0,		"zzz_eol_3",		f_zzz_eol_3,	line=3	; (  -- h ) return its head [----]
 DEFWORD ww_zzz_eol_2,		0,		"zzz_eol_2",		f_zzz_eol_2,	line=2	; (  -- h ) return its head [----]
 DEFWORD w_zzz_eol_1,		0,		"zzz_eol_1",		f_zzz_eol_1		; (  -- h ) return its head [----]
 
@@ -18,6 +19,11 @@ gfunc f_zzz_eol_1	; {{{
 gfunc f_zzz_eol_2	; {{{ 
 	PushST TOS
 	Ldi3i  TOS, ww_zzz_eol_2
+	rjmp NEXT
+; }}}
+gfunc f_zzz_eol_3	; {{{ 
+	PushST TOS
+	Ldi3i  TOS, ww_zzz_eol_3
 	rjmp NEXT
 ; }}}
 

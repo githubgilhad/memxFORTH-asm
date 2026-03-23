@@ -31,6 +31,7 @@ gobj FORTH_WORDS_START	; {{{ trick for STOP value for search: 0.header with none
 101:
 102:
 103:
+104:
 obj FORTH_WORDS_START.attr
 	.byte FLG_HIDDEN
 	.byte 0 //len 0 + FLG_HIDDEN = impossible to find

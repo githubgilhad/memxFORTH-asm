@@ -1,17 +1,63 @@
-DEFCONSTI1 "BL",		BL,		' '
-DEFCONSTI1 "BL",		BL,		'~'
-DEFCONSTI1 "K_BACKSPACE",	K_BACKSPACE,	'\b'
-DEFCONSTI1 "K_BACKSPACE",	K_BACKSPACE,	0x7f
-DEFCONSTI1 "K_DEL",		K_DEL,		'.'+0x80
-DEFCONSTI1 "K_DEL",		K_DEL,		'}'
-DEFCONSTI1 "K_ENTER",		K_ENTER,	'\n'
-DEFCONSTI1 "K_ENTER",		K_ENTER,	0x0d
-DEFCONSTI1 "K_ESC",		K_ESC,		'\e'
-DEFCONSTI1 "K_ESC",		K_ESC,		0x1b
-DEFCONSTI1 "K_LEFT",		K_LEFT,		'4'+0x80
-DEFCONSTI1 "K_LEFT",		K_LEFT,		'['
-DEFCONSTI1 "K_RIGHT",		K_RIGHT,	'6'+0x80
-DEFCONSTI1 "K_RIGHT",		K_RIGHT,	']'
+DEFCONSTI1 "BL",		BL,		' ',		line=3
+DEFCONSTI1 "CR",		CR,		'\r',		line=3
+DEFCONSTI1 "LF",		LF,		'\n',		line=3
+DEFCONSTI1 "kb_AltL",		"kb_AltL",	kb_AltL,	line=3
+DEFCONSTI1 "kb_AltR",		"kb_AltR",	kb_AltR,	line=3
+DEFCONSTI1 "kb_Back",		"kb_Back",	kb_Back,	line=3
+DEFCONSTI1 "kb_CapsLck",	"kb_CapsLck",	kb_CapsLck,	line=3
+DEFCONSTI1 "kb_CtrlL",		"kb_CtrlL",	kb_CtrlL,	line=3
+DEFCONSTI1 "kb_CtrlR",		"kb_CtrlR",	kb_CtrlR,	line=3
+DEFCONSTI1 "kb_Del",		"kb_Del",	kb_Del,		line=3
+DEFCONSTI1 "kb_Down",		"kb_Down",	kb_Down,	line=3
+DEFCONSTI1 "kb_End",		"kb_End",	kb_End,		line=3
+DEFCONSTI1 "kb_Enter",		"kb_Enter",	kb_Enter,	line=3
+DEFCONSTI1 "kb_Esc",		"kb_Esc",	kb_Esc,		line=3
+DEFCONSTI1 "kb_F1",		"kb_F1",	kb_F1,		line=3
+DEFCONSTI1 "kb_F10",		"kb_F10",	kb_F10,		line=3
+DEFCONSTI1 "kb_F11",		"kb_F11",	kb_F11,		line=3
+DEFCONSTI1 "kb_F12",		"kb_F12",	kb_F12,		line=3
+DEFCONSTI1 "kb_F2",		"kb_F2",	kb_F2,		line=3
+DEFCONSTI1 "kb_F3",		"kb_F3",	kb_F3,		line=3
+DEFCONSTI1 "kb_F4",		"kb_F4",	kb_F4,		line=3
+DEFCONSTI1 "kb_F5",		"kb_F5",	kb_F5,		line=3
+DEFCONSTI1 "kb_F6",		"kb_F6",	kb_F6,		line=3
+DEFCONSTI1 "kb_F7",		"kb_F7",	kb_F7,		line=3
+DEFCONSTI1 "kb_F8",		"kb_F8",	kb_F8,		line=3
+DEFCONSTI1 "kb_F9",		"kb_F9",	kb_F9,		line=3
+DEFCONSTI1 "kb_Home",		"kb_Home",	kb_Home,	line=3
+DEFCONSTI1 "kb_Ins",		"kb_Ins",	kb_Ins,		line=3
+DEFCONSTI1 "kb_Left",		"kb_Left",	kb_Left,	line=3
+DEFCONSTI1 "kb_Menu",		"kb_Menu",	kb_Menu,	line=3
+DEFCONSTI1 "kb_NumLck",		"kb_NumLck",	kb_NumLck,	line=3
+DEFCONSTI1 "kb_Pause",		"kb_Pause",	kb_Pause,	line=3
+DEFCONSTI1 "kb_PgDn",		"kb_PgDn",	kb_PgDn,	line=3
+DEFCONSTI1 "kb_PgUp",		"kb_PgUp",	kb_PgUp,	line=3
+DEFCONSTI1 "kb_PrtScr1",	"kb_PrtScr1",	kb_PrtScr1,	line=3
+DEFCONSTI1 "kb_PrtScr2",	"kb_PrtScr2",	kb_PrtScr2,	line=3
+DEFCONSTI1 "kb_Right",		"kb_Right",	kb_Right,	line=3
+DEFCONSTI1 "kb_ScrLck",		"kb_ScrLck",	kb_ScrLck,	line=3
+DEFCONSTI1 "kb_ShiftL",		"kb_ShiftL",	kb_ShiftL,	line=3
+DEFCONSTI1 "kb_ShiftR",		"kb_ShiftR",	kb_ShiftR,	line=3
+DEFCONSTI1 "kb_Tab",		"kb_Tab",	kb_Tab,		line=3
+DEFCONSTI1 "kb_Up",		"kb_Up",	kb_Up,		line=3
+DEFCONSTI1 "kb_WinL",		"kb_WinL",	kb_WinL,	line=3
+DEFCONSTI1 "kb_WinR",		"kb_WinR",	kb_WinR,	line=3
+DEFCONSTI1 "kb_x0",		"kb_x0",	kb_x0,		line=3
+DEFCONSTI1 "kb_x1",		"kb_x1",	kb_x1,		line=3
+DEFCONSTI1 "kb_x2",		"kb_x2",	kb_x2,		line=3
+DEFCONSTI1 "kb_x3",		"kb_x3",	kb_x3,		line=3
+DEFCONSTI1 "kb_x4",		"kb_x4",	kb_x4,		line=3
+DEFCONSTI1 "kb_x5",		"kb_x5",	kb_x5,		line=3
+DEFCONSTI1 "kb_x6",		"kb_x6",	kb_x6,		line=3
+DEFCONSTI1 "kb_x7",		"kb_x7",	kb_x7,		line=3
+DEFCONSTI1 "kb_x8",		"kb_x8",	kb_x8,		line=3
+DEFCONSTI1 "kb_x9",		"kb_x9",	kb_x9,		line=3
+DEFCONSTI1 "kb_xDot",		"kb_xDot",	kb_xDot,	line=3
+DEFCONSTI1 "kb_xEnter",		"kb_xEnter",	kb_xEnter,	line=3
+DEFCONSTI1 "kb_xMinus",		"kb_xMinus",	kb_xMinus,	line=3
+DEFCONSTI1 "kb_xPlus",		"kb_xPlus",	kb_xPlus,	line=3
+DEFCONSTI1 "kb_xSlash",		"kb_xSlash",	kb_xSlash,	line=3
+DEFCONSTI1 "kb_xStar",		"kb_xStar",	kb_xStar,	line=3
 DEFCONSTI2 "TCB.TIB.max", TCB_TIB_max, TIB_SIZE
 DEFTCBVAR "HERE",TCB_HERE		; first free byte in RAM
 DEFTCBVAR "TCB.AIB", TCB_AIB
@@ -190,4 +236,5 @@ DEFWORD ww_do_loop,	FLG_HIDDEN + FLG_ARG_3,	"do_loop",		do_loop,	line=2	; Runtim
 DEFWORD ww_do_plusloop,	FLG_HIDDEN + FLG_ARG_3,	"do_plusloop",		do_plusloop,	line=2	; Runtime: ( x -- ) ( R: limit first -- | limit first+x ) inc 'first' by 'x' and maybe loop
 DEFWORD ww_does,		FLG_ARG_3,	"(does>)",		f_does,		line=2	; (  -- addr ) fix new word's CW with DoubleIndirect address of runtime part [----]
 DEFWORD ww_zzz_eol_2,		0,		"zzz_eol_2",		f_zzz_eol_2,	line=2	; (  -- h ) return its head [----]
+DEFWORD ww_zzz_eol_3,		0,		"zzz_eol_3",		f_zzz_eol_3,	line=3	; (  -- h ) return its head [----]
 DEF_BUFF PS2_input, 16
