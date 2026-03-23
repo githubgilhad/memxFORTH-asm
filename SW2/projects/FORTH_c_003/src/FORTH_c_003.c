@@ -336,13 +336,130 @@ uint8_t serial_getc(void *state, char *out_char) {	// {{{
 	uint16_t ch;
 	ch = BUF_Read_C(&PS2_input);
 	*out_char = (ch & 0xFF);
-	if (ch >> 8) TX0_WriteHex8(ch & 0xFF);
+	if (ch >> 8) {
+		TX0_Write('[');
+		TX0_WriteHex8(ch & 0xFF);
+		TX0_Write(']');
+		};
 //	if (ch >> 8) return GETC_OK;
 	ch = RX0_Read();
 	*out_char = (ch & 0xFF);
 	return (ch >> 8)? GETC_OK:GETC_AGAIN;
 }	// }}}
 
+uint16_t process_scan_code(uint8_t code) {										// {{{
+//
+	static bool ctrl = false;
+	static bool alt = false;
+	static bool shift = false;
+	//
+	static bool caps = false;
+	static bool nums = true;
+	//
+#define PS2_NONE	0
+#define PS2_E0		1
+#define PS2_F0		2
+#define PS2_E0F0	3
+	static uint8_t state = PS2_NONE;
+	if (code == 0xE0) {	// {{{
+		switch (state) { 
+		case PS2_NONE:
+			state = PS2_E0;
+			break;
+		case PS2_E0:
+			break;
+		case PS2_F0:
+			state = PS2_E0F0;
+			break;
+		case PS2_E0F0:
+			break;
+		default:
+			state=PS2_E0;
+		};
+		return 0;
+	};	// }}}
+	if (code == 0xF0) {// {{{ 
+		switch (state) { 
+		case PS2_NONE:
+			state = PS2_F0;
+			break;
+		case PS2_E0:
+			state = PS2_E0F0;
+			break;
+		case PS2_F0:
+			break;
+		case PS2_E0F0:
+			break;
+		default:
+			state=PS2_F0;
+		};
+		return 0;
+	};	// }}}
+	switch (state) {
+		case PS2_NONE:
+			break;
+		case PS2_E0:
+			break;
+		case PS2_F0:
+			state = PS2_NONE;
+			return 0;	// eat code, was released
+			break;
+		case PS2_E0F0:
+			state = PS2_NONE;
+			return 0;	// eat code, was released
+			break;
+		default:
+		};
+	return 0;	// should not came here
+}	// }}}
+
+/*	{	// {{{
+	static bool relea = false;	// indicating that the next key was released
+//	static uint8_t last_char=' ';
+	while( uint8_t scan = BIOS_buffer_get_char())	// are any unread input in the ring buffer?
+	{
+		uint8_t s=0; if (shift || caps) s = 1; else if (altgr) s = 2;	// select bank of lookup according to states of special keys
+		uint16_t key=pgm_read_word_near(&BIOS::ScanToASCII[s][scan & 0x7F]);
+		if (scan==0x83) key=xF7;
+//		{char c; c=scan >> 4; BIOS::vram[0][0]=(c>9?'A'-10+c:'0'+c); c=scan & 0x0F; BIOS::vram[0][1]=((c>9)?'A'-10+c:'0'+c);};
+		switch (scan)
+			{
+			case 0xf0: relea = true; break;	// key release indicator	
+			case 0xe0: break;	// ignore prefix of special keys
+			case 0x11: altgr = !relea; relea = false; break;	// ALT, ALTGR
+			case 0x12: case 0x59: shift = !relea; relea = false; break;	// treat LSHIFT and RSHIFT the same
+//			case 0x76: if (!relea) clear(last_char);break;	//Escape
+			case 0x77: if (!relea) nums = !nums; break;
+			case 0x58: if (!relea) caps = !caps; break;
+			default:	// any other key
+				if (relea == true) relea = false;	// key released => don't emit anything
+				else											// key pressed => emit ASCII code according to lookup table
+				{
+//					last_char=key;
+					if (nums) switch (key){
+						case x1: key='1'; break;
+						case x2: key='2'; break;
+						case x3: key='3'; break;
+						case x4: key='4'; break;
+						case x5: key='5'; break;
+						case x6: key='6'; break;
+						case x7: key='7'; break;
+						case x8: key='8'; break;
+						case x9: key='9'; break;
+						case x0: key='0'; break;
+						case xDot: key='.'; break;
+						case xStar: key='*'; break;
+						case xMinus: key='-'; break;
+						case xPlus: key='+'; break;
+						};
+					return key;
+				}
+				break;
+			}
+		}
+	return 0;
+}	// }}}
+*/
 // {{{ old FORTH
 typedef uint32_t DOUBLE_t;	// 2 cell on data stack 4B
 char buf[32];	// temporary buffer - stack eating structures cannot be in NEXT-chained functions, or stack will overflow !!!
