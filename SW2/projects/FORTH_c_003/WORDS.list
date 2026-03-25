@@ -246,6 +246,7 @@ DEFWORD w_dot_hex,		0,		".h",			f_dot_hex		; ( x  --  ) print hexa value and spa
 DEFWORD w_equals,		0,		"=",			f_equals		; ( x y -- flag ) x == y
 DEFWORD w_exit,			0,		"exit",			f_exit			; ( XX ) exit from word
 DEFWORD w_greater,		0,		">",			f_greater		; ( x y -- flag ) x > y
+DEFWORD w_half,			0,		"/2",			f_half			; ( a -- b ) b = a / 2 [xxxx]
 DEFWORD w_head2flags,		0,		"H>FLAGS",		f_head2flags		;  ( h -- flags )  : H>FLAGS  ( h -- flags )     3 +  ;
 DEFWORD w_head2len,		0,		"H>LEN",		f_head2len		;  ( h -- x )  : H>LEN  ( h -- x )     4 +  ;
 DEFWORD w_head2name,		0,		"H>NAME",		f_head2name		;  ( h -- c-addr )  : H>NAME  ( h -- c-addr )     4 +  ;

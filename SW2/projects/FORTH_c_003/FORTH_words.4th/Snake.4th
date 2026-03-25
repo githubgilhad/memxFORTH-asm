@@ -5,7 +5,7 @@
 0 0 0 0 VALUE score VALUE maxscore VALUE crash VALUE grow
 : show_score
 	1 2 CUR_yx  ." SCORE: " score .
-	score maxscore > IF score TO maxscore 1 MAX_COLUMNS /2 1- CUR_yx brick EMIT FI
+	score maxscore > IF score TO maxscore 1 MAX_COLUMNS /2 1- CUR_yx brick EMIT THEN
 	1 MAX_COLUMNS /2   CUR_yx  ." MAX: " maxscore .
 	;
 ( wall )
@@ -40,7 +40,7 @@
 : test_body ( y x --  )  VRAM_yx@ is_body IF 2 TO crash THEN ;
 ( fruit )
 : random_fruit fruit_str RANDOM +21 C@ ;
-: show_fruit ( -- ) 5 RANDOM IFNOT MAX_LINES 4 - RANDOM 3 + MAX_COLUMNS 2 - RANDOM 1+ DUP2 VRAM_yx@ BL = IF random_fruit VRAM_yx! ELSE DROP2 FI FI ;
+: show_fruit ( -- ) 5 RANDOM IFNOT MAX_LINES 4 - RANDOM 3 + MAX_COLUMNS 2 - RANDOM 1+ DUP2 VRAM_yx@ BL = IF random_fruit VRAM_yx! ELSE DROP2 THEN THEN ;
 : is_fruit ( c -- flag ) fruit_str ISINSTR ;
 : test_fruit ( y x --  ) VRAM_yx@ is_fruit IF 1 TO grow 1 +TO score THEN ;
 ( tail )
@@ -53,7 +53,7 @@
 	grow crash ||
 	IFNOT
 		hide_tail
-		ty tx td do_step DUP2 TO tx TO ty VRAM_yx@ body_str POS IFNOT 10 TO crash ELSE 4 MOD  TO td FI
+		ty tx td do_step DUP2 TO tx TO ty VRAM_yx@ body_str POS IFNOT 10 TO crash ELSE 4 MOD  TO td THEN
 		show_tail
 	THEN
 	;

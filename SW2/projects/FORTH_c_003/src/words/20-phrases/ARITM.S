@@ -3,6 +3,7 @@
 
 DEFWORD w_one_plus,		0,		"1+",			f_one_plus		; ( a -- b ) b = a + 1 [0290]
 DEFWORD w_one_minus,		0,		"1-",			f_one_minus		; ( a -- b ) b = a - 1 [xxxx]
+DEFWORD w_half,			0,		"/2",			f_half			; ( a -- b ) b = a / 2 [xxxx]
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_one_plus	; {{{ #
@@ -13,6 +14,13 @@ gfunc f_one_plus	; {{{ #
 gfunc f_one_minus	; {{{ #
 	ldi	Tx, 1
 	Sub31	TOS, Tx
+	rjmp NEXT
+; }}}
+gfunc f_half	; {{{ #
+	clc
+	ror	TOS_hlo
+	ror	TOS_hi
+	ror	TOS_lo
 	rjmp NEXT
 ; }}}
 

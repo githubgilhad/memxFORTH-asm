@@ -12,7 +12,7 @@ gfunc f_TYPE	; {{{ #
 	mov	Cpar1_lo,Parsx_lo
 	push r30
 	push r31
-	call	TX0_Write
+	call_VT_member_C	VT_write_char
 	pop r31
 	pop r30
 	ldi	Tx,1
