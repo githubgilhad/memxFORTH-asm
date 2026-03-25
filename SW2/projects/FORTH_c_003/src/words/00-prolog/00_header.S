@@ -1,3 +1,4 @@
+#define __SFR_OFFSET 0x00		// set the Special Function Register Offset from 0x20 to 0x00 in order to use AVR PORT definitions
 #include <avr/io.h>
 #include "../../flags.h"
 
@@ -8,6 +9,7 @@
 
 #include "../../TCB_offsets.inc"
 #include "../../getc.inc"
+#include "TextVGA.def"
 
 ; External memory functions
 .extern W1at
@@ -15,7 +17,6 @@
 
 
 ; grep global primitives.S |sed "s@.global f_\(.*\)@DEFWORD w_\1,\t\t0,\t\"\1\",\t\tf_\1\t// @">primitives.words.inc
-
 
 #undef CURRENT_TEXT_SECTION
 #undef CURRENT_DATA_SECTION

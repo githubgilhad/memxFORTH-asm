@@ -2,31 +2,7 @@
  * */
 // ,,g = gcc, exactly one space after "set"
 //
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <stdlib.h>
-
-// nnLIBS: Serial.none/usart0 FORTH/FORTH-Engine FORTH/FORTH-Memory
-// LIBS: Serial.RTS/usart0 FORTH/FORTH-Engine FORTH/FORTH-Memory
-// LOCLIBS: 003_fill_RAM words/all_words C2forth bats debug io
-
-//#include "Serial.none/usart0/usart0.h"
-#include "usart0.h"
-#include "FORTH-Engine.h"
-#include "C_Bats.h"
-#include "tools/PS2_driver.h"
-#include "tools/buffer.h"
-#include "TCB_offsets.h"
-#include "tools/C2forth.h"
-#include "flags.h"
-#include "tools/debug.h"
-#include "tools/getc.h"
-#include "tools/apply_shift.h"
-#include "DebugLEDs.h"
-#include "TextVGA.h"
-#include "StdTextCharDef.h"
-#include "SnakeCharDef.h"
-#include "ScanToASCII.h"
+#include "FORTH_c_003.h"
 
 #define TEXT __attribute__((section(".text")))
 TEXT void write_char(char c){	// {{{
@@ -154,9 +130,8 @@ extern uint8_t __noinit_start;
 extern uint8_t __noinit_end;
 extern uint8_t __heap_start;
 
-#define HERE_SIZE 0x300
+#define HERE_SIZE 0x1000
 uint8_t HERE1[HERE_SIZE] __attribute__((section(".highram")));
-#include <avr/pgmspace.h>
 
 
 // #define F(str) ((const __attribute__((__progmem__))char*)(str))
@@ -335,186 +310,13 @@ TEXT void C_dump(uint32_t MEM) {	// {{{
 	debug_dump (MEM,F("DEBUG"));
 }	// }}}
 
-	static bool Ctrl = false;
-	static bool Alt = false;
-	static bool Shift = false;
-	//
-	static bool Caps = false;
-	static bool Nums = true;
-	//
-	static bool oCtrl = false;
-	static bool oAlt = false;
-	static bool oShift = false;
-	//
-	static bool oCaps = false;
-	static bool oNums = false;
-	//
-uint8_t process_scan_code(uint8_t code) {										// {{{
-//
-	//
-#define PS2_NONE	0
-#define PS2_E0		1
-#define PS2_F0		2
-#define PS2_E0F0	3
-#define PS2_E1		4
-#define PS2_E1_2	5
-#define PS2_E1F0	6
-	static uint8_t state = PS2_NONE;
-	uint8_t c;
-	if (code == 0xE0) {	// {{{
-		switch (state) { 
-		case PS2_NONE:
-			state = PS2_E0;
-			break;
-		case PS2_E0:
-			break;
-		case PS2_F0:
-			state = PS2_E0F0;
-			break;
-		case PS2_E0F0:
-			break;
-		default:
-			state=PS2_E0;
-		};
-		return 0;
-	};	// }}}
-	if (code == 0xE1) {	// {{{
-		switch (state) { 
-		case PS2_NONE:
-			state = PS2_E1;
-			break;
-		case PS2_E1:
-			break;
-		case PS2_F0:
-			state = PS2_E1F0;
-			break;
-		case PS2_E1F0:
-			break;
-		default:
-			state=PS2_E1;
-		};
-		return 0;
-	};	// }}}
-	if (code == 0xF0) {// {{{ 
-		switch (state) { 
-		case PS2_NONE:
-			state = PS2_F0;
-			break;
-		case PS2_E0:
-			state = PS2_E0F0;
-			break;
-		case PS2_F0:
-			break;
-		case PS2_E0F0:
-			break;
-		default:
-			state=PS2_F0;
-		};
-		return 0;
-	};	// }}}
-	switch (state) {
-		case PS2_NONE:
-			c=pgm_read_byte_far(&ScanToASCII[0][code & 0x7F]);
-			if (code == 0x83 ) c=kb_F7;
-			switch (c) {
-				case kb_ShiftL: case kb_ShiftR:  Shift=true; return 0; break;
-				case kb_CtrlL: case kb_CtrlR:  Ctrl=true; return 0; break;
-				case kb_AltL: case kb_AltR:  Alt=true; return 0; break;
-				case kb_CapsLck: Caps = !Caps; return 0; break;
-				case kb_NumLck: Nums = !Nums; return 0; break;
-				default: // nothing
-			};
-			if ((c>='a') && (c<='z')) {	// a..z
-				if (Ctrl) return c+kb__Ctrl;
-				if (Alt) return c+kb__Alt;
-				if (Shift ^ Caps) return c+'A'-'a';
-				return c;
-			};
-			if (Shift) c = apply_shift_s(c);	// non a..z
-			;
-			if (Shift ^ Nums) {	// numeric block
-				if ((c >=kb_x0) && (c <= kb_x9)) return c-0x80;
-				if ( c == kb_xDot ) return c-0x80;
-			};
-			if ((c ==kb_xStar) || (c == kb_xMinus) || ( c == kb_xPlus ) ) return c-0x80;		// so far treat it as normal everytime
-			return c;
-			break;
-		case PS2_E0:
-			c=pgm_read_byte_far(&ScanToASCII[1][code & 0x7F]);
-			switch (c) {
-				case kb_ShiftL: case kb_ShiftR:  Shift=true; return 0; break;
-				case kb_CtrlL: case kb_CtrlR:  Ctrl=true; return 0; break;
-				case kb_AltL: case kb_AltR:  Alt=true; return 0; break;
-				default: // nothing
-			};
-			if (( c == kb_xSlash ) || ( c == kb_xEnter ) ) return c-0x80;		// so far treat it as normal everytime
-			return c;
-			break;
-		case PS2_F0:
-			state = PS2_NONE;
-			c=pgm_read_byte_far(&ScanToASCII[0][code & 0x7F]);
-			switch (c) {
-				case kb_ShiftL: case kb_ShiftR:  Shift=false; return 0; break;
-				case kb_CtrlL: case kb_CtrlR:  Ctrl=false; return 0; break;
-				case kb_AltL: case kb_AltR:  Alt=false; return 0; break;
-				default: // nothing
-			};
-			return 0;	// eat code, was released
-			break;
-		case PS2_E1:
-			state = PS2_E1_2;
-			return 0;	// eat code(14), waiting for next(77) for Pause
-			break;
-		case PS2_E1_2:
-			state = PS2_NONE;
-			return kb_Pause;	// eaten code(14), eat code(77), its Pause
-			break;
-		case PS2_E1F0:
-			state = PS2_NONE;
-			return 0;	// eat code, was released
-			break;
-		case PS2_E0F0:
-			state = PS2_NONE;
-			c=pgm_read_byte_far(&ScanToASCII[1][code & 0x7F]);
-			switch (c) {
-				case kb_ShiftL: case kb_ShiftR:  Shift=false; return 0; break;
-				case kb_CtrlL: case kb_CtrlR:  Ctrl=false; return 0; break;
-				case kb_AltL: case kb_AltR:  Alt=false; return 0; break;
-				default: // nothing
-			};
-			return 0;	// eat code, was released
-			break;
-		default:
-		};
-	return 0;	// should not came here
-}	// }}}
-
 uint8_t serial_getc(void *state, char *out_char) {	// {{{
 	(void)state;	// state UNUSED, no compiler complains
 	uint16_t ch;
-	while (BUF_Free_C(&PS2_ASCII) && BUF_Used_C(&PS2_input))	{
-		ch = BUF_Read_C(&PS2_input);
-		if (ch >>8) { 
-			ch=process_scan_code(ch&0xFF);
-			if (ch) BUF_Write_C(&PS2_ASCII,ch);
-		};
-	};
-	if ( (Ctrl!=oCtrl) || (Alt!=oAlt) || (Shift!=oShift) || (Caps !=oCaps ) || (Nums !=oNums ) ) {
-		oCtrl=Ctrl;
-		oAlt=Alt;
-		oShift=Shift;
-		oCaps =Caps ;
-		oNums =Nums ;
-		DebugLEDs_setRGB(0,Caps?0x80:0,0,0);
-		DebugLEDs_setRGB(1,0,Nums?0x80:0,0);
-		DebugLEDs_setRGB(2,Ctrl?0x80:0,0,0);
-		DebugLEDs_setRGB(3,0,0,Alt?0x80:0);
-		DebugLEDs_setRGB(4,0,Shift?0x80:0,0);
-		DebugLEDs_show();
-	};
-	ch = BUF_Read_C(&PS2_ASCII);
-	*out_char = (ch & 0xFF);
-	if (ch >> 8) return GETC_OK;
+	uint8_t ps2_res;
+	ps2_res = ps2_getc(NULL,out_char);
+	if (ps2_res == GETC_OK) return GETC_OK;
+	
 	ch = RX0_Read();
 	*out_char = (ch & 0xFF);
 	return (ch >> 8)? GETC_OK:GETC_AGAIN;
@@ -764,7 +566,7 @@ void C_show(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition of 
 
 // }}}
 
-// =========================== VGA ===================================
+// =======================vvvv VGA vvvv=============================== {{{
 isr_handler TIMER1_OVF_vect_handler;
 ISR(TIMER1_OVF_vect) { if (TIMER1_OVF_vect_handler) TIMER1_OVF_vect_handler(); }
 
@@ -781,7 +583,9 @@ void VB_handler(){
 
 T_TextVGA_VRAM VRAM;
 T_TextVGA_CRAM CRAM={0xf0, 0x0f, 0x24,0x42,0x9f,0xf9,0xf1,0xf2,0xf3,0xf4,0xf5,0xf6,0xf6,0xf7,0xf8,0xf9,0xfa,0xfb,0xfc,0xfd,0xfe,0xff,0xf0,0xf0,0xf0,};
-// =========================== VGA ===================================
+// =======================^^^^ VGA ^^^^=============================== }}}
+
+// ========================vvvv setup vvvv========================================= {{{
 TEXT void setup(void) {
 	usart0_setup();
 	DebugLEDs_init();
@@ -799,13 +603,13 @@ char *pt=&VRAM[0][0];
 for (uint8_t j =24;j<TextVGA_LINES;j++) CRAM[j]=0xf4;
 CRAM[49]=0x28;
 CRAM[50]=0x48;
-for (uint16_t i =0;i<TextVGA_ROWS*TextVGA_LINES;i++) *pt++ = i & 0xff;
+for (uint16_t i =0;i<TextVGA_COLUMNS*TextVGA_LINES;i++) *pt++ = i & 0xff;
 
 for (uint16_t i =0 ; i< TextVGA_LINES;i++) {
 	VRAM[i][0] = '0'+(i/10);
 	VRAM[i][1] = '0'+(i%10);
 	};
-for (uint16_t i =0 ; i< TextVGA_ROWS;i++) {
+for (uint16_t i =0 ; i< TextVGA_COLUMNS;i++) {
 	VRAM[0][i] = '0'+(i/10);
 	VRAM[1][i] = '0'+(i%10);
 	};
@@ -819,8 +623,9 @@ for (uint16_t i =0 ; i< TextVGA_ROWS;i++) {
 	TX0_WriteHex24(val_of_f_docol);
 	*/
 }
+// ========================^^^^ setup ^^^^========================================= }}}
 
-TEXT void loop(void) {
+TEXT void loop(void) {	// {{{
 	uint16_t ch = RX0_Read();
 	if (ch >> 8) { // Pokud r25 != 0
 		TX0_Write((char)(ch & 0xFF)); // Blokuje dokud není volno
@@ -830,25 +635,27 @@ TEXT void loop(void) {
 //	for (int i=0;i<256;i++) ch=PORTF;
 //	__asm__ __volatile__ ("jmp NEXT \n\t");
 //	NEXT();
-}
-static inline P16 u16_to_p16(uint16_t v)
+}	// }}}
+static inline P16 u16_to_p16(uint16_t v)	// {{{
 {
     P16 p;
     p.lo  = (uint8_t)(v & 0xFF);
     p.hi  = (uint8_t)((v >> 8) & 0xFF);
     return p;
-}
-static inline uint16_t p16_to_u16(P16 p)
+}	// }}}
+static inline uint16_t p16_to_u16(P16 p)	// {{{
 {
     return  ((uint16_t)p.lo) |
             ((uint16_t)p.hi  << 8);
-}
+}	// }}}
 // static
 P24 WL_all;
 P24 WL_all_2;
 P24 WL_all_3;
 P24 WL_all_4;
 // input_stack_t input_stack_serial; get_STK
+Virtual_Table VT_test;
+// ========================vvvv main vvvv========================================== {{{
 TEXT int main(void) {
 	setup();
 	PS2_init();
@@ -857,7 +664,113 @@ TEXT int main(void) {
 	TX0_Write('\n');
 	TX0_Write('#');
 	TX0_Write('>');
+	
+//	VT_test.write_char=;
+	VT_test.read_char.ptr = (__memx const void *)(uintptr_t)			ps2_getc;
+	VT_test.write_char.ptr = (__memx const void *)(uintptr_t)			VGA_write_char;
+	VT_test.cls.ptr = (__memx const void *)(uintptr_t)				VGA_cls;
+	VT_test.set_cursor_visible.ptr = (__memx const void *)(uintptr_t)		VGA_set_cursor_visible;
+	VT_test.set_cursor_char.ptr = (__memx const void *)(uintptr_t)			VGA_set_cursor_char;
+	VT_test.set_cursor_X.ptr = (__memx const void *)(uintptr_t)			VGA_set_cursor_X;
+	VT_test.set_cursor_Y.ptr = (__memx const void *)(uintptr_t)			VGA_set_cursor_Y;
+	VT_test.set_cursor_XY.ptr = (__memx const void *)(uintptr_t)			VGA_set_cursor_XY;
+	VT_test.put_char_XY.ptr = (__memx const void *)(uintptr_t)			VGA_put_char_XY;
+	VT_test.set_row_color.ptr = (__memx const void *)(uintptr_t)			VGA_set_row_color;
+	VT_test.set_row_color_Y.ptr = (__memx const void *)(uintptr_t)			VGA_set_row_color_Y;
+	VT_test.char_at_XY.ptr = (__memx const void *)(uintptr_t)			VGA_char_at_XY;
+	VT_test.MAX_LINES.ptr = (__memx const void *)(uintptr_t)			VGA_MAX_LINES;
+	VT_test.MAX_COLUMNS.ptr = (__memx const void *)(uintptr_t)			VGA_MAX_COLUMNS;
+	
+	C_getc_init(&get_STK);
+	add_getc(&get_STK, serial_getc, NULL);
+	WL_all	.ptr = &w_zzz_eol_1;
+	WL_all_2.ptr = &ww_zzz_eol_2;
+	WL_all_3.ptr = &ww_zzz_eol_3;
+	WL_all_4.ptr = &FORTH_WORDS_START;
+	TCB_test.	TCB_cur 	.ptr	= & TCB_test;
+	TCB_test.	DataStackFirst	.ptr	= & TCB_test.DataStack		[0];
+	TCB_test.	DataStackLast	.ptr	= & TCB_test.DataStack		[DST_SIZE];
+	TCB_test.	ReturnStackFirst.ptr	= & TCB_test.ReturnStack	[0];
+	TCB_test.	ReturnStackLast	.ptr	= & TCB_test.ReturnStack	[RST_SIZE];
+	TCB_test.	LStackFirst	.ptr	= & TCB_test.LStack		[0];
+	TCB_test.	LStackLast	.ptr	= & TCB_test.LStack		[LST_SIZE];	// just AFTER range, first "st -Z, \a_hlo" will write last byte of array
+	
+	/*
+	for (uint8_t i=0; i<DST_SIZE;++i)	TCB_test.DataStack[i] 	= u32_to_p24(P24_Canary);
+	for (uint8_t i=0; i<RST_SIZE;++i)	TCB_test.ReturnStack[i]	= u32_to_p24(P24_Canary);
+	for (uint8_t i=0; i<TIB_SIZE;++i)	TCB_test.TIB[i]	= 'T';
+	for (uint8_t i=0; i<AIB_SIZE;++i)	TCB_test.AIB[i]	= 'A';
+	for (uint8_t i=0; i<ORDER_SIZE;++i)	TCB_test.WL_ORDER[i]	= u32_to_p24(P24_Canary);
+	*/
+	
+	for (uint8_t i=0;  i<DST_SIZE;++i)	TCB_test.DataStack[i] 	= u32_to_p24(0x444444); // 'DDD'
+	for (uint8_t i=0;  i<RST_SIZE;++i)	TCB_test.ReturnStack[i]	= u32_to_p24(0x525252); // 'RRR'
+	for (uint8_t i=0;  i<LST_SIZE;++i)	TCB_test.LStack[i]	= u32_to_p24(0x4C4C4C); // 'LLL'
+	for (uint8_t i=0;  i<TIB_SIZE;++i)	TCB_test.TIB[i]	= 'T';
+	for (uint8_t i=0;  i<AIB_SIZE;++i)	TCB_test.AIB[i]	= 'A';
+	for (uint8_t i=0;  i<ORDER_SIZE;++i)	TCB_test.WL_ORDER[i]	= u32_to_p24(0x4f4f4f); // 'OOO'
+	for (uint16_t i=0; i<HERE_SIZE;++i)	HERE1[i]	= 'H';
+	
+	// For now, just echo serial input
+	TCB_test.	STATE			= F_INTERPRETING ;
+	TCB_test.	BASE			= 10 ;
+	TCB_test.	HERE		.ptr	= & HERE1;
+	TCB_test.	TIB_len		.u16	= 0 ;
+	TCB_test.	TIB_cur		.u16	= 0 ;
+	TCB_test.	TIB_max		.u16	= TIB_SIZE ;
+	TCB_test.	AIB_len		.u16	= 0 ;
+	TCB_test.	AIB_max		.u16	= AIB_SIZE ;
+	TCB_test.	AIB_cur		.u16	= 1 ;
+	TCB_test.	WL_ORDER_len		= 4 ;
+	TCB_test.	WL_ORDER[0]	.ptr	= & WL_all;
+	TCB_test.	WL_ORDER[1]	.ptr	= & WL_all_2;
+	TCB_test.	WL_ORDER[2]	.ptr	= & WL_all_3;
+	TCB_test.	WL_ORDER[3]	.ptr	= & WL_all_4;
+	TCB_test.	WL_CURRENT	.ptr	= & WL_all_4;
+	TCB_test.	getc_ctx	.ptr	= & get_STK;
+	// Set this to your word
+	TCB_test.	IP		.ptr	= & w_TEST_cw;
+	TCB_test.	DST			= TCB_test.DataStackLast;
+	TCB_test.	RST			= TCB_test.ReturnStackLast;
+	TCB_test.	LST			= TCB_test.LStackLast;
+	TCB_test.	TOS			=   u32_to_p24( P24_Canary );
+	TCB_test.	DT			=   u32_to_p24( P24_Canary );
+	TCB_test.	VT			= & VT_test;
 /*
+	C2FORTH(&TCB_test, (uint32_t)(uintptr_t)&run_in_FORTH_xt_in_IP);
+	TX0_WriteHex24(p24_to_u32(TCB_test.TOS));
+	TX0_Write('\r');
+	TX0_Write('\n');
+	TX0_Write('#');
+	TX0_Write('>');
+*/
+	TCB_test.	IP		.ptr	= & w_QUIT_cw;
+/**/	
+	C2FORTH(&TCB_test, (uint32_t)(uintptr_t)&run_in_FORTH_xt_in_IP);
+	TX0_Write('\r');
+	TX0_Write('\n');
+	TX0_Write('=');
+	TX0_WriteHex24(p24_to_u32(TCB_test.TOS));
+	TX0_Write('\r');
+	TX0_Write('\n');
+	TX0_Write('$');
+	TX0_Write('>');
+
+	/*
+	TCB_test.IP=u32_to_p24((uint32_t)(uintptr_t)&w_QUIT_cw);
+	C2FORTH(&TCB_test, (uint32_t)(uintptr_t)&run_in_FORTH_xt_in_IP);
+	TX0_Write('\r');
+	TX0_Write('\n');
+	TX0_Write('#');
+	TX0_Write('>');
+	*/
+	while (1) {
+		loop();
+	}
+}
+// ========================^^^^ main ^^^^========================================== }}}
+
+/*	// {{{ __data_start & spol
 TX0_WriteStr("__data_start ");
 TX0_WriteHex16((uint16_t)&__data_start);
 TX0_Write('+');
@@ -885,93 +798,4 @@ TX0_Write('\r'); TX0_Write('\n');
 TX0_WriteStr("&__heap_start ");
 TX0_WriteHex16((uint16_t)&__heap_start);
 TX0_Write('\r'); TX0_Write('\n');
-*/
-	
-	C_getc_init(&get_STK);
-	add_getc(&get_STK, serial_getc, NULL);
-	WL_all	.ptr = &w_zzz_eol_1;
-	WL_all_2.ptr = &ww_zzz_eol_2;
-	WL_all_3.ptr = &ww_zzz_eol_3;
-	WL_all_4.ptr = &FORTH_WORDS_START;
-	TCB_test.	TCB_cur 	.ptr	= & TCB_test;
-	TCB_test.	DataStackFirst	.ptr	= & TCB_test.DataStack		[0];
-	TCB_test.	DataStackLast	.ptr	= & TCB_test.DataStack		[DST_SIZE];
-	TCB_test.	ReturnStackFirst.ptr	= & TCB_test.ReturnStack	[0];
-	TCB_test.	ReturnStackLast	.ptr	= & TCB_test.ReturnStack	[RST_SIZE];
-	TCB_test.	LStackFirst	.ptr	= & TCB_test.LStack		[0];
-	TCB_test.	LStackLast	.ptr	= & TCB_test.LStack		[LST_SIZE];	// just AFTER range, first "st -Z, \a_hlo" will write last byte of array
-	
-	/*
-	for (uint8_t i=0; i<DST_SIZE;++i)	TCB_test.DataStack[i] 	= u32_to_p24(P24_Canary);
-	for (uint8_t i=0; i<RST_SIZE;++i)	TCB_test.ReturnStack[i]	= u32_to_p24(P24_Canary);
-	for (uint8_t i=0; i<TIB_SIZE;++i)	TCB_test.TIB[i]	= 'T';
-	for (uint8_t i=0; i<AIB_SIZE;++i)	TCB_test.AIB[i]	= 'A';
-	for (uint8_t i=0; i<ORDER_SIZE;++i)	TCB_test.WL_ORDER[i]	= u32_to_p24(P24_Canary);
-	*/
-	
-	for (uint8_t i=0; i<DST_SIZE;++i)	TCB_test.DataStack[i] 	= u32_to_p24(0x444444); // 'DDD'
-	for (uint8_t i=0; i<RST_SIZE;++i)	TCB_test.ReturnStack[i]	= u32_to_p24(0x525252); // 'RRR'
-	for (uint8_t i=0; i<LST_SIZE;++i)	TCB_test.LStack[i]	= u32_to_p24(0x4C4C4C); // 'LLL'
-	for (uint8_t i=0; i<TIB_SIZE;++i)	TCB_test.TIB[i]	= 'T';
-	for (uint8_t i=0; i<AIB_SIZE;++i)	TCB_test.AIB[i]	= 'A';
-	for (uint8_t i=0; i<ORDER_SIZE;++i)	TCB_test.WL_ORDER[i]	= u32_to_p24(0x4f4f4f); // 'OOO'
-	for (uint16_t i=0; i<HERE_SIZE;++i)	HERE1[i]	= 'H';
-	
-	// For now, just echo serial input
-	TCB_test.	STATE			= F_INTERPRETING ;
-	TCB_test.	BASE			= 10 ;
-	TCB_test.	HERE		.ptr	= & HERE1;
-	TCB_test.	TIB_len		.u16	= 0 ;
-	TCB_test.	TIB_cur		.u16	= 0 ;
-	TCB_test.	TIB_max		.u16	= TIB_SIZE ;
-	TCB_test.	AIB_len		.u16	= 0 ;
-	TCB_test.	AIB_max		.u16	= AIB_SIZE ;
-	TCB_test.	AIB_cur		.u16	= 1 ;
-	TCB_test.	WL_ORDER_len		= 4 ;
-	TCB_test.	WL_ORDER[0]	.ptr	= & WL_all;
-	TCB_test.	WL_ORDER[1]	.ptr	= & WL_all_2;
-	TCB_test.	WL_ORDER[2]	.ptr	= & WL_all_3;
-	TCB_test.	WL_ORDER[3]	.ptr	= & WL_all_4;
-	TCB_test.	WL_CURRENT	.ptr	= & WL_all_4;
-	TCB_test.	getc_ctx	.ptr	= & get_STK;
-	// Set this to your word
-	TCB_test.	IP		.ptr	= & w_TEST_cw;
-	TCB_test.	DST			= TCB_test.DataStackLast;
-	TCB_test.	RST			= TCB_test.ReturnStackLast;
-	TCB_test.	LST			= TCB_test.LStackLast;
-	TCB_test.	TOS			=   u32_to_p24( P24_Canary );
-	TCB_test.	DT			=   u32_to_p24( P24_Canary );
-/*
-	C2FORTH(&TCB_test, (uint32_t)(uintptr_t)&run_in_FORTH_xt_in_IP);
-	TX0_WriteHex24(p24_to_u32(TCB_test.TOS));
-	TX0_Write('\r');
-	TX0_Write('\n');
-	TX0_Write('#');
-	TX0_Write('>');
-*/
-	TCB_test.	IP		.ptr	= & w_QUIT_cw;
-/**/	
-//  while (1){;};
-	C2FORTH(&TCB_test, (uint32_t)(uintptr_t)&run_in_FORTH_xt_in_IP);
-	TX0_Write('\r');
-	TX0_Write('\n');
-	TX0_Write('=');
-	TX0_WriteHex24(p24_to_u32(TCB_test.TOS));
-	TX0_Write('\r');
-	TX0_Write('\n');
-	TX0_Write('$');
-	TX0_Write('>');
-
-	/*
-	TCB_test.IP=u32_to_p24((uint32_t)(uintptr_t)&w_QUIT_cw);
-	C2FORTH(&TCB_test, (uint32_t)(uintptr_t)&run_in_FORTH_xt_in_IP);
-	TX0_Write('\r');
-	TX0_Write('\n');
-	TX0_Write('#');
-	TX0_Write('>');
-	*/
-	while (1) {
-		loop();
-	}
-}
-
+*/	// }}}

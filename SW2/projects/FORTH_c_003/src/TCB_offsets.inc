@@ -29,5 +29,21 @@
 	.equ TCB_TIB, 322
 	.equ TCB_AIB, 402
 	.equ TCB_WL_ORDER, 482
-	.equ TCB_something_else, 530
-	.equ TCB_SIZE, 534
+	.equ TCB_VT, 530
+	.equ TCB_something_else, 532
+	.equ TCB_SIZE, 536
+	.equ VT_read_char, 0
+	.equ VT_write_char, 3
+	.equ VT_cls, 6
+	.equ VT_set_cursor_visible, 9
+	.equ VT_set_cursor_char, 12
+	.equ VT_set_cursor_X, 15
+	.equ VT_set_cursor_Y, 18
+	.equ VT_set_cursor_XY, 21
+	.equ VT_put_char_XY, 24
+	.equ VT_set_row_color, 27
+	.equ VT_set_row_color_Y, 30
+	.equ VT_char_at_XY, 33
+	.equ VT_MAX_LINES, 36
+	.equ VT_MAX_COLUMNS, 39
+	.equ VT_SIZE, 42

@@ -152,7 +152,7 @@ nop
 	out_lo(VGA_ENABLE)			// this doubles first column of pixels, moving it down instead eats this column and left space on first character, which is worse
 	out   XCAT(PIN,VGA_LATCH_PORT), r24	// 1CP flip B7 HIGH
 
-.rept TextVGA_ROWS -1
+.rept TextVGA_COLUMNS -1
 	ONECHAR
 .endr
 
@@ -180,7 +180,7 @@ nop
 		inc_mem2 TextVGA_CRAM_ptr
 	lds r24, TextVGA_VRAM_ptr
 	lds r25, TextVGA_VRAM_ptr+1
-	adiw r24, TextVGA_ROWS
+	adiw r24, TextVGA_COLUMNS
 	sts TextVGA_VRAM_ptr, r24
 	sts TextVGA_VRAM_ptr+1, r25
 

@@ -10,7 +10,7 @@ gfunc f_COUNT	; {{{ #
 	Set3 TOS, Zx
 	PushST TOS
 	Set3 TOS, Parsx_lo, r1, r1
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 ; https://forth-standard.org/standard/core/COUNT

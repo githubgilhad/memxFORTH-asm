@@ -1,0 +1,69 @@
+#pragma once
+
+#include "TCB_offsets.h"
+/* export offsets for ASM */
+
+/* This generate text, that we will extract later. Not necessery valid code. */
+#define GEN(sym, val) \
+	asm volatile (".equ " #sym ", %0" :: "i"(val))
+
+
+void gen_offsets(void)		// this is envelope for our generated text, it will NOT be compiled, just macro expanded.
+{
+	// FORTH state
+	GEN(TCB_IP,			offsetof(Thread_Controll_Block, IP));
+	GEN(TCB_DST,			offsetof(Thread_Controll_Block, DST));
+	GEN(TCB_RST,			offsetof(Thread_Controll_Block, RST));
+	GEN(TCB_LST,			offsetof(Thread_Controll_Block, LST));
+	GEN(TCB_TOS,			offsetof(Thread_Controll_Block, TOS));
+	GEN(TCB_DT,			offsetof(Thread_Controll_Block, DT));
+	GEN(TCB_TCB_cur,		offsetof(Thread_Controll_Block, TCB_cur));
+	GEN(TCB_STATE,			offsetof(Thread_Controll_Block, STATE));
+	GEN(TCB_BASE,			offsetof(Thread_Controll_Block, BASE));
+	GEN(TCB_HERE,			offsetof(Thread_Controll_Block, HERE));
+	GEN(TCB_TIB_len,		offsetof(Thread_Controll_Block, TIB_len));
+	GEN(TCB_TIB_cur,		offsetof(Thread_Controll_Block, TIB_cur));
+	GEN(TCB_TIB_max,		offsetof(Thread_Controll_Block, TIB_max));
+	GEN(TCB_AIB_len,		offsetof(Thread_Controll_Block, AIB_len));
+	GEN(TCB_AIB_max,		offsetof(Thread_Controll_Block, AIB_max));
+	GEN(TCB_AIB_cur,		offsetof(Thread_Controll_Block, AIB_cur));
+	GEN(TCB_WL_ORDER_len,		offsetof(Thread_Controll_Block, WL_ORDER_len));
+	GEN(TCB_WL_CURRENT,		offsetof(Thread_Controll_Block, WL_CURRENT));
+	GEN(TCB_GETC_CTX,		offsetof(Thread_Controll_Block, getc_ctx));
+	GEN(TCB_DataStackFirst,		offsetof(Thread_Controll_Block, DataStackFirst));
+	GEN(TCB_DataStackLast,		offsetof(Thread_Controll_Block, DataStackLast));
+	GEN(TCB_ReturnStackFirst,	offsetof(Thread_Controll_Block, ReturnStackFirst));
+	GEN(TCB_ReturnStackLast,	offsetof(Thread_Controll_Block, ReturnStackLast));
+	GEN(TCB_LStackFirst,		offsetof(Thread_Controll_Block, LStackFirst));
+	GEN(TCB_LStackLast,		offsetof(Thread_Controll_Block, LStackLast));
+	GEN(TCB_DataStack,		offsetof(Thread_Controll_Block, DataStack));
+	GEN(TCB_ReturnStack,		offsetof(Thread_Controll_Block, ReturnStack));
+	GEN(TCB_LStack,			offsetof(Thread_Controll_Block, LStack));
+	GEN(TCB_TIB,			offsetof(Thread_Controll_Block, TIB));
+	GEN(TCB_AIB,			offsetof(Thread_Controll_Block, AIB));
+	GEN(TCB_WL_ORDER,		offsetof(Thread_Controll_Block, WL_ORDER));
+	GEN(TCB_VT,			offsetof(Thread_Controll_Block, VT));
+	// something_else
+	GEN(TCB_something_else,		offsetof(Thread_Controll_Block, something_else));
+	// total size
+	GEN(TCB_SIZE,			sizeof(Thread_Controll_Block));
+/*
+ *
+ * */
+	GEN(VT_read_char,		offsetof(Virtual_Table, read_char));
+	GEN(VT_write_char,		offsetof(Virtual_Table, write_char));
+	GEN(VT_cls,			offsetof(Virtual_Table, cls));
+	GEN(VT_set_cursor_visible,	offsetof(Virtual_Table, set_cursor_visible));
+	GEN(VT_set_cursor_char,		offsetof(Virtual_Table, set_cursor_char));
+	GEN(VT_set_cursor_X,		offsetof(Virtual_Table, set_cursor_X));
+	GEN(VT_set_cursor_Y,		offsetof(Virtual_Table, set_cursor_Y));
+	GEN(VT_set_cursor_XY,		offsetof(Virtual_Table, set_cursor_XY));
+	GEN(VT_put_char_XY,		offsetof(Virtual_Table, put_char_XY));
+	GEN(VT_set_row_color,		offsetof(Virtual_Table, set_row_color));
+	GEN(VT_set_row_color_Y,		offsetof(Virtual_Table, set_row_color_Y));
+	GEN(VT_char_at_XY,		offsetof(Virtual_Table, char_at_XY));
+	GEN(VT_MAX_LINES,		offsetof(Virtual_Table, MAX_LINES));
+	GEN(VT_MAX_COLUMNS,		offsetof(Virtual_Table, MAX_COLUMNS));
+	GEN(VT_SIZE,			sizeof(Virtual_Table));
+
+};

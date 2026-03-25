@@ -9,19 +9,19 @@ DEFWORD w_BRK3,			0,		"BRK3",			f_BRK3			; (  --  ) do nothing, breakpoint may b
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_BRK	; {{{ 
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 gfunc f_BRK0	; {{{ 
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 gfunc f_BRK1	; {{{ 
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 gfunc f_BRK2	; {{{ 
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 gfunc f_BRK3	; {{{ 
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 

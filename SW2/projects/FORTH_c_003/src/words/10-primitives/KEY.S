@@ -2,9 +2,6 @@ DEFWORD w_KEY,			0,		"KEY",			f_KEY			; ( -- 0 | char ) read character from seri
 
 ; KEY - read character from serial
 ; ( -- char )
-.section .bss.FORTH
-obj scratch_byte
-	.byte 0
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_KEY	; {{{ #
 	; Save TOS and call RX0_Read

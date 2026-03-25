@@ -20,8 +20,8 @@
 	#define PROMPT STR_RIGHT
 	#define PROMPTcomp STR_RIGHT STR_2MORE
 
-	#define BIOS_ROWS		25					// number of rows of VGA text output
-	#define BIOS_COLS		40					// number of columns of VGA text output (more than 37 means noise from PS/2 input)
+	#define BIOS_LINES		25					// number of rows of VGA text output
+	#define BIOS_COLUMNS		40					// number of columns of VGA text output (more than 37 means noise from PS/2 input)
 
 #elif OUTPUT_TARGET == OUTPUT_TARGET_terminal
 	#define STR_2LESS "«" //0xC2 0xAB);//'«'

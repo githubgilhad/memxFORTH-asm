@@ -24,11 +24,11 @@ gfunc f_COLON	; {{{ #
 	ldi Parsx_lo, F_COMPILING	; ]
 	TCB_member TCB_STATE
 		RW1at
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 gfunc f_docol	; {{{ #
-	rjmp DOCOL
+	jmp DOCOL
 ; }}}
 
 

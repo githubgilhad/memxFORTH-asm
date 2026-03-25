@@ -2,7 +2,7 @@
 
 #include "TextVGA.def"
 typedef void (*isr_handler)(void);
-typedef char T_TextVGA_VRAM[TextVGA_LINES][TextVGA_ROWS];
+typedef char T_TextVGA_VRAM[TextVGA_LINES][TextVGA_COLUMNS];
 typedef uint8_t T_TextVGA_CRAM[TextVGA_LINES];
 // typedef const uint8_t T_TextVGA_CharDef[][256]; // at least 8 sublines // PROBLEM with >16 bit addresses
 typedef uint_farptr_t P_TextVGA_CharDef; // at least 8 sublines

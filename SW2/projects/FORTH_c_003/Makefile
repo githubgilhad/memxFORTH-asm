@@ -19,7 +19,7 @@ R_need_target_update = \
 INC_FILES := $(wildcard src/words/*/*)
 
 
-$(CURDIR)/src/TCB_offsets.inc: $(CURDIR)/src/TCB_offsets.h Makefile
+$(CURDIR)/src/TCB_offsets.inc: $(CURDIR)/src/TCB_offsets.func Makefile
 	$(HEAD)
 	$(Q)$(CC) -x c $(CFLAGS_NODEP)  -S $< -o src/TCB_offsets.tmp
 	$(Q)grep "\.equ" src/TCB_offsets.tmp >$@

@@ -2,7 +2,7 @@
 
 #include "TextRCA.def"
 typedef void (*isr_handler)(void);
-typedef char T_TextRCA_VRAM[TextRCA_LINES][TextRCA_ROWS];
+typedef char T_TextRCA_VRAM[TextRCA_LINES][TextRCA_COLUMS];
 typedef uint8_t T_TextRCA_CRAM[TextRCA_LINES];
 // typedef const uint8_t T_TextRCA_CharDef[][256]; // at least 8 sublines // PROBLEM with >16 bit addresses
 typedef uint_farptr_t P_TextRCA_CharDef; // at least 8 sublines

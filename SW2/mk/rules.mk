@@ -163,10 +163,10 @@ TODO: $(TARGET).dis  sizecheck WORDS
 
 WORDS: $(TARGET).dis  sizecheck
 	$(HEAD)
-	$(Q)find -name "*.S" -exec grep -h "^DEF" {} \;|sort>WORDS.list
+	$(Q)find src -name "*.S" -exec grep -h "^DEF" {} \;|sort>WORDS.list
 
 monitor:
-	picocom -b 115200 --flow n --noreset --quiet $(PORT)
+	picocom -b 115200 --flow h --noreset --quiet $(PORT)
 
 upload_monitor: upload monitor
 

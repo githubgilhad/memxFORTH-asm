@@ -50,7 +50,8 @@ gfunc func_CREATE	; {{{ #
 	Sub31 TOS,Tx
 	brne 2b
 3:
-	Ldi3 Parsx,ww_do_create_cw
+;	Ldi3 Parsx,ww_do_create_cw
+	Ldi3 Parsx,do_create
 	Set3 Zx,Temp
 	call W3at
 	Set3 Parsx,Zx

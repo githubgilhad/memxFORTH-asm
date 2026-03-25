@@ -15,6 +15,21 @@ Changelog
 --------------------------------------------------------------------------------
 
 %START%
+* 2026.03.25 18:38:09 - DEFWORD w_LITSTRING,		0,		"LITSTRING",		f_LITSTRING		; ( -- addr len ) push addr and len of string on the stack - similar to LIT
+* 2026.03.25 18:02:34 - DEFWORD w_TELL,			0,		"TELL",			f_TELL			; ( addr len -- ) prints out string [----]
+* 2026.03.25 16:51:54 - DEFWORD w_REBOOT,		0,		"REBOOT",		f_REBOOT		; (  --  ) reboots computer [----]
+* 2026.03.25 15:56:49 - DEFWORD w_TO,			0,		"TO",			f_docol, yes		; ( "name" val  --  ) change value [----] { 24 TO test 	test ( -- 24 ) }
+* 2026.03.25 15:55:24 - DEFWORD w_VALUE,		0,		"VALUE",		f_VALUE			; ( "name" val  --  ) create value [----] { 12 VALUE test 	test ( -- 12 ) }
+* 2026.03.25 12:32:33 - DEFWORD w_COMMENT,		FLG_IMMEDIATE,	"(",			f_COMMENT		; ( "text)"  --  ) skip comment to paired ) [----]
+* 2026.03.25 11:58:16 - DEFWORD w_IMMEDIATE,		FLG_IMMEDIATE,	"IMMEDIATE",		f_IMMEDIATE		; (  --  ) mark last defined word as IMMEDIATE [----]
+* 2026.03.25 11:39:39 - DEFWORD w_CLS,			0,		"CLS",			f_CLS			; (  --  ) clear screen, mocve cursor to 0,0 [----]
+* 2026.03.25 11:39:17 - DEFWORD w_EMIT,			0,		"EMIT",			f_EMIT			; ( c  --  ) output character [----]
+* 2026.03.25 11:37:51 - DEFWORD w_KEYpress,		0,		"KEYpress",		f_KEYpress		; (  --  ) return pressed key or zero [----]
+* 2026.03.25 11:36:57 - DEFWORD w_VRAM_yx_set,		0,		"VRAM_yx!",		f_VRAM_yx_set		; ( y x c --  ) store c to X,Y [----]
+* 2026.03.25 11:36:48 - DEFWORD w_VRAM_yx_get,		0,		"VRAM_yx@",		f_VRAM_yx_get		; ( y x  --  c ) get c at X,Y [----]
+* 2026.03.25 11:35:59 - DEFWORD w_CLS,			0,		"CLS",			f_CLS			; (  --  ) clear screen, mocve cursor to 0,0 [----]
+* 2026.03.25 11:35:39 - DEFWORD w_BEGIN,		FLG_IMMEDIATE,	"BEGIN",		f_BEGIN			; Compilation ( C: -- do-sys ) compile 'do_begin' to definition
+* 2026.03.25 11:35:27 - DEFWORD w_UNTIL,		FLG_IMMEDIATE,	"UNTIL",		f_UNTIL			; Compilation ( C: do-sys --  ) compile 'do_until' to definition
 * 2026.03.15 22:11:39 - DEFWORD w_revROT,		0,		"-ROT",			f_revROT		; ( a b c -- c a b ) rotate 1. item to 3. [----]
 * 2026.03.15 22:11:00 - DEFWORD w_ROT,			0,		"ROT",			f_ROT			; ( a b c -- b c a ) rotate 3. item up [----]
 * 2026.03.15 21:51:35 - DEFWORD w_TIMES,		0,		"*",			f_times			; ( a b -- a*b ) multiply top two stack items (24-bit result, may overflow) 

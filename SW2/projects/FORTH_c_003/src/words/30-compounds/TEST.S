@@ -46,6 +46,7 @@ DEFWORD w_TEST,			0,		"TEST",			f_docol, yes		; ( -- ) // just test
 	P24 20
 	P24 w_less_cw
 	P24 w_dot_hex_cw
+	P24 w_KEYpress_cw
 	P24 w_exit_cw
 2:
 	.byte lo8(3f - . - 1 )

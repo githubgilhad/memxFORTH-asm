@@ -9,7 +9,7 @@ gfunc f_CELLS	; {{{ #
 	Set3 Parsx, TOS		; CELL_size = 3
 	Add3 TOS,Parsx
 	Add3 TOS,Parsx
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 gfunc f_CELLS_plus	; {{{ #
 	Set3 Parsx, TOS		; CELL_size = 3
@@ -17,7 +17,7 @@ gfunc f_CELLS_plus	; {{{ #
 	Add3 TOS,Parsx
 	PopST Parsx
 	Add3 TOS,Parsx
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 

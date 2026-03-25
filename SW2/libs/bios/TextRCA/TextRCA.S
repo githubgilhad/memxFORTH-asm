@@ -138,7 +138,7 @@ TextRCA_TIMER1_OVF_vect_handler:	; {{{ RCA Hsync
 	out_lo(RCA_ENABLE)
 	out   XCAT(PIN,RCA_LATCH_PORT), r24	// 1CP flip B7 HIGH
 
-.rept TextRCA_ROWS -1
+.rept TextRCA_COLUMS -1
 	ONECHAR
 .endr
 
@@ -165,7 +165,7 @@ nop
 		inc_mem2 TextRCA_CRAM_ptr
 	lds r24, TextRCA_VRAM_ptr
 	lds r25, TextRCA_VRAM_ptr+1
-	adiw r24, TextRCA_ROWS
+	adiw r24, TextRCA_COLUMS
 	sts TextRCA_VRAM_ptr, r24
 	sts TextRCA_VRAM_ptr+1, r25
 

@@ -15,7 +15,7 @@ gfunc f_right_bracket	; {{{ #
 	ldi Parsx_lo, F_COMPILING
 	TCB_member TCB_STATE
 		RW1at
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 ; https://forth-standard.org/standard/core/Bracket

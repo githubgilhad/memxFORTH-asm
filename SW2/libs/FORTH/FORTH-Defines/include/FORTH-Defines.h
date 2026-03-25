@@ -27,6 +27,14 @@
 #define 	Cpar2_hi r23
 #define 	Cpar2 Cpar2_lo, Cpar2_hi
 
+#define 	Cpar3_lo r20
+#define 	Cpar3_hi r21
+#define 	Cpar3 Cpar3_lo, Cpar3_hi
+
+#define 	Cpar4_lo r18
+#define 	Cpar4_hi r19
+#define 	Cpar4 Cpar4_lo, Cpar4_hi
+
 #define 	Temp_lo r18
 #define 	Temp_hi r19
 #define 	Temp_hlo r20

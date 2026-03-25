@@ -23,7 +23,7 @@ gfunc f_0BRANCH	; {{{ #
 	Add3 IP, Parsx
 3:
 	PopST TOS
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 gfunc f_1BRANCH	; {{{ #
 	; IP points to the offset to jump
@@ -36,6 +36,6 @@ gfunc f_1BRANCH	; {{{ #
 	Set3 IP,Zx
 3:
 	PopST TOS
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 

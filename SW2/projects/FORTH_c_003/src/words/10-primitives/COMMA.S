@@ -14,7 +14,7 @@ gfunc f_comma	; {{{ #
 	TCB_member	TCB_HERE
 			RW3at
 		PopST	TOS
-	rjmp NEXT
+	jmp NEXT
 	; }}}
 
 ; https://forth-standard.org/standard/core/Comma

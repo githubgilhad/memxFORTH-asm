@@ -40,7 +40,8 @@ obj .L_f_INIT__len
 ;	.ascii " INCLUDE test.4th \r "
 ;	.ascii " : foobar  INCLUDE TEST.4TH 1 2 + ; ' foobar EXPORT foobar "
 ;	.ascii " : x IF 5 ELSE 6 THEN 7 ; ' x EXPORT  "
-	.ascii " 12 3 DIVMOD .h .h "
+;	.ascii " 12 3 DIVMOD .h .h "
+	.ascii " : C, HERE @ C!  1 HERE +! ; : x BRK LITSTRING [ 2 C,  'O' C, 'K' C, ] ; x \r "
 2:
 	.byte 1
 .balign 2

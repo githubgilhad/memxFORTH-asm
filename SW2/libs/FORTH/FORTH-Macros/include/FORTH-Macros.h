@@ -371,6 +371,18 @@
 	RW3atX \a_lo, \a_hi, \a_hlo
 .endm	; }}}
 
+; === VT members
+.macro	call_VT_member_C	ofset	; {{{ call VT member C style with params in Cpars??? 
+	TCB_member TCB_VT
+	RB2atX	DT2
+	adiw	DT_lo, \ofset
+	ld	ZL, X+
+	ld	ZH, X+
+	ld	XL, X
+	out	EIND, XL
+	eicall
+.endm	; }}}
+
 ; === P16, P24, func ...
 .macro	P16 addr	; {{{ store 2B address
 	.byte lo8(\addr)
