@@ -34,4 +34,5 @@ void VGA_set_row_color_Y(uint8_t col, uint8_t y);	// set row color
 uint8_t VGA_char_at_XY(uint8_t x, uint8_t y);		// return char at X,Y
 uint8_t VGA_MAX_LINES();				// 
 uint8_t VGA_MAX_COLUMNS();				// 
+void VGA_cr(); 
 

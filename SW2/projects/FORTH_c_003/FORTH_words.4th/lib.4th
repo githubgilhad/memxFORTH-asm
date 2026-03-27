@@ -1,5 +1,10 @@
+'#' EMIT 0 >L
+HERE @ DUMP
+
 : ascii $100 0 DO I EMIT LOOP ;
 
+NEXTcounter .h .h 
+HEADLESS
 
 : ALLOT HERE +! ;
 
@@ -22,6 +27,7 @@
 
 : CASE IMMEDIATE
 	0 >L		( push 0 to L to mark the bottom of the stack )
+	'C' EMIT
 ;
 
 : OF IMMEDIATE
@@ -44,6 +50,7 @@
 	WHILE
 		>L
 		[COMPILE] THEN
+		'c' EMIT
 	REPEAT
 ;
 
@@ -102,3 +109,12 @@
 		REPEAT
 THEN
 ;
+
+: SPACE 32 EMIT ;
+
+HEADMORE
+.L 
+
+NEXTcounter .h .h 
+
+HERE @ DUMP

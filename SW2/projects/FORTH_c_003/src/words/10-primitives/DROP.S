@@ -2,6 +2,7 @@
 
 DEFWORD w_DROP,			0,		"DROP",			f_DROP			; ( a -- ) DROP top of stack
 DEFWORD w_2DROP,		0,		"2DROP",		f_2DROP			; ( a a -- ) 2DROP top of stack
+DEFWORD w_DROP2,		0,		"DROP2",		f_2DROP			; ( a a -- ) DROP2 top of stack (aka 2DROP)
 DEFWORD w_NDROP,		0,		"NDROP",		f_NDROP			; ( xn .. x1 n -- ) DROP N items from top of stack
 DEFWORD w_DROPat,		0,		"DROP@",		f_DROPat		; ( xn .. x1 n -- xn-1 .. x1) DROP item at place n (n>2) (1=DROP, 2=NIP)
 DEFWORD w_NIP,			0,		"NIP",			f_NIP			; ( a b -- b ) DROP second item in stack

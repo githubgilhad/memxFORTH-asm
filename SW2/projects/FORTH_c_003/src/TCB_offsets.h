@@ -33,6 +33,8 @@ typedef struct __attribute__((packed)) {
 	P24 char_at_XY;
 	P24 MAX_LINES;
 	P24 MAX_COLUMNS;
+	P24 wait;
+	P24 cr;
 } Virtual_Table;
 
 typedef struct __attribute__((packed)) {

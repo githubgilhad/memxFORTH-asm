@@ -1,0 +1,28 @@
+1 VALUE hdd
+
+: TO IMMEDIATE
+	TCB.STATE C@
+	IF
+		LIT3 LIT3 , ' 1 CELLS+ ,  LIT3 ! ,
+	ELSE
+		' 1 CELLS+ !
+	THEN
+;
+
+: TO IMMEDIATE
+	TCB.STATE C@
+	IF
+		LIT3 LIT3 , ' ,  LIT3 1 , LIT3 CELLS+ ,  LIT3 ! ,
+	ELSE
+		' 1 CELLS+ !
+	THEN
+;
+
+' TO SHOW
+' TO EXPORT
+' TO DUMP
+
+: x TO hdd hdd .h ;
+' x SHOW
+' x EXPORT
+' x DUMP

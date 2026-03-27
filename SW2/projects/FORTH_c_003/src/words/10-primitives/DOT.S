@@ -2,6 +2,7 @@
 
 
 DEFWORD w_dot_hex,		0,		".h",			f_dot_hex		; ( x  --  ) print hexa value and space [xxxx]
+DEFWORD w_dot,			0,		".",			f_dot			; ( x  --  ) print value
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_dot_hex	; {{{ # 
@@ -14,5 +15,15 @@ gfunc f_dot_hex	; {{{ #
 	jmp NEXT
 ; }}}
 
+gfunc f_dot	; {{{ 
+	Set2	Cpar3, TCB
+	Set3	Cpar2, Cpar1_lo 	TOS
+	mov	Cpar1_hi,		r1
+	call	C_num2str
+	Set3	DT, 		Cpar2, r1
+	Set3	TOS, 		Cpar1, r1
+	PushST	DT
+	jmp f_TELL
+; }}}
 
 

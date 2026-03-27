@@ -6,7 +6,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
-
+#include <string.h>
 
 #include "TCB_offsets.h"
 #include "usart0.h"
@@ -22,3 +22,4 @@
 
 extern T_TextVGA_VRAM VRAM;
 extern T_TextVGA_CRAM CRAM;
+extern void func_yield();

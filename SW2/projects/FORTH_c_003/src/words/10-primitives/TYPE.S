@@ -10,11 +10,13 @@ gfunc f_TYPE	; {{{ #
 .f_TYPE.loop:
 	call	B1at
 	mov	Cpar1_lo,Parsx_lo
-	push r30
-	push r31
+	push Z_lo
+	push Z_hi
+	push Z_hlo
 	call_VT_member_C	VT_write_char
-	pop r31
-	pop r30
+	pop Z_hlo
+	pop Z_hi
+	pop Z_lo
 	ldi	Tx,1
 	Sub31	TOS, Tx
 	brne	.f_TYPE.loop

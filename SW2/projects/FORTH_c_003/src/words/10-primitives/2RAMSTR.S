@@ -56,7 +56,7 @@ gfunc func_2RAMSTR	; {{{
 ; }}}
 gfunc f_2RAMSTR	; {{{ 
 	call func_2RAMSTR
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 

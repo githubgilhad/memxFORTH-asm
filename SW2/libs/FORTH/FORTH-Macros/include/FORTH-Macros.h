@@ -373,8 +373,10 @@
 
 ; === VT members
 .macro	call_VT_member_C	ofset	; {{{ call VT member C style with params in Cpars??? 
+	push	r25
 	TCB_member TCB_VT
 	RB2atX	DT2
+	pop	r25
 	adiw	DT_lo, \ofset
 	ld	ZL, X+
 	ld	ZH, X+

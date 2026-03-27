@@ -2,6 +2,7 @@
 
 DEFWORD w_DUP,			0,		"DUP",			f_DUP			; ( a -- a a ) duplicate top of stack
 DEFWORD w_2DUP,			0,		"2DUP",			f_2DUP			; ( a b -- a b a b ) duplicate 2 CELLs on top of stack [0380]
+DEFWORD w_DUP2,			0,		"DUP2",			f_2DUP			; ( a b -- a b a b ) duplicate 2 CELLs on top of stack [0380] (aka 2DUP)
 DEFWORD w_qDUP,			0,		"?DUP",			f_qDUP			; ( a -- 0 | a a ) duplicate non zero CELL [0630]
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits

@@ -15,6 +15,12 @@ Changelog
 --------------------------------------------------------------------------------
 
 %START%
+* 2026.03.26 12:39:18 - DEFWORD w_WAIT,			0,		"WAIT",			f_WAIT			; ( a  --  ) wait a ticks (0 - no wait)
+* 2026.03.26 12:33:01 - DEFWORD w_LOR,			0,		"||",			f_LOR			; ( a b -- a||b ) logical OR of two stack items
+* 2026.03.26 12:32:52 - DEFWORD w_OR,			0,		"OR",			f_OR			; ( a b -- a|b ) bitwise OR of two stack items
+* 2026.03.26 12:20:34 - DEFWORD w_LAND,			0,		"&&",			f_LAND			; ( a b -- a&&b ) logical AND of two stack items
+* 2026.03.26 11:35:22 - DEFWORD w_HEADMORE,		0,		"HEADMORE",		f_HEADMORE		; (  --  ) start generation of VGA signal again [----]
+* 2026.03.26 11:35:11 - DEFWORD w_HEADLESS,		0,		"HEADLESS",		f_HEADLESS		; (  --  ) stop generation of VGA signal [----]
 * 2026.03.25 18:38:09 - DEFWORD w_LITSTRING,		0,		"LITSTRING",		f_LITSTRING		; ( -- addr len ) push addr and len of string on the stack - similar to LIT
 * 2026.03.25 18:02:34 - DEFWORD w_TELL,			0,		"TELL",			f_TELL			; ( addr len -- ) prints out string [----]
 * 2026.03.25 16:51:54 - DEFWORD w_REBOOT,		0,		"REBOOT",		f_REBOOT		; (  --  ) reboots computer [----]

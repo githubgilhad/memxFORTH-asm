@@ -46,4 +46,6 @@
 	.equ VT_char_at_XY, 33
 	.equ VT_MAX_LINES, 36
 	.equ VT_MAX_COLUMNS, 39
-	.equ VT_SIZE, 42
+	.equ VT_wait, 42
+	.equ VT_cr, 45
+	.equ VT_SIZE, 48

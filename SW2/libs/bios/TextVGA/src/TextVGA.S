@@ -185,7 +185,8 @@ nop
 	sts TextVGA_VRAM_ptr+1, r25
 
 		inc_mem TextVGA_textline
-		cpi r24, TextVGA_LINES +1
+;		cpi r24, TextVGA_LINES +1
+		cpi r24, TextVGA_LINES
 		brne 1f
 		; last line just ended, call TextVGA_VerticalBlank (maybe via trampoline)
 		lds Zl, TextVGA_VerticalBlank

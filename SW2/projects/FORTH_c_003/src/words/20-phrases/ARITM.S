@@ -3,7 +3,10 @@
 
 DEFWORD w_one_plus,		0,		"1+",			f_one_plus		; ( a -- b ) b = a + 1 [0290]
 DEFWORD w_one_minus,		0,		"1-",			f_one_minus		; ( a -- b ) b = a - 1 [xxxx]
-DEFWORD w_half,			0,		"/2",			f_half			; ( a -- b ) b = a / 2 [xxxx]
+DEFWORD w_half,			0,		"2/",			f_half			; ( a -- b ) b = a / 2 [xxxx]
+DEFWORD w_quater,		0,		"4/",			f_quater		; ( a -- b ) b = a / 4 [xxxx]
+DEFWORD w_double,		0,		"2*",			f_double		; ( a -- b ) b = a * 2 [xxxx]
+DEFWORD w_quad,			0,		"4*",			f_quad			; ( a -- b ) b = a * 4 [xxxx]
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_one_plus	; {{{ #
@@ -23,6 +26,35 @@ gfunc f_half	; {{{ #
 	ror	TOS_lo
 	rjmp NEXT
 ; }}}
+gfunc f_quater	; {{{ #
+	clc
+	ror	TOS_hlo
+	ror	TOS_hi
+	ror	TOS_lo
+	clc
+	ror	TOS_hlo
+	ror	TOS_hi
+	ror	TOS_lo
+	rjmp NEXT
+; }}}
+gfunc f_double	; {{{
+	clc
+	rol	TOS_lo
+	rol	TOS_hi
+	rol	TOS_hlo
+	rjmp NEXT
+;}}}
+gfunc f_quad	; {{{
+	clc
+	rol	TOS_lo
+	rol	TOS_hi
+	rol	TOS_hlo
+	clc
+	rol	TOS_lo
+	rol	TOS_hi
+	rol	TOS_hlo
+	rjmp NEXT
+;}}}
 
 ; https://forth-standard.org/standard/core/OnePlus
 ; 

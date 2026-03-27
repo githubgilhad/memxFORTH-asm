@@ -130,7 +130,7 @@ extern uint8_t __noinit_start;
 extern uint8_t __noinit_end;
 extern uint8_t __heap_start;
 
-#define HERE_SIZE 0x1000
+#define HERE_SIZE 0x3000
 uint8_t HERE1[HERE_SIZE] __attribute__((section(".highram")));
 
 
@@ -580,11 +580,31 @@ void VB_handler(){
 	frames++;
 	VB_flag=true;
 }
+void wait(uint32_t dt){ 
+	uint32_t f; 
+	f=frames;
+	while (frames-f < dt) func_yield(); 
+	}
 
 T_TextVGA_VRAM VRAM;
 T_TextVGA_CRAM CRAM={0xf0, 0x0f, 0x24,0x42,0x9f,0xf9,0xf1,0xf2,0xf3,0xf4,0xf5,0xf6,0xf6,0xf7,0xf8,0xf9,0xfa,0xfb,0xfc,0xfd,0xfe,0xff,0xf0,0xf0,0xf0,};
 // =======================^^^^ VGA ^^^^=============================== }}}
-
+uint32_t C_RANDOM(uint32_t max) { 
+//	TX0_WriteStr("RND(");
+//	TX0_WriteHex24(max);
+	uint32_t r = rand() % max ; 
+//	TX0_WriteStr(")=");
+//	TX0_WriteHex24(r);
+	return r;
+	}
+char str_buf[80];
+uint32_t C_num2str(uint32_t num, Thread_Controll_Block *TCB) {
+	ltoa(num,str_buf,TCB->BASE);
+	uint32_t adr=(uint16_t)str_buf;
+	uint32_t len=strlen(str_buf);
+	return adr+ (len <<16);
+	
+}
 // ========================vvvv setup vvvv========================================= {{{
 TEXT void setup(void) {
 	usart0_setup();
@@ -680,6 +700,8 @@ TEXT int main(void) {
 	VT_test.char_at_XY.ptr = (__memx const void *)(uintptr_t)			VGA_char_at_XY;
 	VT_test.MAX_LINES.ptr = (__memx const void *)(uintptr_t)			VGA_MAX_LINES;
 	VT_test.MAX_COLUMNS.ptr = (__memx const void *)(uintptr_t)			VGA_MAX_COLUMNS;
+	VT_test.wait.ptr = (__memx const void *)(uintptr_t)				wait;
+	VT_test.cr.ptr = (__memx const void *)(uintptr_t)				VGA_cr;
 	
 	C_getc_init(&get_STK);
 	add_getc(&get_STK, serial_getc, NULL);

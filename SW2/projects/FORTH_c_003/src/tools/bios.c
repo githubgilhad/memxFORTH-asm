@@ -191,12 +191,7 @@ static bool cursor_visible = true;
 static char cursor_char = 0x14; // bottom block
 
 
-
-void VGA_write_char(uint8_t c) {			// {{{  write char to cursor, move cursor, scroll screen if needed
-	VRAM[cursor_Y][cursor_X] = c;
-	if (cursor_X++ >=TextVGA_COLUMNS) {
-		cursor_X = 0;
-		if (cursor_Y++ >=TextVGA_LINES) {
+void scroll () {	// {{{
 			cursor_Y--;
 			for (uint8_t y=0; y < TextVGA_LINES-1; y++) 
 				for (uint8_t x=0; x < TextVGA_COLUMNS; x++) 
@@ -206,7 +201,15 @@ void VGA_write_char(uint8_t c) {			// {{{  write char to cursor, move cursor, sc
 			for (uint8_t y=0; y < TextVGA_LINES-1; y++) 
 				CRAM[y]=CRAM[y+1];
 			CRAM[TextVGA_LINES-1]= VGA_none;
+}	// }}}
 
+void VGA_write_char(uint8_t c) {			// {{{  write char to cursor, move cursor, scroll screen if needed
+	VRAM[cursor_Y][cursor_X++] = c;
+	if (cursor_X >=TextVGA_COLUMNS) {
+		cursor_X = 0;
+		cursor_Y ++;
+		if (cursor_Y >=TextVGA_LINES) {
+			scroll();
 		};
 	};
 }	// }}}
@@ -248,9 +251,17 @@ void VGA_set_row_color_Y(uint8_t col, uint8_t y) {	// {{{  set row color
 uint8_t VGA_char_at_XY(uint8_t x, uint8_t y) {		// {{{  return char at X,Y
 	return VRAM[y][x];
 }	// }}}
-uint8_t VGA_MAX_LINES() {				// 
+uint8_t VGA_MAX_LINES() {				// {{{
 	return TextVGA_LINES;
 }	// }}}
-uint8_t VGA_MAX_COLUMNS() {				// 
+uint8_t VGA_MAX_COLUMNS() {				// {{{
 	return TextVGA_COLUMNS;
 }	// }}}
+void VGA_cr() {	// {{{  go to new line
+	cursor_X=0;
+	cursor_Y++;
+	if (cursor_Y >=TextVGA_LINES) {
+		scroll();
+	};
+}	// }}}
+
