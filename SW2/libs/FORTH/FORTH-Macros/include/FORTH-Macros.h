@@ -121,6 +121,19 @@
 	mov \a_hlo, \b_hlo
 .endm			; }}}
 
+; === Real stack ===
+
+.macro	Push3_x a_lo, a_hi, a_hlo	; {{{ # push "a"  to real stack, 3B
+	push \a_lo
+	push \a_hi
+	push \a_hlo
+.endm			; }}}
+.macro	Pop3_x a_lo, a_hi, a_hlo	; {{{ #  pop  "a" from real stack, 3B
+	pop \a_hlo
+	pop \a_hi
+	pop \a_lo
+.endm			; }}}
+
 ; === Aritmetic ===
 .macro	Add3 a_lo, a_hi, a_hlo, b_lo, b_hi, b_hlo	; {{{ #  "a" += "b", 3B
 	add \a_lo,  \b_lo

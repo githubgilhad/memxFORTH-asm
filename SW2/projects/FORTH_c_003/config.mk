@@ -23,6 +23,7 @@ LIBS += SD/SD
 LIBS += DebugLEDs/DebugLEDs
 LIBS += bios/StdTextCharDef
 LIBS += bios/SnakeCharDef
+LIBS += bios/SnakeCharDef2
 LIBS += bios/ScanToASCII
 LIBS += bios/TextVGA
 LIBS += MHF-002/MHF-002

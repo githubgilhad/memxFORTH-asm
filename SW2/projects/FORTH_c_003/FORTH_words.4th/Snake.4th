@@ -1,26 +1,27 @@
-
-NEXTcounter .h .h 
 HEADLESS
 
-( keys 8462 on numeric keyboard, or numbers )
 ( item )
-: brick $A0 ;
+( : brick $A0 ; )
+: brick 235 ;
 ( score, max )
 0 0 0 0 VALUE score VALUE maxscore VALUE crash VALUE grow
 : show_score
-	1 2 CUR_yx  ." SCORE: " score .
+	1 2 CUR_yx  ." SCORE: " score . SPACE
 	score maxscore > IF score TO maxscore 1 MAX_COLUMNS 2/ 1- CUR_yx brick EMIT $4D ROW_COLOR THEN
 	1 MAX_COLUMNS 2/   CUR_yx  ." MAX: " maxscore .
 	;
 ( wall )
 : wall CLS
-	0 BEGIN 0 OVER brick VRAM_yx! 2 OVER brick VRAM_yx! MAX_LINES 1- OVER brick VRAM_yx!  1+ DUP MAX_COLUMNS  = UNTIL DROP
-	0 BEGIN                     DUP  0 brick VRAM_yx! DUP MAX_COLUMNS 1-  brick VRAM_yx!  1+ DUP MAX_LINES  = UNTIL DROP
-	1 2 CUR_yx ." SCORE:" 0 . SPACE
+	MAX_COLUMNS 0 DO  0 I brick VRAM_yx! ( ) 2 I brick VRAM_yx! ( )  4 I brick VRAM_yx! ( )  MAX_LINES 1- I brick VRAM_yx! ( )  MAX_LINES 3 - I brick VRAM_yx! LOOP
+	MAX_LINES 0   DO  I 0 brick VRAM_yx! ( ) I MAX_COLUMNS 1- brick VRAM_yx! LOOP
+	1 2 CUR_yx ." SCORE: " 0 . SPACE
+	3 10 CUR_yx ." Go reptile !"
+	MAX_LINES 2 - 10 CUR_yx ." Eat them all !"
 	;
 : is_wall ( c -- flag ) brick = ;
 : test_wall ( y x --  )  VRAM_yx@ is_wall IF 1 TO crash THEN ;
 ( movement )
+( dirs are derived from 2468 keys on num block - "2/ 1-" )
 : do_step ( y x d -- y x )
 	CASE
 	0 OF SWAP 1+ SWAP ENDOF
@@ -34,18 +35,20 @@ HEADLESS
 	kb_Right OF DROP 2 ENDOF
 	kb_Up OF DROP 3 ENDOF
 	ENDCASE ;
-: body_str S" abc#de#fg#hi#jkl" ; : body_str_addr body_str DROP ;
-( : body_str S" -##fg#hi#jkl" ; : body_str_addr body_str DROP ; )
-: head_str S" v<>^" ; : head_str_addr head_str DROP ;
-: tail_str S" ;=~!" ; : tail_str_addr tail_str DROP ;
-: fruit_str S" @$&*" ; : fruit_str_addr fruit_str DROP ;
+'*' 231 232 233 4 BINSTR fruit_str : fruit_str_addr fruit_str DROP ;
+234 1 BINSTR grass_str
+236 237 238 239 4 BINSTR tail_str : tail_str_addr tail_str DROP ;
+240 241 242 243 4 BINSTR head_str : head_str_addr head_str DROP ;
+244 245 246 '#' 247 248 '#' 249 250 '#' 251 252 '#' 253 254 255 16 BINSTR body_str : body_str_addr body_str DROP ;
+
 ( body )
 : show_body ( y x old new ) SWAP 4* + body_str_addr + C@ VRAM_yx! ;
 : is_body ( c -- flag ) body_str ISINSTR ;
 : test_body ( y x --  )  VRAM_yx@ is_body IF 2 TO crash THEN ;
 ( fruit )
 : random_fruit fruit_str RANDOM + C@ ;
-: show_fruit ( -- ) 5 RANDOM IFNOT MAX_LINES 4 - RANDOM 3 + MAX_COLUMNS 2 - RANDOM 1+ DUP2 VRAM_yx@ BL = IF random_fruit VRAM_yx! ELSE DROP2 THEN THEN ;
+: place_fruit MAX_LINES 8 - RANDOM 5 + MAX_COLUMNS 2 - RANDOM 1+ DUP2 VRAM_yx@ BL = IF random_fruit VRAM_yx! ELSE DROP2 THEN ;
+: show_fruit ( -- ) 15 RANDOM IFNOT place_fruit THEN ;
 : is_fruit ( c -- flag ) fruit_str ISINSTR ;
 : test_fruit ( y x --  ) VRAM_yx@ is_fruit IF 1 TO grow 1 +TO score THEN ;
 ( tail )
@@ -64,10 +67,11 @@ HEADLESS
 	;
 ( head )
 0 0 0 0 VALUE hx VALUE hy VALUE hd VALUE hdd
+10 VALUE speed
 : hide_head hy hx BL VRAM_yx! ;
 : show_head hy hx head_str_addr hd + C@ VRAM_yx! ;
 : move_head
-	10 WAIT hide_head
+	speed WAIT hide_head
 	hy hx hd ( body here )
 		hy hx ( new head )
 			hd KEYpress key_to_dir ( dir )
@@ -85,6 +89,7 @@ HEADLESS
 
 : snake_game 
 		wall show_score
+		place_fruit place_fruit place_fruit
 		MAX_COLUMNS 2/ TO hx
 		MAX_LINES 2/ TO hy
 		2 TO hd
@@ -100,17 +105,17 @@ HEADLESS
 			show_score
 (			BEGIN KEYpress 0= UNTIL )
 		crash UNTIL
-		2 5 CUR_yx $D8 ROW_COLOR crash 1 = IF  ." * Avoid Walls ! *" ELSE ." * Avoid yourself *" THEN
+		3 7 CUR_yx $D8 ROW_COLOR SPACE crash 1 = IF  ." * Avoid Walls ! *" ELSE ." * Avoid yourself *" THEN SPACE
 	;
 : snake_wrap
 	BEGIN
 		snake_game
-		MAX_LINES 1- 5 CUR_yx $4D ROW_COLOR ." Press Space / Q " 
+		MAX_LINES 2 - 7 CUR_yx $4D ROW_COLOR SPACE ." Press Space / Esc " 
 		BEGIN 
 			BEGIN KEYpress ?DUP UNTIL ( non-zero key pressed)
 			DUP .
-			DUP 'q' = IF EXIT THEN 
-		32 = UNTIL
+			DUP kb_Esc = IF EXIT THEN 
+		kb_Space = UNTIL
 	REPEAT
 ;
 : snake
@@ -120,14 +125,26 @@ HEADLESS
 
 : hb  ( c old new  -- ) ( hack body character ) SWAP 4* + body_str_addr + C! ;
 : full_body 
-				0 0 1 2 show_body
+				3 1 '<' VRAM_yx!
+				0 0 3 2 show_body
 				0 1 2 2 show_body
-				0 2 2 3 show_body
-				1 2 3 3 show_body
-				2 2 3 0 show_body
-				2 1 0 0 show_body
-				2 0 0 1 show_body
-				1 0 1 1 show_body
+				0 2 2 0 show_body
+				1 2 0 0 show_body
+				2 2 0 1 show_body
+				2 1 1 1 show_body
+				2 0 1 3 show_body
+				1 0 3 3 show_body
+	
+				3 5 '>' VRAM_yx!
+				0 4 3 2 show_body
+				0 5 2 2 show_body
+				0 6 2 0 show_body
+				1 6 0 0 show_body
+				2 6 0 1 show_body
+				2 5 1 1 show_body
+				2 4 1 3 show_body
+				1 4 3 3 show_body
+	
 	4 1 CUR_yx
 ;
 
@@ -138,34 +155,8 @@ HEADLESS
 	 100  10 DO SPACE       I . SPACE I EMIT ascii_fill  LOOP 
 	$100 100 DO             I . SPACE I EMIT ascii_fill  LOOP 
 ;
-
-130 2 3 hb full_body ( up - left )
-128 1 2 hb full_body ( left - down)
-137 2 2 hb full_body ( left - left )
+( 130 2 3 hb full_body )
 
 HEADMORE
 
-snake
-
-
-0 1
-1 1
-1 2
-2 2
-2 3
-3 3
-3 0
-0 0
-
-
-
-
-
-
-
-
-
-
-
-
-
+( snake )

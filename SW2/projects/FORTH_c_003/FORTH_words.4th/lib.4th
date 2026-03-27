@@ -1,9 +1,3 @@
-'#' EMIT 0 >L
-HERE @ DUMP
-
-: ascii $100 0 DO I EMIT LOOP ;
-
-NEXTcounter .h .h 
 HEADLESS
 
 : ALLOT HERE +! ;
@@ -113,8 +107,4 @@ THEN
 : SPACE 32 EMIT ;
 
 HEADMORE
-.L 
 
-NEXTcounter .h .h 
-
-HERE @ DUMP

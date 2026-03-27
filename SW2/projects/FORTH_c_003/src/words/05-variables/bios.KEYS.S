@@ -2,17 +2,18 @@
 #include "ScanToASCII.h"
 
 DEFCONSTI1 "BL",		BL,		' ',		line=3
-DEFCONSTI1 "CR",		CR,		'\r',		line=3
-DEFCONSTI1 "LF",		LF,		'\n',		line=3
-/**/
-DEFVAR "PROMPT_X",	PROMPT_X
-DEFVAR "PROMPT_Y",	PROMPT_Y
-/**/
+// DEFCONSTI1 "CR",		CR,		'\r',		line=3
+// DEFCONSTI1 "LF",		LF,		'\n',		line=3
+//
+// DEFVAR "PROMPT_X",	PROMPT_X
+// DEFVAR "PROMPT_Y",	PROMPT_Y
+
 
 DEFCONSTI1	"kb_Esc",	"kb_Esc",	kb_Esc,		line=3
 DEFCONSTI1	"kb_Tab",	"kb_Tab",	kb_Tab,		line=3
 DEFCONSTI1	"kb_Back",	"kb_Back",	kb_Back,	line=3
 DEFCONSTI1	"kb_Enter",	"kb_Enter",	kb_Enter,	line=3
+DEFCONSTI1	"kb_Space",	"kb_Space",	kb_Space,	line=3
 
 DEFCONSTI1	"kb_CapsLck",	"kb_CapsLck",	kb_CapsLck,	line=3
 DEFCONSTI1	"kb_NumLck",	"kb_NumLck",	kb_NumLck,	line=3

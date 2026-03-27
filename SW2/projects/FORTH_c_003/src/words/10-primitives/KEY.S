@@ -15,15 +15,6 @@ gfunc f_KEY	; {{{ #
 ;	mov TOS_hi, Cpar1_hi
 	clr TOS_hi
 	clr TOS_hlo		; Clear high byte (24-bit value)
-;;	tst TOS_lo
-;; 	breq 2f
-;; 	ldi Cpar1_lo, 10
-;; 	call TX0_Write
-;; 	mov Cpar1_lo, TOS_lo
-;; 	call TX0_Write
-;; 	ldi Cpar1_lo, 32
-;; 	call TX0_Write
-;; 2:
 	jmp NEXT
 	; }}}
 gfunc old_f_KEY	; {{{ #
@@ -34,15 +25,6 @@ gfunc old_f_KEY	; {{{ #
 ;	mov TOS_hi, Cpar1_hi
 	clr TOS_hi
 	clr TOS_hlo		; Clear high byte (24-bit value)
-;;	tst TOS_lo
-;; 	breq 2f
-;; 	ldi Cpar1_lo, 10
-;; 	call TX0_Write
-;; 	mov Cpar1_lo, TOS_lo
-;; 	call TX0_Write
-;; 	ldi Cpar1_lo, 32
-;; 	call TX0_Write
-;; 2:
 	jmp NEXT
 	; }}}
 

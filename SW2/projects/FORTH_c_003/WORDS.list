@@ -87,6 +87,7 @@ DEFCONSTI1	"kb_Right",	"kb_Right",	kb_Right,	line=3
 DEFCONSTI1	"kb_ScrLck",	"kb_ScrLck",	kb_ScrLck,	line=3
 DEFCONSTI1	"kb_ShiftL",	"kb_ShiftL",	kb_ShiftL,	line=3
 DEFCONSTI1	"kb_ShiftR",	"kb_ShiftR",	kb_ShiftR,	line=3
+DEFCONSTI1	"kb_Space",	"kb_Space",	kb_Space,	line=3
 DEFCONSTI1	"kb_Tab",	"kb_Tab",	kb_Tab,		line=3
 DEFCONSTI1	"kb_Up",	"kb_Up",	kb_Up,		line=3
 DEFCONSTI1	"kb_WinL",	"kb_WinL",	kb_WinL,	line=3
@@ -108,8 +109,6 @@ DEFCONSTI1	"kb_xPlus",	"kb_xPlus",	kb_xPlus,	line=3
 DEFCONSTI1	"kb_xSlash",	"kb_xSlash",	kb_xSlash,	line=3
 DEFCONSTI1	"kb_xStar",	"kb_xStar",	kb_xStar,	line=3
 DEFCONSTI1 "BL",		BL,		' ',		line=3
-DEFCONSTI1 "CR",		CR,		'\r',		line=3
-DEFCONSTI1 "LF",		LF,		'\n',		line=3
 DEFCONSTI2 "TCB.TIB.max", TCB_TIB_max, TIB_SIZE
 DEFTCBVAR "HERE",TCB_HERE		; first free byte in RAM
 DEFTCBVAR "TCB.AIB", TCB_AIB
@@ -123,8 +122,6 @@ DEFTCBVAR "TCB.TIB.len", TCB_TIB_len
 DEFTCBVAR "TCB.WL.CURRENT", TCB_WL_CURRENT
 DEFTCBVAR "TCB.WL.ORDER", TCB_WL_ORDER
 DEFTCBVAR "TCB.WL.ORDER.count", TCB_WL_ORDER_len
-DEFVAR "PROMPT_X",	PROMPT_X
-DEFVAR "PROMPT_Y",	PROMPT_Y
 DEFWORD w_0BRANCH,		FLG_ARG_3,	"0BRANCH",		f_0BRANCH		; ( -- ) branch if zero - add following P24 to IP and NEXT there; -3 is endless loop, else skip, eat stack [----]
 DEFWORD w_1BRANCH,		FLG_ARG_3,	"1BRANCH",		f_1BRANCH		; ( -- ) branch if NOT zero - add following P24 to IP and NEXT there; -3 is endless loop, else skip, eat stack [xxxx]
 DEFWORD w_2DROP,		0,		"2DROP",		f_2DROP			; ( a a -- ) 2DROP top of stack
@@ -142,6 +139,7 @@ DEFWORD w_ADDR_R,		0,		"&R",			f_ADDR_R		; (  -- &R ) return R stack address [xx
 DEFWORD w_ADDR_S,		0,		"&S",			f_ADDR_S		; (  -- &S ) data Stack address [xxxx]
 DEFWORD w_AND,			0,		"AND",			f_AND			; ( a b -- a&b ) bitwise AND of two stack items
 DEFWORD w_BEGIN,		FLG_IMMEDIATE,	"BEGIN",		f_BEGIN			; Compilation ( C: -- 0 do-sys ) compile 'do_begin' to definition
+DEFWORD w_BINSTR,		0,		"BINSTR",		f_BINSTR		;  ( "name" x1 x2 .. xn-1 xn n -- ) CREATE word for binary string:  save binary string (1B bytes) to memory, 10 20 30 3 BINSTR THREE create word THREE ( -- addr len ) returning string "\10\20\30"
 DEFWORD w_BRANCH,		FLG_ARG_3,	"BRANCH",		f_BRANCH		; ( -- ) add following P24 to IP and NEXT there; -3 is endless loop [----]
 DEFWORD w_BRK,			0,		"BRK",			f_BRK			; (  --  ) do nothing, breakpoint may be set here [xxxx]
 DEFWORD w_BRK0,			0,		"BRK0",			f_BRK0			; (  --  ) do nothing, breakpoint may be set here [xxxx]

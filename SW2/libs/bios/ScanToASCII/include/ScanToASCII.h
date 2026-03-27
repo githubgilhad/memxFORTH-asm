@@ -15,6 +15,7 @@ extern const uint16_t ScanToASCII[2][128] PROGMEM ; // [x][..]: [x][...] --/E0 k
 #define	kb_Tab		9	// '\t'
 #define	kb_Back		'\b'
 #define	kb_Enter	'\n'
+#define	kb_Space	' '
 
 #define	kb_CapsLck	( '`'+0x80 )
 #define	kb_NumLck	( '~'+0x80 )

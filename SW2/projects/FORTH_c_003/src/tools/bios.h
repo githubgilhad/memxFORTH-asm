@@ -9,6 +9,7 @@
 #include <avr/pgmspace.h>
 #include "StdTextCharDef.h"
 #include "SnakeCharDef.h"
+#include "SnakeCharDef2.h"
 #include "ScanToASCII.h"
 #include "apply_shift.h"
 #include "PS2_driver.h"
