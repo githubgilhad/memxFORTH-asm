@@ -8,6 +8,8 @@
 #include "ff.h"
 #include "getc.h"
 #include <stddef.h>
+#include "VGA0.h"
+
 
 uint8_t sd_getc(void *ptr, char *c);	// exported, source of chars
 void C_SD_LOAD(char * C_filename);	// word SD.LOAD, call with C string in RAM

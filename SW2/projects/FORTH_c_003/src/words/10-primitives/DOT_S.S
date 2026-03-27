@@ -21,20 +21,20 @@ gfunc f_DOT_S	; {{{ #
 	breq	.L_f_DOT_S__end
 2:
 	ld	r24, -X
-	call TX0_WriteHex8
+	call VGA0_WriteHex8
 	ld	r24, -X
-	call TX0_WriteHex8
+	call VGA0_WriteHex8
 	ld	r24, -X
-	call TX0_WriteHex8
+	call VGA0_WriteHex8
 	ldi	r24, ' '
-	call TX0_Write
+	call VGA0_Write
 	Cmp2	DST,dst_ptr
 	brlo	2b ; branch if DST< dst_ptr
 .L_f_DOT_S__end:
 	Set3	Parsx,TOS
-	call TX0_WriteHex24
+	call VGA0_WriteHex24
 	ldi	r24, ' '
-	call TX0_Write
+	call VGA0_Write
 .L_f_DOT_S__noTOS:
 	POP_R2_R17
 	jmp NEXT
@@ -50,13 +50,13 @@ gfunc f_DOT_R	; {{{ #
 	brsh	.L_f_DOT_R__end		; branch if RST was Same or Higher (stack empty/underflown)
 2:
 	ld	r24, -X
-	call TX0_WriteHex8
+	call VGA0_WriteHex8
 	ld	r24, -X
-	call TX0_WriteHex8
+	call VGA0_WriteHex8
 	ld	r24, -X
-	call TX0_WriteHex8
+	call VGA0_WriteHex8
 	ldi	r24, ' '
-	call TX0_Write
+	call VGA0_Write
 	Cmp2	RST,dst_ptr
 	brlo	2b ; branch if DST< dst_ptr
 .L_f_DOT_R__end:
@@ -74,13 +74,13 @@ gfunc f_DOT_L	; {{{ #
 	brsh	.L_f_DOT_L__end		; branch if LST was Same or Higher (stack empty/underflown)
 2:
 	ld	r24, -X
-	call TX0_WriteHex8
+	call VGA0_WriteHex8
 	ld	r24, -X
-	call TX0_WriteHex8
+	call VGA0_WriteHex8
 	ld	r24, -X
-	call TX0_WriteHex8
+	call VGA0_WriteHex8
 	ldi	r24, ' '
-	call TX0_Write
+	call VGA0_Write
 	Cmp2	LST,dst_ptr
 	brlo	2b ; branch if LST< dst_ptr
 .L_f_DOT_L__end:

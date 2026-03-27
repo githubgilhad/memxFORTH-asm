@@ -6,10 +6,10 @@
 
 #define TEXT __attribute__((section(".text")))
 TEXT void write_char(char c){	// {{{
-	TX0_Write(c);
+	VGA0_Write(c);
 }	// }}}
 TEXT void write_charA(char c){	// {{{
-	TX0_WriteA(c);
+	VGA0_WriteA(c);
 }	// }}}
 TEXT char read_char(){	// {{{
 	return RX0_Read();
@@ -27,11 +27,11 @@ TEXT void write_num8(uint8_t n) {	// {{{
 }	// }}}
 TEXT uint32_t c_to_number(char *buf, uint8_t base) {	// {{{
 /*
-    TX0_WriteStr("c_to_number(\"");
-    TX0_WriteStr(buf);
-    TX0_WriteStr("\", ");
+    VGA0_WriteStr("c_to_number(\"");
+    VGA0_WriteStr(buf);
+    VGA0_WriteStr("\", ");
     write_num8(base);
-    TX0_Write(')');
+    VGA0_Write(')');
     */
     char *end;
     int neg = 0;
@@ -74,9 +74,9 @@ TEXT uint32_t c_to_number(char *buf, uint8_t base) {	// {{{
 
     /* truncate to CELL = 24 bit, add FF as 4.byte as sign of success */
     /*
-    TX0_Write('=');
-    TX0_WriteHex24(val);
-    TX0_Write(';');
+    VGA0_Write('=');
+    VGA0_WriteHex24(val);
+    VGA0_Write(';');
     */
 
     return val | 0xFF000000;
@@ -94,9 +94,9 @@ TEXT void c_cursor_xy(uint8_t x, uint8_t y) {	// {{{
 }	// }}}
 
 Thread_Controll_Block TCB_test __attribute__((section(".highram")));
-extern uint8_t TX0_WriteHex8(uint8_t h);
-extern uint8_t TX0_WriteHex16(uint16_t h);
-extern uint8_t TX0_WriteHex24(uint32_t h);
+extern uint8_t VGA0_WriteHex8(uint8_t h);
+extern uint8_t VGA0_WriteHex16(uint16_t h);
+extern uint8_t VGA0_WriteHex24(uint32_t h);
 
 // External FORTH primitives
 extern void f_dup(void);
@@ -184,7 +184,7 @@ TEXT void C_Tracer(uint32_t DT,uint16_t IP,uint16_t RST,uint16_t DST,uint32_t TO
 	for (uint16_t i=0;i< depth_R; i++) write_char('\t');
 	write_char(' ');
 	DT-=3;
-	TX0_WriteHex24(DT);
+	VGA0_WriteHex24(DT);
 	write_char(' ');
 	write_num8(c);
 	write_char(' ');
@@ -201,10 +201,10 @@ TEXT void C_Tracer(uint32_t DT,uint16_t IP,uint16_t RST,uint16_t DST,uint32_t TO
 	write_num8(depth_D);
 	for (uint16_t i=2;i< depth_D+1; i++) {
 		write_char(' ');
-		TX0_WriteHex24(p24_to_u32(TCB_test.DataStack[DST_SIZE-2-i]));
+		VGA0_WriteHex24(p24_to_u32(TCB_test.DataStack[DST_SIZE-2-i]));
 	};
 	write_char(':');
-	TX0_WriteHex24(TOS);
+	VGA0_WriteHex24(TOS);
 	
 	write_char('\e');
 	write_char('[');
@@ -213,12 +213,12 @@ TEXT void C_Tracer(uint32_t DT,uint16_t IP,uint16_t RST,uint16_t DST,uint32_t TO
 	write_num8(depth_R);
 	write_char(' ');
 	for (uint16_t i=1;i< depth_R+1; i++) {
-		TX0_WriteHex24(p24_to_u32(TCB_test.ReturnStack[RST_SIZE-1-i]));
+		VGA0_WriteHex24(p24_to_u32(TCB_test.ReturnStack[RST_SIZE-1-i]));
 		write_char(' ');
 	};
 	write_char('|');
 	write_char(' ');
-	TX0_WriteHex24(IP - 3 );
+	VGA0_WriteHex24(IP - 3 );
 	write_char(' ');
 	write_char('|');
 	
@@ -236,24 +236,25 @@ TEXT void C_words() {	// {{{
 	uint32_t head, a;
 	uint32_t p;
 	uint8_t len = TCB_test.WL_ORDER_len;
+	uint8_t page=10;
 	for (uint8_t i=0;i<len;i++) {
-		TX0_WriteStr("\r\n=== ");
-		TX0_WriteHex8(i);
-		TX0_WriteStr(" ===\r\n");
+		VGA0_WriteStr("\r\n=== ");
+		VGA0_WriteHex8(i);
+		VGA0_WriteStr(" ===\r\n");
 		p=P24_U32(TCB_test.WL_ORDER[i]);
 		/*
-		TX0_WriteHex8(p.dta.hlo);
-		TX0_WriteHex8(p.dta.hi);
-		TX0_WriteHex8(p.dta.lo);
-		TX0_Write(':');
+		VGA0_WriteHex8(p.dta.hlo);
+		VGA0_WriteHex8(p.dta.hi);
+		VGA0_WriteHex8(p.dta.lo);
+		VGA0_Write(':');
 		*/
 		
 		p=C_B3at(p);
 		/*
-		TX0_WriteHex8(p.dta.hlo);
-		TX0_WriteHex8(p.dta.hi);
-		TX0_WriteHex8(p.dta.lo);
-		TX0_Write(':');
+		VGA0_WriteHex8(p.dta.hlo);
+		VGA0_WriteHex8(p.dta.hi);
+		VGA0_WriteHex8(p.dta.lo);
+		VGA0_Write(':');
 		*/
 		
 		head= p;
@@ -262,11 +263,18 @@ TEXT void C_words() {	// {{{
 		uint8_t b,b1,b2,b3,att;
 		
 		while (head) {
-		if (! count--) { count=10; TX0_Write('\r');TX0_Write('\n');};
-		TX0_Write('<');
+		if (! count--) { 
+			count=10; VGA0_Write('\r');TX0_Write('\n');
+			if (!page--) {
+				char nic;
+				page=10; VGA0_WriteStr("-- page --");while (GETC_OK != serial_getc(NULL, &nic)){;};
+				VGA0_Write('\r');TX0_Write('\n');
+				};
+			};
+		VGA0_Write('<');
 		/*
-		TX0_WriteHex24(head);
-		TX0_Write(':');
+		VGA0_WriteHex24(head);
+		VGA0_Write(':');
 		*/
 		a=head;
 		b1=C_B1at(a++);
@@ -277,32 +285,32 @@ TEXT void C_words() {	// {{{
 			| ((uint32_t)b2 << 8)
 			| ((uint32_t)b3 << 16);
 		/*
-		TX0_WriteHex24(head);
-		TX0_Write(':');
+		VGA0_WriteHex24(head);
+		VGA0_Write(':');
 		*/
 		att=C_B1at(a++);//attrib
 		if (att){
-			if (att & FLG_IMMEDIATE)	{ TX0_Write('I'); };
-			if (att & FLG_HIDDEN)		{ TX0_Write('H'); };
-			if (att & FLG_FOG)		{ TX0_Write('F'); };
-			if (att & FLG_ADDR)		{ TX0_Write('A'); }
+			if (att & FLG_IMMEDIATE)	{ VGA0_Write('I'); };
+			if (att & FLG_HIDDEN)		{ VGA0_Write('H'); };
+			if (att & FLG_FOG)		{ VGA0_Write('F'); };
+			if (att & FLG_ADDR)		{ VGA0_Write('A'); }
 			else
 			switch (att & FLG_ARG_MASK) {
-				case FLG_ARG_1:		{ TX0_Write('1'); break;};
-				case FLG_ARG_2:		{ TX0_Write('2'); break;};
-				case FLG_ARG_3:		{ TX0_Write('3'); break;};
-				case FLG_ARG_4:		{ TX0_Write('4'); break;};
+				case FLG_ARG_1:		{ VGA0_Write('1'); break;};
+				case FLG_ARG_2:		{ VGA0_Write('2'); break;};
+				case FLG_ARG_3:		{ VGA0_Write('3'); break;};
+				case FLG_ARG_4:		{ VGA0_Write('4'); break;};
 			};
-			if (att & FLG_PSTRING)		{ TX0_Write('P'); };
-			TX0_Write(':');
+			if (att & FLG_PSTRING)		{ VGA0_Write('P'); };
+			VGA0_Write(':');
 		};
 		b=C_B1at(a++);
-		if (b) for (uint8_t i=0; i<b;i++) TX0_Write( C_B1at(a++));
-		TX0_Write('>');
-		TX0_Write(' ');
+		if (b) for (uint8_t i=0; i<b;i++) VGA0_Write( C_B1at(a++));
+		VGA0_Write('>');
+		VGA0_Write(' ');
 		};
-	TX0_Write('\r');
-	TX0_Write('\n');
+	VGA0_Write('\r');
+	VGA0_Write('\n');
 	};
 }	// }}}
 TEXT void C_dump(uint32_t MEM) {	// {{{
@@ -326,31 +334,31 @@ uint8_t serial_getc(void *state, char *out_char) {	// {{{
 typedef uint32_t DOUBLE_t;	// 2 cell on data stack 4B
 char buf[32];	// temporary buffer - stack eating structures cannot be in NEXT-chained functions, or stack will overflow !!!
 DOUBLE_t cw2h(DOUBLE_t cw) {	// {{{ codeword address to head address
-//TX0_WriteStr("cw2h( ");
-// TX0_WriteHex24(xpC_U32(&FORTH_WORDS_START));
-// TX0_Write('<');
-// TX0_WriteHex24(cw);
-// TX0_Write('<');
-// TX0_WriteHex24( xpC_U32(&FORTH_WORDS_END));
-// TX0_Write('|');
-// TX0_WriteHex24(RAM(npC_U32(&HERE1[0])));
-// TX0_Write('<');
-// TX0_WriteHex24(cw);
-// TX0_Write('<');
-// TX0_WriteHex24( RAM(npC_U32(&HERE1[0]))+sizeof(HERE1) );
+//VGA0_WriteStr("cw2h( ");
+// VGA0_WriteHex24(xpC_U32(&FORTH_WORDS_START));
+// VGA0_Write('<');
+// VGA0_WriteHex24(cw);
+// VGA0_Write('<');
+// VGA0_WriteHex24( xpC_U32(&FORTH_WORDS_END));
+// VGA0_Write('|');
+// VGA0_WriteHex24(RAM(npC_U32(&HERE1[0])));
+// VGA0_Write('<');
+// VGA0_WriteHex24(cw);
+// VGA0_Write('<');
+// VGA0_WriteHex24( RAM(npC_U32(&HERE1[0]))+sizeof(HERE1) );
 	if ( ! (
 		( (xpC_U32(&FORTH_WORDS_START) <= cw) && ( cw < xpC_U32(&FORTH_WORDS_END)) ) ||
 		( (RAM(npC_U32(&HERE1[0])) <= cw) && ( cw < RAM(npC_U32(&HERE1[0]))+sizeof(HERE1) ) )
 		) ) { return 0; };
-// TX0_Write('+');
+// VGA0_Write('+');
 	if (!cw) return 0;
-// TX0_Write('+');
+// VGA0_Write('+');
 	uint8_t i =0;
 	cw--;
 	while ((i<33 ) && (i!=C_B1at(cw))) {i++;cw--;};
-// TX0_Write('=');
-// TX0_WriteHex8(i);
-// TX0_Write(')');
+// VGA0_Write('=');
+// VGA0_WriteHex8(i);
+// VGA0_Write(')');
 	if (i<33) return cw-5;
 	return 0;
 }	// }}}
@@ -375,126 +383,126 @@ void C_export(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition o
 	uint32_t val;
 	uint8_t flags;
 	bool new;
-	if ( ! cw2h(cw)) { TX0_WriteStr("Not valid CW."); return;};
-	TX0_Write('\r');
-	TX0_Write('\n');
-	TX0_WriteStr("DEFWORD	w_");
+	if ( ! cw2h(cw)) { VGA0_WriteStr("Not valid CW."); return;};
+	VGA0_Write('\r');
+	VGA0_Write('\n');
+	VGA0_WriteStr("DEFWORD	w_");
 	flags = name_to_buf(cw);
-	TX0_WriteStr(buf);
-	TX0_WriteStr(",	0");
-	if (flags & FLG_IMMEDIATE) TX0_WriteStr("+ FLG_IMMEDIATE");
-	if (flags & FLG_HIDDEN) TX0_WriteStr("+ FLG_HIDDEN");
-	if (flags & FLG_FOG) TX0_WriteStr("+ FLG_FOG");
-	if ((flags & FLG_ARG_MASK) == FLG_ARG_1 ) TX0_WriteStr("+ FLG_ARG_1");
-	if ((flags & FLG_ARG_MASK) == FLG_ARG_2 ) TX0_WriteStr("+ FLG_ARG_2");
-	if ((flags & FLG_ARG_MASK) == FLG_ARG_3 ) TX0_WriteStr("+ FLG_ARG_3");
-	if ((flags & FLG_ARG_MASK) == FLG_ARG_4 ) TX0_WriteStr("+ FLG_ARG_4");
-	if (flags & FLG_PSTRING) TX0_WriteStr("+ FLG_PSTRING");
-	if (flags & FLG_ADDR) TX0_WriteStr("+ FLG_ADDR");
+	VGA0_WriteStr(buf);
+	VGA0_WriteStr(",	0");
+	if (flags & FLG_IMMEDIATE) VGA0_WriteStr("+ FLG_IMMEDIATE");
+	if (flags & FLG_HIDDEN) VGA0_WriteStr("+ FLG_HIDDEN");
+	if (flags & FLG_FOG) VGA0_WriteStr("+ FLG_FOG");
+	if ((flags & FLG_ARG_MASK) == FLG_ARG_1 ) VGA0_WriteStr("+ FLG_ARG_1");
+	if ((flags & FLG_ARG_MASK) == FLG_ARG_2 ) VGA0_WriteStr("+ FLG_ARG_2");
+	if ((flags & FLG_ARG_MASK) == FLG_ARG_3 ) VGA0_WriteStr("+ FLG_ARG_3");
+	if ((flags & FLG_ARG_MASK) == FLG_ARG_4 ) VGA0_WriteStr("+ FLG_ARG_4");
+	if (flags & FLG_PSTRING) VGA0_WriteStr("+ FLG_PSTRING");
+	if (flags & FLG_ADDR) VGA0_WriteStr("+ FLG_ADDR");
 	if (val_of_f_docol != C_B3at(cw)) {
-		TX0_WriteStr(" NOT_DOCOL definition ");
+		VGA0_WriteStr(" NOT_DOCOL definition ");
 		return;	// neumim rozepsat
 		};
-	TX0_WriteStr(",	\"");
-	TX0_WriteStr(buf);
-	TX0_WriteStr("\",	f_docol\r\n	P24s	");
+	VGA0_WriteStr(",	\"");
+	VGA0_WriteStr(buf);
+	VGA0_WriteStr("\",	f_docol\r\n	P24s	");
 	new=true;
 	cw+=3;
 	do {
 		val=C_B3at(cw);
 		cw+=3;
 		if (val == val_of_w_exit_cw) break;
-		if (! new) TX0_WriteStr(", ");
+		if (! new) VGA0_WriteStr(", ");
 		new=false;
 		flags=name_to_buf(val);
-		TX0_WriteStr("w_");
-		TX0_WriteStr(buf);
-		TX0_WriteStr("_cw");
+		VGA0_WriteStr("w_");
+		VGA0_WriteStr(buf);
+		VGA0_WriteStr("_cw");
 		if ( ((flags & FLG_ARG_MASK)==FLG_ARG_3) || ((flags & FLG_ADDR)==FLG_ADDR)) {
 			val=C_B3at(cw);
 			cw+=3;
 			uint32_t h1=cw2h(val);
 				if (h1) {	// it points to cw of existing word
-					TX0_WriteStr(", w_");
+					VGA0_WriteStr(", w_");
 					name_to_buf(val);
-					TX0_WriteStr(buf);
-					TX0_WriteStr("_cw");
+					VGA0_WriteStr(buf);
+					VGA0_WriteStr("_cw");
 				} else {
-					TX0_WriteStr(", 0x");
-					TX0_WriteHex24(val);
+					VGA0_WriteStr(", 0x");
+					VGA0_WriteHex24(val);
 				};
 			val=0;
 		}
 		else if ( ((flags & FLG_ARG_MASK)==FLG_ARG_4)) {
 			val=C_B2at(cw);
 			cw+=2;
-			TX0_WriteStr("\r\n		.long	0x");
-			TX0_WriteHex16(val);
+			VGA0_WriteStr("\r\n		.long	0x");
+			VGA0_WriteHex16(val);
 			val=C_B2at(cw);
 			cw+=2;
-			TX0_WriteHex16(val);
-			TX0_WriteStr("\"\r\n	P24s	");
+			VGA0_WriteHex16(val);
+			VGA0_WriteStr("\"\r\n	P24s	");
 			new=true;
 			val=0;
 		}
 		else if ( ((flags & FLG_ARG_MASK)==FLG_ARG_2)) {
 			val=C_B2at(cw);
 			cw+=2;
-			TX0_WriteStr("\r\n		.word	0x");
-			TX0_WriteHex16(val);
-			TX0_WriteStr("\"\r\n	P24s	");
+			VGA0_WriteStr("\r\n		.word	0x");
+			VGA0_WriteHex16(val);
+			VGA0_WriteStr("\"\r\n	P24s	");
 			new=true;
 			val=0;
 		}
 		else if ( ((flags & FLG_ARG_MASK)==FLG_ARG_1)) {
 			val=C_B1at(cw);
 			cw+=1;
-			TX0_WriteStr("\r\n		.byte	0x");
-			TX0_WriteHex8(val);
-			TX0_WriteStr("\"\r\n	P24s	");
+			VGA0_WriteStr("\r\n		.byte	0x");
+			VGA0_WriteHex8(val);
+			VGA0_WriteStr("\"\r\n	P24s	");
 			new=true;
 			val=0;
 		}
 		else if ((flags & FLG_PSTRING) && (C_B1at(cw)<128)) { // too long strings probabely are not arguments
 			val=C_B1at(cw);
 			cw+=1;
-			TX0_WriteStr("\r\n		.byte	0x");
-			TX0_WriteHex8(val);
-			TX0_WriteStr("\r\n		.ascii \"");
-			while (val--) TX0_WriteA(C_B1at(cw++));
-			TX0_WriteStr("\"\r\n	P24s	");
+			VGA0_WriteStr("\r\n		.byte	0x");
+			VGA0_WriteHex8(val);
+			VGA0_WriteStr("\r\n		.ascii \"");
+			while (val--) VGA0_WriteA(C_B1at(cw++));
+			VGA0_WriteStr("\"\r\n	P24s	");
 			new=true;
 			val=0;
 		};
 	} while (1);
 //	} while (val != val_of_w_exit_cw);
-	if (! new) TX0_WriteStr(",	");
-	TX0_WriteStr(" w_exit_cw");
-	TX0_Write('\r');
-	TX0_Write('\n');
+	if (! new) VGA0_WriteStr(",	");
+	VGA0_WriteStr(" w_exit_cw");
+	VGA0_Write('\r');
+	VGA0_Write('\n');
 
 }	// }}}
 void C_show(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition of WORD
 	uint32_t val;
 	uint8_t flags;
-	if ( ! cw2h(cw)) { TX0_WriteStr("Not valid CW."); return;};
-	TX0_Write('\r');
-	TX0_Write('\n');
-	TX0_Write(':');
-	TX0_Write(' ');
+	if ( ! cw2h(cw)) { VGA0_WriteStr("Not valid CW."); return;};
+	VGA0_Write('\r');
+	VGA0_Write('\n');
+	VGA0_Write(':');
+	VGA0_Write(' ');
 	flags = name_to_buf(cw);
-	TX0_WriteStr(buf);
-	if (flags & FLG_IMMEDIATE) TX0_WriteStr(" IMMEDIATE");
-	if (flags & FLG_HIDDEN) TX0_WriteStr(" ( HIDDEN )");
-	if (flags & FLG_FOG) TX0_WriteStr(" ( FOG )");
-	if ((flags & FLG_ARG_MASK) == FLG_ARG_1 ) TX0_WriteStr(" ( FLG_ARG_1 )");
-	if ((flags & FLG_ARG_MASK) == FLG_ARG_2 ) TX0_WriteStr(" ( FLG_ARG_2 )");
-	if ((flags & FLG_ARG_MASK) == FLG_ARG_3 ) TX0_WriteStr(" ( FLG_ARG_3 )");
-	if ((flags & FLG_ARG_MASK) == FLG_ARG_4 ) TX0_WriteStr(" ( FLG_ARG_4 )");
-	if (flags & FLG_PSTRING) TX0_WriteStr(" ( FLG_PSTRING )");
-	if (flags & FLG_ADDR) TX0_WriteStr(" ( FLG_ADDR )");
+	VGA0_WriteStr(buf);
+	if (flags & FLG_IMMEDIATE) VGA0_WriteStr(" IMMEDIATE");
+	if (flags & FLG_HIDDEN) VGA0_WriteStr(" ( HIDDEN )");
+	if (flags & FLG_FOG) VGA0_WriteStr(" ( FOG )");
+	if ((flags & FLG_ARG_MASK) == FLG_ARG_1 ) VGA0_WriteStr(" ( FLG_ARG_1 )");
+	if ((flags & FLG_ARG_MASK) == FLG_ARG_2 ) VGA0_WriteStr(" ( FLG_ARG_2 )");
+	if ((flags & FLG_ARG_MASK) == FLG_ARG_3 ) VGA0_WriteStr(" ( FLG_ARG_3 )");
+	if ((flags & FLG_ARG_MASK) == FLG_ARG_4 ) VGA0_WriteStr(" ( FLG_ARG_4 )");
+	if (flags & FLG_PSTRING) VGA0_WriteStr(" ( FLG_PSTRING )");
+	if (flags & FLG_ADDR) VGA0_WriteStr(" ( FLG_ADDR )");
 	if (val_of_f_docol != C_B3at(cw)) {
-		TX0_WriteStr(" NOT_DOCOL definition ");
+		VGA0_WriteStr(" NOT_DOCOL definition ");
 		return;	// neumim rozepsat
 		};
 	cw+=3;
@@ -502,65 +510,65 @@ void C_show(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition of 
 		val=C_B3at(cw);
 		cw+=3;
 		if (val == val_of_w_exit_cw) break;
-		TX0_Write(' ');
+		VGA0_Write(' ');
 		flags=name_to_buf(val);
-		TX0_WriteStr(buf);
+		VGA0_WriteStr(buf);
 		if ( ((flags & FLG_ARG_MASK)==FLG_ARG_3) || ((flags & FLG_ADDR)==FLG_ADDR)) {
 			val=C_B3at(cw);
 			cw+=3;
-			TX0_Write(' ');
+			VGA0_Write(' ');
 			uint32_t h1=cw2h(val);
 				if (h1) {	// it points to cw of existing word
 					name_to_buf(val);
-					TX0_WriteStr(buf);
-					TX0_WriteStr(" ( $");
-					TX0_WriteHex24(val);
-					TX0_WriteStr(" )");
+					VGA0_WriteStr(buf);
+					VGA0_WriteStr(" ( $");
+					VGA0_WriteHex24(val);
+					VGA0_WriteStr(" )");
 				} else {
-					TX0_WriteStr("$");
-					TX0_WriteHex24(val);
+					VGA0_WriteStr("$");
+					VGA0_WriteHex24(val);
 				};
 			val=0;
 		}
 		else if ( ((flags & FLG_ARG_MASK)==FLG_ARG_4)) {
 			val=C_B2at(cw);
 			cw+=2;
-			TX0_WriteStr(" $");
-			TX0_WriteHex16(val);
+			VGA0_WriteStr(" $");
+			VGA0_WriteHex16(val);
 			val=C_B2at(cw);
 			cw+=2;
-			TX0_WriteHex16(val);
+			VGA0_WriteHex16(val);
 			val=0;
 		}
 		else if ( ((flags & FLG_ARG_MASK)==FLG_ARG_2)) {
 			val=C_B2at(cw);
 			cw+=2;
-			TX0_WriteStr(" $");
-			TX0_WriteHex16(val);
+			VGA0_WriteStr(" $");
+			VGA0_WriteHex16(val);
 			val=0;
 		}
 		else if ( ((flags & FLG_ARG_MASK)==FLG_ARG_1)) {
 			val=C_B1at(cw);
 			cw+=1;
-			TX0_WriteStr(" $");
-			TX0_WriteHex8(val);
+			VGA0_WriteStr(" $");
+			VGA0_WriteHex8(val);
 			val=0;
 		}
 		else if ((flags & FLG_PSTRING) && (C_B1at(cw)<128)) { // too long strings probabely are not arguments
 			val=C_B1at(cw);
 			cw+=1;
-			TX0_WriteStr(" $");
-			TX0_WriteHex8(val);
-			TX0_WriteStr(" \\\"");
-			while (val--) TX0_WriteA(C_B1at(cw++));
-			TX0_WriteStr("\"");
+			VGA0_WriteStr(" $");
+			VGA0_WriteHex8(val);
+			VGA0_WriteStr(" \\\"");
+			while (val--) VGA0_WriteA(C_B1at(cw++));
+			VGA0_WriteStr("\"");
 			val=0;
 		};
 	} while (1);
 //	} while (val != val_of_w_exit_cw);
-	TX0_WriteStr(" ;");
-	TX0_Write('\r');
-	TX0_Write('\n');
+	VGA0_WriteStr(" ;");
+	VGA0_Write('\r');
+	VGA0_Write('\n');
 
 }	// }}}
 
@@ -590,11 +598,11 @@ T_TextVGA_VRAM VRAM;
 T_TextVGA_CRAM CRAM={0xf0, 0x0f, 0x24,0x42,0x9f,0xf9,0xf1,0xf2,0xf3,0xf4,0xf5,0xf6,0xf6,0xf7,0xf8,0xf9,0xfa,0xfb,0xfc,0xfd,0xfe,0xff,0xf0,0xf0,0xf0,};
 // =======================^^^^ VGA ^^^^=============================== }}}
 uint32_t C_RANDOM(uint32_t max) { 
-//	TX0_WriteStr("RND(");
-//	TX0_WriteHex24(max);
+//	VGA0_WriteStr("RND(");
+//	VGA0_WriteHex24(max);
 	uint32_t r = rand() % max ; 
-//	TX0_WriteStr(")=");
-//	TX0_WriteHex24(r);
+//	VGA0_WriteStr(")=");
+//	VGA0_WriteHex24(r);
 	return r;
 	}
 char str_buf[80];
@@ -640,8 +648,8 @@ for (uint16_t i =0 ; i< TextVGA_COLUMNS;i++) {
 // while (1){;};
 	sei();
 	/*
-	TX0_WriteHex24(xpC_U32(&f_docol));	// vyjde to stejne obema zpusoby
-	TX0_WriteHex24(val_of_f_docol);
+	VGA0_WriteHex24(xpC_U32(&f_docol));	// vyjde to stejne obema zpusoby
+	VGA0_WriteHex24(val_of_f_docol);
 	*/
 }
 // ========================^^^^ setup ^^^^========================================= }}}
@@ -649,9 +657,9 @@ for (uint16_t i =0 ; i< TextVGA_COLUMNS;i++) {
 TEXT void loop(void) {	// {{{
 	uint16_t ch = RX0_Read();
 	if (ch >> 8) { // Pokud r25 != 0
-		TX0_Write((char)(ch & 0xFF)); // Blokuje dokud není volno
+		VGA0_Write((char)(ch & 0xFF)); // Blokuje dokud není volno
 		if ((ch & 0xFF)==13)
-			TX0_Write(10); // Blokuje dokud není volno
+			VGA0_Write(10); // Blokuje dokud není volno
 	};
 //	for (int i=0;i<256;i++) ch=PORTF;
 //	__asm__ __volatile__ ("jmp NEXT \n\t");
@@ -681,10 +689,10 @@ TEXT int main(void) {
 	setup();
 	PS2_init();
 //	C_words();
-	TX0_Write('\r');
-	TX0_Write('\n');
-	TX0_Write('#');
-	TX0_Write('>');
+	VGA0_Write('\r');
+	VGA0_Write('\n');
+	VGA0_Write('#');
+	VGA0_Write('>');
 	
 //	VT_test.write_char=;
 	VT_test.read_char.ptr = (__memx const void *)(uintptr_t)			ps2_getc;
@@ -761,31 +769,31 @@ TEXT int main(void) {
 	TCB_test.	VT			= & VT_test;
 /*
 	C2FORTH(&TCB_test, (uint32_t)(uintptr_t)&run_in_FORTH_xt_in_IP);
-	TX0_WriteHex24(p24_to_u32(TCB_test.TOS));
-	TX0_Write('\r');
-	TX0_Write('\n');
-	TX0_Write('#');
-	TX0_Write('>');
+	VGA0_WriteHex24(p24_to_u32(TCB_test.TOS));
+	VGA0_Write('\r');
+	VGA0_Write('\n');
+	VGA0_Write('#');
+	VGA0_Write('>');
 */
 	TCB_test.	IP		.ptr	= & w_QUIT_cw;
 /**/	
 	C2FORTH(&TCB_test, (uint32_t)(uintptr_t)&run_in_FORTH_xt_in_IP);
-	TX0_Write('\r');
-	TX0_Write('\n');
-	TX0_Write('=');
-	TX0_WriteHex24(p24_to_u32(TCB_test.TOS));
-	TX0_Write('\r');
-	TX0_Write('\n');
-	TX0_Write('$');
-	TX0_Write('>');
+	VGA0_Write('\r');
+	VGA0_Write('\n');
+	VGA0_Write('=');
+	VGA0_WriteHex24(p24_to_u32(TCB_test.TOS));
+	VGA0_Write('\r');
+	VGA0_Write('\n');
+	VGA0_Write('$');
+	VGA0_Write('>');
 
 	/*
 	TCB_test.IP=u32_to_p24((uint32_t)(uintptr_t)&w_QUIT_cw);
 	C2FORTH(&TCB_test, (uint32_t)(uintptr_t)&run_in_FORTH_xt_in_IP);
-	TX0_Write('\r');
-	TX0_Write('\n');
-	TX0_Write('#');
-	TX0_Write('>');
+	VGA0_Write('\r');
+	VGA0_Write('\n');
+	VGA0_Write('#');
+	VGA0_Write('>');
 	*/
 	while (1) {
 		loop();
@@ -794,31 +802,31 @@ TEXT int main(void) {
 // ========================^^^^ main ^^^^========================================== }}}
 
 /*	// {{{ __data_start & spol
-TX0_WriteStr("__data_start ");
-TX0_WriteHex16((uint16_t)&__data_start);
-TX0_Write('+');
-TX0_WriteHex24(&__data_end - &__data_start);
-TX0_Write('\r'); TX0_Write('\n');
+VGA0_WriteStr("__data_start ");
+VGA0_WriteHex16((uint16_t)&__data_start);
+VGA0_Write('+');
+VGA0_WriteHex24(&__data_end - &__data_start);
+VGA0_Write('\r'); TX0_Write('\n');
 
-TX0_WriteStr("&__highram_start ");
-TX0_WriteHex16((uint16_t)&__highram_start);
-TX0_Write('+');
-TX0_WriteHex16(&__highram_end - &__highram_start);
-TX0_Write('\r'); TX0_Write('\n');
+VGA0_WriteStr("&__highram_start ");
+VGA0_WriteHex16((uint16_t)&__highram_start);
+VGA0_Write('+');
+VGA0_WriteHex16(&__highram_end - &__highram_start);
+VGA0_Write('\r'); TX0_Write('\n');
 
-TX0_WriteStr("&__bss_start ");
-TX0_WriteHex16((uint16_t)&__bss_start);
-TX0_Write('+');
-TX0_WriteHex16(&__bss_end - &__bss_start);
-TX0_Write('\r'); TX0_Write('\n');
+VGA0_WriteStr("&__bss_start ");
+VGA0_WriteHex16((uint16_t)&__bss_start);
+VGA0_Write('+');
+VGA0_WriteHex16(&__bss_end - &__bss_start);
+VGA0_Write('\r'); TX0_Write('\n');
 
-TX0_WriteStr("&__noinit_start ");
-TX0_WriteHex16((uint16_t)&__noinit_start);
-TX0_Write('+');
-TX0_WriteHex16(&__noinit_end - &__noinit_start);
-TX0_Write('\r'); TX0_Write('\n');
+VGA0_WriteStr("&__noinit_start ");
+VGA0_WriteHex16((uint16_t)&__noinit_start);
+VGA0_Write('+');
+VGA0_WriteHex16(&__noinit_end - &__noinit_start);
+VGA0_Write('\r'); TX0_Write('\n');
 
-TX0_WriteStr("&__heap_start ");
-TX0_WriteHex16((uint16_t)&__heap_start);
-TX0_Write('\r'); TX0_Write('\n');
+VGA0_WriteStr("&__heap_start ");
+VGA0_WriteHex16((uint16_t)&__heap_start);
+VGA0_Write('\r'); TX0_Write('\n');
 */	// }}}

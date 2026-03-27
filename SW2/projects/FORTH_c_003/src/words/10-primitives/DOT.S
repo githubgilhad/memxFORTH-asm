@@ -8,9 +8,9 @@ DEFWORD w_dot,			0,		".",			f_dot			; ( x  --  ) print value
 gfunc f_dot_hex	; {{{ # 
 	Set2 Cpar2,TOS2
 	mov Cpar1_lo,TOS_hlo
-	call TX0_WriteHex24
+	call VGA0_WriteHex24
 	ldi Cpar1_lo, ' '
-	call TX0_Write
+	call VGA0_Write
 	PopST TOS
 	jmp NEXT
 ; }}}

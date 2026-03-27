@@ -1,7 +1,11 @@
-/* vim: ft=cpp showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list: tabstop=8 linebreak  
-// ,,g = gcc, exactly one space after "set" */
-//
+/* vim: ft=cpp showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list: tabstop=8 linebreak tags=./tags;,tags; 
+ * */
+// ,,g = gcc, exactly one space after "set"
+
 #include "getc.h"
+
+// VGA_write_char
+#include "bios.h"
 
 
 
@@ -13,12 +17,15 @@ uint8_t C_getc(input_stack_t *s, char *out) {	// {{{ FORTH will use this to get 
 		uint8_t r = src.getc(src.state, out);
 		
 		if (r == GETC_OK) { 		// ECHO 
+			VGA_write_char(*out);
 			TX0_Write(*out);
 			if (*out==13){
 				TX0_Write(10);
+				VGA_cr();
 			};
 			if (*out==10){
 				TX0_Write(13);
+				VGA_cr();
 			};
 		};
 

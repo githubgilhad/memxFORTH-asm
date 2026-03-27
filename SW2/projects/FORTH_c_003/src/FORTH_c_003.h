@@ -10,6 +10,7 @@
 
 #include "TCB_offsets.h"
 #include "usart0.h"
+#include "tools/VGA0.h"
 #include "FORTH-Engine.h"
 #include "C_Bats.h"
 #include "tools/C2forth.h"
@@ -23,3 +24,4 @@
 extern T_TextVGA_VRAM VRAM;
 extern T_TextVGA_CRAM CRAM;
 extern void func_yield();
+uint8_t serial_getc(void *state, char *out_char);
