@@ -74,6 +74,12 @@ TextVGA_subline:	.byte 0 	; // 0..7 line of character
 TextVGA_VRAM_ptr:	.word 0 	; start of current line in VRAM
 TextVGA_CRAM_ptr:	.word 0 	; current line in CRAM
 TextVGA_subline_ptr:	.word 0 	; start of current subline in Flash - 24bit, but lo=0 by definition
+TextVGA_cursor_ptr:	.word 0 	; pointer into VRAM where cursor should be drawn 
+TextVGA_cursor_char:	.byte 0 	; Character for alternate as cursor 
+TextVGA_cursor_c_temp:	.byte 0 	; INTERNAL place for alternating character 
+TextVGA_cursor_time:	.byte 0 	; time for count down for alternating 
+TextVGA_cursor_counter:	.byte 0 	; counter down for alternating 
+TextVGA_cursor_visible:	.byte 0 	; actual state 
 
 
 .section .text.TextVGA
@@ -100,10 +106,25 @@ TextVGA_TIMER1_OVF_vect_handler:	; {{{ VGA Hsync
 ;	rjmp .TextVGA_TIMER1_OVF_vect_handler_end_after
 1:
 
+	
+	lds r20, TextVGA_cursor_visible
+	tst r20
+	breq 1f
+	lds ZL, TextVGA_cursor_ptr
+	lds ZH, TextVGA_cursor_ptr+1
+	ld r20, Z
+	sts TextVGA_cursor_c_temp, r20
+	lds r20, TextVGA_cursor_char
+	st Z, r20
+1:
 
 nop		; <=============== 2 nops are more stable here for synchronise
 nop
 
+1:
+lds r20, TCNT1L	; synchronise
+cpi r20, 0x70
+brlo 1b
 
 	set_output_all(VGA_COLOR,sts)	; output COLORs
 	lds ZL,TextVGA_CRAM_ptr
@@ -112,7 +133,8 @@ nop
 			lds r20, TCNT1L	; synchronise
 
 			; if we are too late, do not show line at all
-			cpi r20, 0x58	; <=== cut line at this point, depend on everything, too small no screen, too large flying right side
+;			cpi r20, 0x58	; <=== cut line at this point, depend on everything, too small no screen, too large flying right side
+			cpi r20, 0x80	; <=== cut line at this point, depend on everything, too small no screen, too large flying right side
 			brlo 1f
 				rjmp .L_TextVGA_TIMER1_OVF_vect_handler__end
 			1:
@@ -165,6 +187,15 @@ nop
 	out_hi(VGA_ENABLE)
 ;
 .L_TextVGA_TIMER1_OVF_vect_handler__end:
+	lds r20, TextVGA_cursor_visible
+	tst r20
+	breq 1f
+	lds ZL, TextVGA_cursor_ptr
+	lds ZH, TextVGA_cursor_ptr+1
+	ld r20, Z
+	lds r20, TextVGA_cursor_c_temp
+	st Z, r20
+1:
 	;
 	inc_mem2 TextVGA_subline_ptr
 	lds r24, TextVGA_subline
@@ -226,6 +257,18 @@ TextVGA_TIMER3_OVF_vect_handler:	; {{{  VGA VSync
 	sts TextVGA_subline_ptr, r24
 	sts TextVGA_subline_ptr+1, r25
 	; TODO enable Hsync IRQ
+	lds r24, TextVGA_cursor_counter
+	tst r24
+	brne 1f
+		lds r24, TextVGA_cursor_visible
+		cpse	r24,r1
+		ser r24
+		com r24
+		sts TextVGA_cursor_visible,r24
+		lds r24, TextVGA_cursor_time
+1:
+	dec r24
+	sts TextVGA_cursor_counter, 24
 	ret
 ; }}}
 
@@ -241,6 +284,15 @@ TextVGA_begin:		; {{{ set Timers, enable IRQs, set DDRs
 	set_output(VGA_HSYNC)
 	set_output_all(VGA_DATA,out)
 	set_output_all(VGA_COLOR,sts)
+	ldi r24, lo8(VRAM)
+	ldi r25, hi8(VRAM)
+	sts TextVGA_cursor_ptr, r24
+	sts TextVGA_cursor_ptr+1, r25
+	sts TextVGA_cursor_counter, r1
+	ldi r24,25
+	sts TextVGA_cursor_time, r24
+	ldi r24, DEFAULT_CURSOR_CHAR
+	sts TextVGA_cursor_char, r24
 	cli
 	; set timers
 	ldi r24, (1<<TSM) | (1<<PSRASY) | (1 <<PSRSYNC)

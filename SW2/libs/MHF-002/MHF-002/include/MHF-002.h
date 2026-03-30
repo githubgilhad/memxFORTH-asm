@@ -48,6 +48,8 @@
 #define VGA_DATA_PORT F
 #define VGA_COLOR_PORT H
 
+#define DEFAULT_CURSOR_CHAR 148
+
 // }}}
 // -------------------------------- RCA ------------------------------------------- {{{
 #define RCA_SIGNAL_PORT D
