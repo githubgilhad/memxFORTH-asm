@@ -41,3 +41,4 @@ void TextVGA_end();
 extern volatile uint16_t TextVGA_scanline; // 0..199 top porch, 200..400 visible
 extern volatile uint8_t TextVGA_textline; // 0..24 line of text
 extern volatile uint8_t TextVGA_subline; // 0..7 line of character
+extern volatile char* TextVGA_cursor_ptr;

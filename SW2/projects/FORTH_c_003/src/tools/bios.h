@@ -16,6 +16,7 @@
 #include "buffer.h"
 #include "DebugLEDs.h"
 #include "getc.h"
+#include "TextVGA.h"
 uint8_t process_scan_code(uint8_t code);
 
 

@@ -6,7 +6,7 @@
 // #define TextVGA_LINES 56
 // #define TextVGA_COLUMNS 35
 #define TextVGA_LINES 56
-#define TextVGA_COLUMNS 34
+#define TextVGA_COLUMNS 29
 #define TextVGA_SUBLINES 8
 #define TextVGA_FIRST_SCAN_LINE 50
 #define TextVGA_ACTIVE_SCAN_LINES TextVGA_SUBLINES*TextVGA_LINES

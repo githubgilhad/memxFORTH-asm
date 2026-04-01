@@ -48,7 +48,8 @@
 #define VGA_DATA_PORT F
 #define VGA_COLOR_PORT H
 
-#define DEFAULT_CURSOR_CHAR 148
+#define DEFAULT_CURSOR_CHAR '_' // 148=low_half 151=full_block
+#define DEFAULT_CURSOR_SPEED 15 // 30= 1/2 sec on, 1/2 sec off
 
 // }}}
 // -------------------------------- RCA ------------------------------------------- {{{

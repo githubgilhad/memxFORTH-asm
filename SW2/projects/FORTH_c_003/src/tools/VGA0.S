@@ -1,8 +1,13 @@
+/* vim: ft=cpp showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list: tabstop=8 linebreak tags=./tags;,tags; 
+*/
+// ,,g = gcc, exactly one space after "set"
+
 #define __SFR_OFFSET 0x00		// set the Special Function Register Offset from 0x20 to 0x00 in order to use AVR PORT definitions
 #include <avr/io.h>
 
 #include "FORTH-Defines.h"
 #include "FORTH-Macros.h"
+// #include "TextVGA.h"
 
 ; === VGA0_WriteA: vstup r24 = znak, blokuje při plném bufferu, vystup r24 - aktualni delka bufferu; uses r18, r19, r20, Z {{{ pise pouze ASCII
 .global VGA0_WriteA
@@ -116,3 +121,19 @@ VGA0_WriteHex32:
 	pop r24
 	rjmp VGA0_WriteHex16
 ; === }}}
+
+/*
+gfunc VGA0_set_cursor_xy	; {{{ === char* VGA0_set_cursor_xy(uint8_t x, uint8_t y);
+	mul	Cpar1_lo, Cpar2_lo
+	ldi	ZL, lo8(TextVGA_VRAM)
+	ldi	ZH, hi8(TextVGA_VRAM+1)
+	ld	Cpar1_lo, Z+
+	ld	Cpar1_hi, Z
+	add	Cpar1_lo, r0
+	adc	Cpar1_hi, r1
+	clr	r1
+	sts	TextVGA_cursor_ptr, Cpar1_lo
+	sts	TextVGA_cursor_ptr+1, Cpar1_hi
+	ret
+; }}}
+*/

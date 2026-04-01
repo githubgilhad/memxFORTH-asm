@@ -5,6 +5,10 @@
 
 #include "MHF-002.h"
 #include "TextVGA.def"
+#include "FORTH-Macros.h"
+#define SYNC_TIME	8*10
+#define TOO_LONG	SYNC_TIME+8+8	// 0x88
+// #define NOPS_BEFORE	4
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Interface:
@@ -74,7 +78,8 @@ TextVGA_subline:	.byte 0 	; // 0..7 line of character
 TextVGA_VRAM_ptr:	.word 0 	; start of current line in VRAM
 TextVGA_CRAM_ptr:	.word 0 	; current line in CRAM
 TextVGA_subline_ptr:	.word 0 	; start of current subline in Flash - 24bit, but lo=0 by definition
-TextVGA_cursor_ptr:	.word 0 	; pointer into VRAM where cursor should be drawn 
+gobj TextVGA_cursor_ptr
+			.word 0 	; pointer into VRAM where cursor should be drawn 
 TextVGA_cursor_char:	.byte 0 	; Character for alternate as cursor 
 TextVGA_cursor_c_temp:	.byte 0 	; INTERNAL place for alternating character 
 TextVGA_cursor_time:	.byte 0 	; time for count down for alternating 
@@ -118,35 +123,41 @@ TextVGA_TIMER1_OVF_vect_handler:	; {{{ VGA Hsync
 	st Z, r20
 1:
 
-nop		; <=============== 2 nops are more stable here for synchronise
-nop
+// .rept NOPS_BEFORE		; <=============== nops here for synchronise - SYNC_TIME contains it as well
+// 	nop
+// .endr
 
 1:
-lds r20, TCNT1L	; synchronise
-cpi r20, 0x70
-brlo 1b
+	lds r20, TCNT1L	; synchronise
+	cpi r20, SYNC_TIME
+	brlo 1b
+				; if we are too late, do not show line at all
+	cpi r20, TOO_LONG	; <=== cut line at this point, depend on everything, too small no screen, too large flying right side
 
+	brlo 1f
+		rjmp .L_TextVGA_TIMER1_OVF_vect_handler__end
+	1:
+		andi r20, 0xF
+		check 15
+		check 14
+		check 13
+		check 12
+		check 11
+		check 10
+		check 9
+		check 8
+		check 7
+		check 6
+		check 5
+		check 4
+;		andi r20, 3
+		check 3
+		check 2
+		check 1
+	
 	set_output_all(VGA_COLOR,sts)	; output COLORs
 	lds ZL,TextVGA_CRAM_ptr
 	lds ZH,TextVGA_CRAM_ptr+1
-
-			lds r20, TCNT1L	; synchronise
-
-			; if we are too late, do not show line at all
-;			cpi r20, 0x58	; <=== cut line at this point, depend on everything, too small no screen, too large flying right side
-			cpi r20, 0x80	; <=== cut line at this point, depend on everything, too small no screen, too large flying right side
-			brlo 1f
-				rjmp .L_TextVGA_TIMER1_OVF_vect_handler__end
-			1:
-			
-			andi r20, 7
-			check 7
-			check 6
-			check 5
-			check 4
-			check 3
-			check 2
-			check 1
 	
 	ld r20,Z
 	sts XCAT(PORT,VGA_COLOR_PORT),r20
@@ -289,7 +300,7 @@ TextVGA_begin:		; {{{ set Timers, enable IRQs, set DDRs
 	sts TextVGA_cursor_ptr, r24
 	sts TextVGA_cursor_ptr+1, r25
 	sts TextVGA_cursor_counter, r1
-	ldi r24,25
+	ldi r24,DEFAULT_CURSOR_SPEED
 	sts TextVGA_cursor_time, r24
 	ldi r24, DEFAULT_CURSOR_CHAR
 	sts TextVGA_cursor_char, r24

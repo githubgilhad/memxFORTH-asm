@@ -188,8 +188,8 @@ uint8_t ps2_getc(void *state, char *out_char) { 	// {{{
 static uint8_t cursor_X = 0;
 static uint8_t cursor_Y = 0;
 static bool cursor_visible = true;
-static char cursor_char = 0x14; // bottom block
-
+static char cursor_char = 0x151; // block
+#define Fix_Cursor TextVGA_cursor_ptr=&VRAM[cursor_Y][cursor_X];
 
 void scroll () {	// {{{
 			cursor_Y--;
@@ -201,6 +201,7 @@ void scroll () {	// {{{
 			for (uint8_t y=0; y < TextVGA_LINES-1; y++) 
 				CRAM[y]=CRAM[y+1];
 			CRAM[TextVGA_LINES-1]= VGA_none;
+			Fix_Cursor;
 }	// }}}
 
 void VGA_write_char(uint8_t c) {			// {{{  write char to cursor, move cursor, scroll screen if needed
@@ -212,6 +213,7 @@ void VGA_write_char(uint8_t c) {			// {{{  write char to cursor, move cursor, sc
 			scroll();
 		};
 	};
+	Fix_Cursor;
 }	// }}}
 void VGA_cls(char c, uint8_t col) {			// {{{  clear screen with character and color, moves cursor to 0,0
 	for (uint8_t y=0; y < TextVGA_LINES; y++) 
@@ -222,6 +224,7 @@ void VGA_cls(char c, uint8_t col) {			// {{{  clear screen with character and co
 		CRAM[y] = col;
 	cursor_X = 0;
 	cursor_Y = 0;
+	Fix_Cursor;
 }	// }}}
 void VGA_set_cursor_visible(bool c) {			// {{{  set new value, return old
 	cursor_visible = c;
@@ -231,13 +234,16 @@ void VGA_set_cursor_char(uint8_t c) {		// {{{  set new value, return old
 }	// }}}
 void VGA_set_cursor_X(uint8_t x) {			// {{{  set new value, return old
 	cursor_X = x;
+	Fix_Cursor;
 }	// }}}
 void VGA_set_cursor_Y(uint8_t y) {			// {{{  set new value, return old
 	cursor_Y = y;
+	Fix_Cursor;
 }	// }}}
 void VGA_set_cursor_XY(uint8_t x, uint8_t y) {		// {{{  set new value
 	cursor_X = x;
 	cursor_Y = y;
+	Fix_Cursor;
 }	// }}}
 void VGA_put_char_XY(char c, uint8_t x, uint8_t y) {	// {{{  put char on screen without moving cursor
 	VRAM[y][x] = c;
@@ -263,5 +269,6 @@ void VGA_cr() {	// {{{  go to new line
 	if (cursor_Y >=TextVGA_LINES) {
 		scroll();
 	};
+	Fix_Cursor;
 }	// }}}
 

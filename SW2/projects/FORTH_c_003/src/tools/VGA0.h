@@ -11,4 +11,5 @@ uint8_t VGA0_WriteHex8(uint8_t h);	//       0A, r24=buf_used. BLOCKS if buffer f
 uint8_t VGA0_WriteHex16(uint16_t h);	//     0A0D , r24=buf_used. BLOCKS if buffer full
 uint8_t VGA0_WriteHex24(uint32_t h);	//   0A0D0C , r24=buf_used. BLOCKS if buffer full
 uint8_t VGA0_WriteHex32(uint32_t h);	// 0A0D0C0D , r24=buf_used. BLOCKS if buffer full
+// char *VGA0_set_cursor_xy(uint8_t x, uint8_t y);	// return pointer to cursor
 
