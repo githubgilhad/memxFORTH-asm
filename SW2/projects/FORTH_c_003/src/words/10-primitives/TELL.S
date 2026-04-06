@@ -6,19 +6,27 @@ DEFWORD w_TELL,			0,		"TELL",			f_TELL			; ( addr len -- ) prints out string [--
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_TELL	; {{{ 
 	PopST	DT
-	push	YL
-	push	YH
-	movw	YL,	XL
+	push	DT_lo
+	push	DT_hi
+	push	DT_hlo
 2:
 	tst	TOS_lo
 	breq	3f
 	dec	TOS_lo
-	ld	Cpar1_lo, Y+
+	pop	Z_hlo
+	pop	Z_hi
+	pop	Z_lo
+	call	B1at
+	push	Z_lo
+	push	Z_hi
+	push	Z_hlo
+	mov	Cpar1_lo, Parsx_lo
 	call_VT_member_C	VT_write_char
 	rjmp	2b
 3:
-	pop	YH
-	pop	YL
+	pop	Z_hlo
+	pop	Z_hi
+	pop	Z_lo
 	PopST	TOS
 	jmp NEXT
 ; }}}

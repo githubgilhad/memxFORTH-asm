@@ -20,7 +20,8 @@ gfunc f_dot	; {{{
 	Set3	Cpar2, Cpar1_lo 	TOS
 	mov	Cpar1_hi,		r1
 	call	C_num2str
-	Set3	DT, 		Cpar2, r1
+	ldi	Tx,	0x80
+	Set3	DT, 		Cpar2, Tx
 	Set3	TOS, 		Cpar1, r1
 	PushST	DT
 	jmp f_TELL

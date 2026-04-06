@@ -6,15 +6,11 @@ DEFWORD w_HEADMORE,		0,		"HEADMORE",		f_HEADMORE		; (  --  ) start generation of
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_HEADLESS	; {{{ 
-	lds r24,TIMSK1
-	andi r24, ~(1 << TOIE1)
-	sts TIMSK1, r24
+	call_VT_member_C	VT_HEADLESS
 	jmp NEXT
 ; }}}
 gfunc f_HEADMORE	; {{{ 
-	lds r24,TIMSK1
-	ori r24, (1 << TOIE1)
-	sts TIMSK1, r24
+	call_VT_member_C	VT_HEADMORE
 	jmp NEXT
 ; }}}
 

@@ -3,7 +3,7 @@
 
 DEFWORD w_WAIT,			0,		"WAIT",			f_WAIT			; ( x  --  ) wait x ticks (0 - no wait)
 
-DEFWORD w_frames,			0,		"frames",			f_frames			; (  --  ) do something TODO [----]
+DEFWORD w_frames,		0,		"frames",		f_frames		; (  --  ) do something TODO [----]
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_frames	; {{{ 

@@ -3,12 +3,12 @@
 
 #pragma once
 
-// #define TextVGA_LINES 56
-// #define TextVGA_COLUMNS 35
-#define TextVGA_LINES 56
-#define TextVGA_COLUMNS 29
+// #define TextVGA_LINES 59
+// #define TextVGA_COLUMNS 50
+#define TextVGA_LINES 58
+#define TextVGA_COLUMNS 49
 #define TextVGA_SUBLINES 8
-#define TextVGA_FIRST_SCAN_LINE 50
+#define TextVGA_FIRST_SCAN_LINE 38
 #define TextVGA_ACTIVE_SCAN_LINES TextVGA_SUBLINES*TextVGA_LINES
 #define TextVGA_LAST_SCAN_LINE (TextVGA_FIRST_SCAN_LINE + TextVGA_ACTIVE_SCAN_LINES)
 

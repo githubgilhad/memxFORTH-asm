@@ -2,11 +2,17 @@
 
 
 DEFWORD w_I,			0,		"I",			f_I			; (  -- x ) return value of inner loop control variable
+DEFWORD w_J,			0,		"J",			f_J			; (  -- x ) return value of next loop control variable
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_I	; {{{ #
 	PushST     TOS
 	ReadR_N_x 0, TOS
+	rjmp NEXT
+; }}}
+gfunc f_J	; {{{ #
+	PushST     TOS
+	ReadR_N_x 2, TOS
 	rjmp NEXT
 ; }}}
 

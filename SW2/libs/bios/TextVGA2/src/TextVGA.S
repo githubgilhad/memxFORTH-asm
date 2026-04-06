@@ -9,12 +9,12 @@
 #include "FORTH-Macros.h"
 
 
-#define	TIMER1_COMPA_start	100	// 0..511  position inside H line
+#define	TIMER1_COMPA_start	39	// 0..511  position inside H line
 #define	TIMER3_COMPA_start	(TextVGA_FIRST_SCAN_LINE *2)	// 0..1040  first horizontal line *2
 #define	TIMER3_COMPC_start	(TextVGA_LAST_SCAN_LINE  *2)	// 0..1040  last horizontal line  *2
 
-#define	HANDLER_OFFSET		18	// clocks from interrupt start to handler start
-#define TOO_LONG		250	// how many we can compensate
+#define	HANDLER_OFFSET		25	// clocks from interrupt start to handler start
+#define TOO_LONG		2	// how many we can compensate
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Interface:
@@ -38,6 +38,7 @@ gobj TextVGA_cursor_enabled	$	.byte 0 	; 0 = disabled
 obj TextVGA_cursor_visible	$	.byte 0 	; actual state 
 obj TextVGA_cursor_counter	$	.byte 0 	; counter down for alternating 
 
+jitter: .word 0
 .section .text.TextVGA
 
 #define	Ltmp1	r0
@@ -46,6 +47,9 @@ obj TextVGA_cursor_counter	$	.byte 0 	; counter down for alternating
 #define	subline_ptrHL	r5
 #define	line_startL	r6
 #define	line_startH	r7
+#define	jitter_act	r8
+#define	jitter_min	r9
+#define	jitter_max	r10
 #define	subline_cnt	r16
 #define	pinflip		r17
 #define	temp_2	r22
@@ -94,17 +98,21 @@ func horizontal_line_handler	; {{{
 	add  temp_4, temp_2
 	adc  temp_5, temp_3
 
+	mov	jitter_act,	temp_4
 	cpse	temp_5,	r1
 	rjmp	horizontal_line_handler_end
 	cpi temp_4, TOO_LONG
 	brlo	1f
+	sbi	DDRD,0			; Debug - SCL Led blik
+	sbi	PIND,0			; Debug - SCL Led blik
 	rjmp	horizontal_line_handler_end
 1:
 ;	}}}
+;	mov	jitter_act,	temp_4
 ;	check 4
 ;	check 3
 ;	check 2
-;	check 1
+	check 1
 	
 	out RAMPZ, subline_ptrHL
 	mov ZH, subline_ptrH
@@ -122,11 +130,19 @@ func horizontal_line_handler	; {{{
 .endr
 
 ; VGA_ENABLE hi must be 8 clocks after last ONECHAR
-	nop $ nop $ nop $ nop $ nop $ nop $ nop $ nop  
+	nop $ nop $ nop $ nop $ nop $ nop 
 	out_hi(VGA_ENABLE)
 
-
 horizontal_line_handler_end:
+	cp	jitter_act,	jitter_max
+	brlo	1f
+	mov	jitter_max,	jitter_act
+1:
+	cp	jitter_act,	jitter_min
+	brsh	1f
+	mov	jitter_min,	jitter_act
+1:
+
 	dec	subline_cnt
 	breq	horizontal_line_handler_new_line
 	add	subline_ptrH,	L_one
@@ -153,15 +169,16 @@ func vertical_start_handler	; {{{
 	PUSHX(0,29)	; Z=r30:31 already saved
 	eor r1,r1
 	
-	; enable interrupt TIMER1_COMPA by OCIE1A
+	; {{{ enable interrupt TIMER1_COMPA by OCIE1A
 	lds	r24,	TIMSK1
 	ori	r24,	(1<<OCIE1A)
 	sts	TIMSK1,	 r24
-	; set constants here
+; }}}
+	; {{{ set constants here
 	mov	L_one,	r1
 	inc	L_one
-	
-	; blik cursor
+; }}}
+	; {{{ blik cursor
 	
 	lds temp_4, TextVGA_cursor_counter
 	tst temp_4
@@ -175,30 +192,39 @@ func vertical_start_handler	; {{{
 1:
 	dec temp_4
 	sts TextVGA_cursor_counter, temp_4
-	
-	; set variables here
-	lds	ZL,	TextVGA_CRAM
-	lds	ZH,	TextVGA_CRAM+1
-	ld	YL,	Z+	; CRAM_ptr
-	ld	YH,	Z+
+; }}}
+	; {{{ set variables here
+;	lds	ZL,	TextVGA_CRAM
+;	lds	ZH,	TextVGA_CRAM+1
+;	ld	YL,	Z+	; CRAM_ptr
+;	ld	YH,	Z+
+	lds	YL,	TextVGA_CRAM	; CRAM_ptr
+	lds	YH,	TextVGA_CRAM+1
 	
 	lds XL, TextVGA_VRAM
 	lds XH, TextVGA_VRAM+1
 	
 	movw	line_startL,	XL
 	
+	lds subline_ptrH, TextVGA_CharDef+1	; TextVGA_CharDef+0 = 0 by definition
+	lds subline_ptrHL, TextVGA_CharDef+2
+	ldi	subline_cnt,	TextVGA_SUBLINES
+	
+	ldi pinflip, 1<<VGA_LATCH_PIN
+
+	lds	jitter_min,	jitter
+	lds	jitter_max,	jitter+1
+; }}}
+	; {{{ set pins
 	set_output_all(VGA_COLOR,sts)	; output COLORs
 	set_output_all(VGA_DATA,out)	; prepare for outputting DATA
 	set_output(VGA_LATCH)
 	out_hi(VGA_LATCH)		; hi=get data, low=clock out
-	ldi pinflip, 1<<VGA_LATCH_PIN
 
-	lds subline_ptrH, TextVGA_CharDef+1	; TextVGA_CharDef+0 = 0 by definition
-	lds subline_ptrHL, TextVGA_CharDef+2
-	ldi	subline_cnt,	TextVGA_SUBLINES
 	ld	Ltmp1,	Y+
 	sts XCAT(PORT,VGA_COLOR_PORT),Ltmp1
-	
+; }}}
+	; {{{ set cursor
 	lds Ltmp1, TextVGA_cursor_enabled
 	tst Ltmp1
 	breq 1f
@@ -212,10 +238,27 @@ func vertical_start_handler	; {{{
 	lds Ltmp1,	TextVGA_cursor_char
 	st Z, Ltmp1
 1:
+; }}}
 	; enter loop
+1:
+	ldi	temp_4,	TCNT3L
+	cpi	temp_4,	lo8(TIMER3_COMPA_start+1)
+	brlo	1b
+
+	ldi  temp_4, (1<<OCF1A)		; clear pending interrupt
+	out  TIFR1, temp_4
 	sei
 1:	rjmp 1b
 vertical_start_handler_end:
+	sts	jitter,		jitter_min
+	sts	jitter+1,	jitter_max
+	lds XL, TextVGA_VRAM
+	lds XH, TextVGA_VRAM+1
+	ldi temp_4, 'A'
+	add jitter_min, temp_4
+	st	X+,	jitter_min
+	add jitter_max, temp_4
+	st	X+,	jitter_max
 	nop		;;;
 	lds Ltmp1, TextVGA_cursor_enabled
 	tst Ltmp1
@@ -248,13 +291,13 @@ func vertical_end_handler	; {{{ makes vertical_start_handler leave its loop
 				; tricky part - stack hack
 	in	ZL,	SPL
 	in	ZH,	SPH
-	adiw	ZL,	9-1	;;; maybe stack ret is just 16bit?
+	adiw	ZL,	9	;;; maybe stack ret is just 16bit? NO, it is 24bit and AVRemu is wrong !!!
 				; stack is reti.addr.ess ZL ZH SREG ret.addr.ess here, need to fix reti part, Z point there
 	push	r24
 ;	ldi	r24,	pm_hh8(vertical_start_handler_end)
 ;	st	Z+,	r24
-	ldi	r24,	pm_hi8(vertical_start_handler_end)
-	st	Z+,	r24
+;	ldi	r24,	pm_hi8(vertical_start_handler_end)
+;	st	Z+,	r24
 	ldi	r24,	pm_lo8(vertical_start_handler_end)
 	st	Z+,	r24
 	pop	r24
@@ -448,6 +491,10 @@ tick 13 → OCR3C
 
 ; }}}	Timer3: VGA VSYNC ends
 
+	ldi	r24,	0xFF
+	sts	jitter,	r24
+	ldi	r24,	0
+	sts	jitter+1,	r24
 	; GTCCR = 0;	// clear TSM => all timers start synchronously
 	out	GTCCR,	r1
 	pop	r0
@@ -477,6 +524,46 @@ TextVGA_end:		; {{{ disable interrupts and timers output
 	handler TIMER1_COMPA_vect_handler,	EMPTY_HANDLER
 	handler TIMER3_COMPA_vect_handler,	EMPTY_HANDLER
 	handler TIMER3_COMPC_vect_handler,	EMPTY_HANDLER
+	ret
+; }}}
+
+
+
+#include "FORTH-Defines.h"
+gfunc TextVGA_HEADLESS	; {{{ time saving, no display
+	Ldi3	Zx,  		DebugLEDs_values + 5*3
+	Ldi3	Parsx,	0x0000FF
+	call	W3at
+	call	DebugLEDs_show
+
+	lds r24,TIMSK3
+	andi r24, ~((1<<OCIE3A) | (1<<OCIE3C))
+	sts TIMSK3, r24
+	ret
+; }}}
+gfunc TextVGA_HEADMORE	; {{{ full display
+	Ldi3	Zx,		DebugLEDs_values + 5*3
+	Ldi3	Parsx,	0x00FF00
+	call	W3at
+	call	DebugLEDs_show
+
+1:
+	lds	temp_4,	TCNT3L	; {{{ wait for overflow
+	lds	temp_5,	TCNT3H
+	tst	temp_5
+	brne	1b
+	cpi	temp_4, 10
+	brsh	1b		; }}}
+	in	r0,	SREG
+	push	r0
+	cli
+	lds r24,TIMSK3
+	ori r24, (1<<OCIE3A) | (1<<OCIE3C)
+	sts TIMSK3, r24
+	ldi  temp_4, (1<<OCF3A) | (1<<OCF3C)		; clear pending interrupt
+	out  TIFR3, temp_4
+	pop	r0
+	out	SREG,	r0
 	ret
 ; }}}
 

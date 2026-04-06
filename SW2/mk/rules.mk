@@ -107,12 +107,23 @@ clean:
 
 -include $(OBJ:.o=.d)
 
-.PHONY: all nums clean sizecheck ispload bootloader reset TODO WORDS upload_monitor upload monitor tags debug
+.PHONY: all nums clean sizecheck ispload bootloader reset TODO WORDS upload_monitor upload monitor tags debug FORCE version help more_help
 
 
+help:	## Show help about main commands	{{{
+	@egrep -h '(^|[^#])##\s' $(MAKEFILE_LIST) | \
+	sed "s/^#	/# /;s/{{{//;s/}}}//" | \
+	awk 'BEGIN {FS = ":.*?#[#] "}; {printf "$(shell echo -en $(COLORS))$(BRIGHTGREEN);$(BG_BLUE);$(BOLD)m%-15s$(shell echo -en $(COLORS))$(RESET)m %s\n", $$1, $$2}' 
+	@# awk %-15s fits string left, padding with spaces - works better than tabs
+# }}}
+more_help:	## Show help about all docummented targets {{{
+	@egrep -h '###?\s' $(MAKEFILE_LIST) | \
+	sed "s/^#	/# /;s/{{{//;s/}}}//" | \
+	awk 'BEGIN {FS = ":.*?#[#] "}; {printf "$(shell echo -en $(COLORS))$(BRIGHTGREEN);$(BG_BLUE);$(BOLD)m%-15s$(shell echo -en $(COLORS))$(RESET)m %s\n", $$1, $$2}' 
+# }}}
 
 
-$(TARGET).dis: $(TARGET).elf $(MK_DEP)
+$(TARGET).dis: $(TARGET).elf $(MK_DEP)		### disassemble target
 	$(HEAD)
 	$(Q)$(OBJDUMP)   --disassemble --source --line-numbers --demangle -z --section=.text  --section=.data   --section=.highram --section=.bss  --section=.rodata --section=.FORTH_data $< > $@
 	$(Q)if ( $(OBJDUMP) -h $< | grep -q "\.FORTH_data") ; then \
@@ -121,7 +132,7 @@ $(TARGET).dis: $(TARGET).elf $(MK_DEP)
 	$(Q)Elf.rb $(TARGET).elf $(TARGET).bin2 $(TARGET).xref2
 	$(Q)AVRemu -d -m $(MCU)  -x $(TARGET).xref2 $(TARGET).bin2 >$(TARGET).dis2 || true
 
-sizecheck: $(TARGET).dis 
+sizecheck: $(TARGET).dis ### check size of code and data
 	$(HEAD)
 	$(Q)avr-size -A $(TARGET).elf | awk ' /\.text/ { text = $$2 } /\.FORTH_data/  { forth = $$2 } /\.data/ { data = $$2 } END {\
 		total = text + forth + data;  \
@@ -142,33 +153,33 @@ sizecheck: $(TARGET).dis
 		}'
 
 
-upload: $(TARGET).hex reset sizecheck
+upload: $(TARGET).hex reset sizecheck	## upload code
 	/usr/bin/avrdude -v -V -p $(MCU) -D -c wiring -b 115200 -P $(PORT) -U flash:w:$<:i
 
-ispload: $(TARGET).hex sizecheck 
+ispload: $(TARGET).hex sizecheck # upload vias ISP
 	/usr/bin/avrdude -v -p atmega2560 -c usbasp -b 115200 -e -U lock:w:0x3F:m -U efuse:w:0xFD:m -U hfuse:w:0xD1:m -U lfuse:w:0xBF:m
 	/usr/bin/avrdude -v -p $(MCU) -D -c usbasp -b 115200                 -U flash:w:$<:i
 
-bootloader:
+bootloader:	## burn bootloader
 	/usr/bin/avrdude -v -p atmega2560 -c usbasp -b 115200 -e -U lock:w:0x3F:m -U efuse:w:0xFD:m -U hfuse:w:0xD0:m -U lfuse:w:0xBF:m
 	/usr/bin/avrdude -v -p atmega2560 -c usbasp -b 115200 -U flash:w:/usr/share/arduino/hardware/arduino/avr/bootloaders//stk500v2/stk500boot_v2_mega2560.hex:i
 
-reset:
+reset:	## reset board
 	$(HEAD)
 	$(Q) ard-reset-arduino  $(PORT) || true
 
-TODO: $(TARGET).dis  sizecheck WORDS
+TODO: $(TARGET).dis  sizecheck WORDS	## show TODO and FIXME from code
 	$(HEAD)
 	$(Q)cd src;grep  --color=always -r "TODO\|FIXME"|grep -v "^.\[[[:digit:]][[:digit:]]m.\[Ktags.\[m.\[K.\[[[:digit:]][[:digit:]]m.\[K:"
 
-WORDS: $(TARGET).dis  sizecheck
+WORDS: $(TARGET).dis  sizecheck		## collects all definitions of words to WORDS.list
 	$(HEAD)
 	$(Q)find src -name "*.S" -exec grep -h "^DEF" {} \;|sort>WORDS.list
 
-monitor:
-	picocom -b 115200 --flow h --noreset --quiet $(PORT)
+monitor:	## open monitor
+	picocom -b 115200 --flow h --noreset -s cat --quiet $(PORT)
 
-upload_monitor: upload monitor
+upload_monitor: upload monitor	## upload code and open monitor
 
 debug: $(TARGET).dis
 	$(HEAD)
@@ -177,3 +188,46 @@ debug: $(TARGET).dis
 tags:
 	ctags -R .
 
+
+#--------------------------------------------------------------------------------------------------------
+
+# Makro pro získání dat z gitu
+GIT_DESCRIBE := $(shell git describe --tags --long 2>/dev/null || echo "v0.0.0-0-g0000000")
+GIT_COMMIT_HASH := $(shell git rev-parse --short HEAD)
+GIT_COMMIT_MESSAGE := $(shell git log -1 --pretty=%s)
+VERSION_HEADER := version.h
+
+# Cíl pro generování version.h
+$(VERSION_HEADER): FORCE
+	@echo "Checking version..."
+	@TMPFILE=$$(mktemp) && \
+	echo "#pragma once" > $$TMPFILE && \
+	echo "#define VERSION_STRING \"$(GIT_DESCRIBE)++\"" >> $$TMPFILE && \
+	echo "#define VERSION_COMMIT \"$(GIT_COMMIT_HASH)\"" >> $$TMPFILE && \
+	echo "#define VERSION_MESSAGE \"$(GIT_COMMIT_MESSAGE)\"" >> $$TMPFILE && \
+	if ! cmp -s $$TMPFILE $(VERSION_HEADER); then \
+		echo "Updating $(VERSION_HEADER)"; \
+		mv $$TMPFILE $(VERSION_HEADER); \
+	else \
+		echo "$(VERSION_HEADER) is up to date"; \
+		rm $$TMPFILE; \
+	fi
+
+
+
+# Cíl pro návrh nového tagu
+new_tag:
+	@LAST_TAG=$$(git tag --sort=-v:refname | head -n1); \
+	if [ -z "$$LAST_TAG" ]; then \
+		NEW_TAG="v0.0.1"; \
+	else \
+		IFS=. read -r MAJOR MINOR PATCH <<< "$$(echo $$LAST_TAG | sed 's/^v//')"; \
+		PATCH=$$((PATCH + 1)); \
+		NEW_TAG="v$${MAJOR}.$${MINOR}.$${PATCH}"; \
+	fi; \
+	echo "Suggested new tag:"; \
+	echo "git tag -a $$NEW_TAG -m \"Release $$NEW_TAG\""; \
+	echo "git push origin $$NEW_TAG"
+
+# Cíl pro ruční vygenerování nové verze
+version: $(VERSION_HEADER)

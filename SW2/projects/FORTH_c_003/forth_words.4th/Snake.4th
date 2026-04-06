@@ -3,6 +3,11 @@ HEADLESS
 ( item )
 ( : brick $A0 ; )
 : brick 235 ;
+'*' 231 232 233 4 BINSTR fruit_str : fruit_str_addr fruit_str DROP ;
+32 234 2 BINSTR grass_str : random_grass grass_str RANDOM + C@ ;
+236 237 238 239 4 BINSTR tail_str : tail_str_addr tail_str DROP ;
+240 241 242 243 4 BINSTR head_str : head_str_addr head_str DROP ;
+244 245 246 '#' 247 248 '#' 249 250 '#' 251 252 '#' 253 254 255 16 BINSTR body_str : body_str_addr body_str DROP ;
 ( score, max )
 0 0 0 0 VALUE score VALUE maxscore VALUE crash VALUE grow
 : show_score
@@ -11,12 +16,14 @@ HEADLESS
 	1 MAX_COLUMNS 2/   CUR_yx  ." MAX: " maxscore .
 	;
 ( wall )
-: wall CLS
+: wall CLS HEADLESS
 	MAX_COLUMNS 0 DO  0 I brick VRAM_yx! ( ) 2 I brick VRAM_yx! ( )  4 I brick VRAM_yx! ( )  MAX_LINES 1- I brick VRAM_yx! ( )  MAX_LINES 3 - I brick VRAM_yx! LOOP
 	MAX_LINES 0   DO  I 0 brick VRAM_yx! ( ) I MAX_COLUMNS 1- brick VRAM_yx! LOOP
+	MAX_LINES 4 - 5   DO  MAX_COLUMNS 1- 1 DO J I random_grass VRAM_yx! LOOP LOOP 
 	1 2 CUR_yx ." SCORE: " 0 . SPACE
 	3 10 CUR_yx ." Go reptile !"
 	MAX_LINES 2 - 10 CUR_yx ." Eat them all !"
+	HEADMORE
 	;
 : is_wall ( c -- flag ) brick = ;
 : test_wall ( y x --  )  VRAM_yx@ is_wall IF 1 TO crash THEN ;
@@ -35,11 +42,6 @@ HEADLESS
 	kb_Right OF DROP 2 ENDOF
 	kb_Up OF DROP 3 ENDOF
 	ENDCASE ;
-'*' 231 232 233 4 BINSTR fruit_str : fruit_str_addr fruit_str DROP ;
-234 1 BINSTR grass_str
-236 237 238 239 4 BINSTR tail_str : tail_str_addr tail_str DROP ;
-240 241 242 243 4 BINSTR head_str : head_str_addr head_str DROP ;
-244 245 246 '#' 247 248 '#' 249 250 '#' 251 252 '#' 253 254 255 16 BINSTR body_str : body_str_addr body_str DROP ;
 
 ( body )
 : show_body ( y x old new ) SWAP 4* + body_str_addr + C@ VRAM_yx! ;
@@ -53,7 +55,7 @@ HEADLESS
 : test_fruit ( y x --  ) VRAM_yx@ is_fruit IF 1 TO grow 1 +TO score THEN ;
 ( tail )
 0 0 0 VALUE tx VALUE ty VALUE td
-: hide_tail ty tx BL VRAM_yx! ;
+: hide_tail ty tx random_grass VRAM_yx! ;
 : is_tail ( c -- flag ) tail_str ISINSTR ;
 : show_tail ty tx tail_str_addr td + C@ VRAM_yx! ;
 : test_tail ( y x --  )  VRAM_yx@ is_tail IF 2 TO crash THEN ;

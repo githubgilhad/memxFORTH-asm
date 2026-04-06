@@ -5,6 +5,7 @@ DEFWORD w_REBOOT,		0,		"REBOOT",		f_REBOOT		; (  --  ) reboots computer [----]
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_REBOOT	; {{{ 
+	cli
 	jmp 0
 ; }}}
 

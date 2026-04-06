@@ -589,7 +589,7 @@ void wait(uint32_t dt){
 	}
 
 T_TextVGA_VRAM VRAM;
-T_TextVGA_CRAM CRAM={0xf0, 0x0f, 0x24,0x42,0x9f,0xf9,0xf1,0xf2,0xf3,0xf4,0xf5,0xf6,0xf6,0xf7,0xf8,0xf9,0xfa,0xfb,0xfc,0xfd,0xfe,0xff,0xf0,0xf0,0xf0,};
+T_TextVGA_CRAM CRAM={0x0f, 0xcf, 0xd4,0xd4,0x9f,0xf9,0xf1,0xf2,0xf3,0xf4,0xf5,0xf6,0xf6,0xf7,0xf8,0xf9,0xfa,0xfb,0xfc,0xfd,0xfe,0xff,0xf0,0xf0,0xf0,};
 // =======================^^^^ VGA ^^^^=============================== }}}
 uint32_t C_RANDOM(uint32_t max) { 
 //	VGA0_WriteStr("RND(");
@@ -637,6 +637,9 @@ for (uint16_t i =0 ; i< TextVGA_COLUMNS;i++) {
 	};
 	VRAM[23][2] = '0'+(TextVGA_LINES/10);
 	VRAM[23][3] = '0'+(TextVGA_LINES%10);
+VGA_set_cursor_XY(0,2);
+char ver[] = "*** ver." VERSION_STRING " (" VERSION_MESSAGE ") ***";
+for (uint8_t i=0; i<strlen(ver); i++) VGA_write_char(ver[i]);
 
 // while (1){;};
 	sei();
@@ -697,6 +700,7 @@ TEXT int main(void) {
 	VT_test.set_cursor_Y.ptr = (__memx const void *)(uintptr_t)			VGA_set_cursor_Y;
 	VT_test.set_cursor_XY.ptr = (__memx const void *)(uintptr_t)			VGA_set_cursor_XY;
 	VT_test.put_char_XY.ptr = (__memx const void *)(uintptr_t)			VGA_put_char_XY;
+	VT_test.set_def_color.ptr = (__memx const void *)(uintptr_t)			VGA_set_def_color;
 	VT_test.set_row_color.ptr = (__memx const void *)(uintptr_t)			VGA_set_row_color;
 	VT_test.set_row_color_Y.ptr = (__memx const void *)(uintptr_t)			VGA_set_row_color_Y;
 	VT_test.char_at_XY.ptr = (__memx const void *)(uintptr_t)			VGA_char_at_XY;
@@ -704,6 +708,8 @@ TEXT int main(void) {
 	VT_test.MAX_COLUMNS.ptr = (__memx const void *)(uintptr_t)			VGA_MAX_COLUMNS;
 	VT_test.wait.ptr = (__memx const void *)(uintptr_t)				wait;
 	VT_test.cr.ptr = (__memx const void *)(uintptr_t)				VGA_cr;
+	VT_test.HEADLESS.ptr = (__memx const void *)(uintptr_t)				VGA_HEADLESS;
+	VT_test.HEADMORE.ptr = (__memx const void *)(uintptr_t)				VGA_HEADMORE;
 	
 	C_getc_init(&get_STK);
 	add_getc(&get_STK, serial_getc, NULL);

@@ -153,16 +153,18 @@ DEFWORD w_CERROR,		0,		"CERROR",		f_docol, yes		; ( c-address u  -- ) reports er
 DEFWORD w_CLS,			0,		"CLS",			f_CLS			; (  --  ) clear screen, mocve cursor to 0,0 [----]
 DEFWORD w_COLON,		0,		":",			f_COLON			; ( C: "<spaces>name" -- colon-sys ) create new word [0450]
 DEFWORD w_COMMENT,		FLG_IMMEDIATE,	"(",			f_COMMENT		; ( "text)"  --  ) skip comment to paired ) [----]
+DEFWORD w_COMMIT,		0,		"COMMIT",		f_CONSTSTRING		; (  --  addr u ) just commit
 DEFWORD w_COMPARE,		0,		"COMPARE",		f_COMPARE		; ( c-addr1 u1 c-addr2 u2 -- n ) compare 2 strings  n=0 identical, n= -1 string1 is LESS than string2
 DEFWORD w_COMPILEcomma,		0,		"COMPILE,",		f_comma			; ( x --  ) compile x at HERE
 DEFWORD w_COUNT,		0,		"COUNT",		f_COUNT			; ( c-addr1  -- c-addr2 u2 ) counted string to string
 DEFWORD w_CR,			0,		"CR",			f_CR			; (  --  ) do new line 
 DEFWORD w_CREATE,		0,		"CREATE",		f_CREATE		; ( "<spaces>name" -- ) Create a definition for name  [1000]
 DEFWORD w_CURSOR_XY,		0,		"CURSOR_XY",		f_CURSOR_XY		; ( x y --  ) move cursor to x,y [xxxx]
-DEFWORD w_CUR_char,			0,		"CUR_char",			f_CUR_char			; ( c --  ) set c as cursor marker
-DEFWORD w_CUR_visible,			0,		"CUR_visible",			f_CUR_visible			; ( flag --  ) set cursor visibility
+DEFWORD w_CUR_char,		0,		"CUR_char",		f_CUR_char		; ( c --  ) set c as cursor marker
+DEFWORD w_CUR_visible,		0,		"CUR_visible",		f_CUR_visible		; ( flag --  ) set cursor visibility
 DEFWORD w_CUR_yx,		0,		"CUR_yx",		f_CUR_yx		; ( y x  --  ) move cursor to Y,X  [----]
 DEFWORD w_DEFINITIONS,		0,		"DEFINITIONS",		f_DEFINITIONS		; ( -- ) set CURRENT to first WL in ORDER
+DEFWORD w_DEF_COLOR,		0,		"DEF_COLOR",		f_DEF_COLOR		; ( c --  ) set default color c
 DEFWORD w_DIV,			0,		"/",			f_DIV			// ( a b -- div ) divide second by top, get quotient [xxxx]
 DEFWORD w_DIVMOD,		0,		"DIVMOD",		f_DIVMOD		// ( a b -- mod div ) divide second by top, get remainder and quotient [xxxx]
 DEFWORD w_DO,			FLG_IMMEDIATE,	"DO",			f_DO			; Compilation ( C: -- 0 do-sys ) compile 'do_do' to definition
@@ -195,8 +197,9 @@ DEFWORD w_INCLUDE,		FLG_IMMEDIATE,	"INCLUDE",		f_INCLUDE		; ( "filename" --  ) i
 DEFWORD w_INIT,			0,		"INIT",			f_INIT			; (  -- ) Set stacks and all other data to init values
 DEFWORD w_INTERPRET,		0,		"INTERPRET",		f_docol, yes		; ( -- )  : INTERPRET ... ; 
 DEFWORD w_ISINSTR,		0,		"ISINSTR",		f_ISINSTR		; ( char addr len  -- flag ) if char is in string
+DEFWORD w_J,			0,		"J",			f_J			; (  -- x ) return value of next loop control variable
 DEFWORD w_KEY,			0,		"KEY",			f_KEY			; ( -- 0 | char ) read character from serial (\0 if not avaiable)
-DEFWORD w_KEYpress,		0,		"KEYpress",		f_KEYpress		; (  --  ) return pressed key or zero [----]
+DEFWORD w_KEYpress,		0,		"KEYpress",		f_KEYpress		; (  -- x ) return pressed key or zero [----]
 DEFWORD w_LAND,			0,		"&&",			f_LAND			; ( a b -- a&&b ) logical AND of two stack items
 DEFWORD w_LEAVE, 		FLG_IMMEDIATE,	"LEAVE",		f_LEAVE			; Compilation ( C: backn do-sys  -- backn backn+1 do-sys ) compile 'do_leave' to definition
 DEFWORD w_LEDS_get,		0,		"LEDS@",		f_LEDS_get		; ( num  -- RGB  ) get LED # num  RGB value [xxxx]
@@ -205,12 +208,12 @@ DEFWORD w_LIT1,			FLG_ARG_1,	"LIT1",			f_LIT1			; ( -- value ) push literal valu
 DEFWORD w_LIT2,			FLG_ARG_2,	"LIT2",			f_LIT2			; ( -- value ) push literal value 2B
 DEFWORD w_LIT3,			FLG_ARG_3,	"LIT3",			f_LIT3			; ( -- value ) push literal value 3B
 DEFWORD w_LITERAL,		FLG_IMMEDIATE,	"LITERAL",		f_LITERAL		; ( x -- ) compile x to current word 3B (as LIT3 x)
-DEFWORD w_LITSTRING,		FLG_PSTRING,		"LITSTRING",		f_LITSTRING		; ( -- addr len ) push addr and len of string on the stack - similar to LIT
+DEFWORD w_LITSTRING,		FLG_PSTRING,	"LITSTRING",		f_LITSTRING		; ( -- addr len ) push addr and len of string on the stack - similar to LIT
 DEFWORD w_LOOP,			FLG_IMMEDIATE,	"LOOP",			f_LOOP			; Compilation ( C: 0 back1 .. backn do-sys --  ) compile 'do_loop' to definition
 DEFWORD w_LOR,			0,		"||",			f_LOR			; ( a b -- a||b ) logical OR of two stack items
 DEFWORD w_Lfrom,		0,		"L>",			f_Lfrom			; (  -- x ) ( L: x -- ) move CELL from L stack to data stack
-DEFWORD w_MAX_COLUMNS,		0,		"MAX_COLUMNS",		f_MAX_COLUMNS		; (  --  ) return number of columns [----]
-DEFWORD w_MAX_LINES,		0,		"MAX_LINES",		f_MAX_LINES		; (  --  ) return number of lines [----]
+DEFWORD w_MAX_COLUMNS,		0,		"MAX_COLUMNS",		f_MAX_COLUMNS		; (  -- x ) return number of columns [----]
+DEFWORD w_MAX_LINES,		0,		"MAX_LINES",		f_MAX_LINES		; (  -- x ) return number of lines [----]
 DEFWORD w_MOD,			0,		"%",			f_MOD			// ( a b -- mod ) divide second by top, get remainder (modulo)  [xxxx]
 DEFWORD w_NDROP,		0,		"NDROP",		f_NDROP			; ( xn .. x1 n -- ) DROP N items from top of stack
 DEFWORD w_NEXTcounter,		0,		"NEXTcounter",		f_NEXTcounter		; (  -- x1 x2  ) returns NEXTcounter as Double (# of jumps to NEXT)  [xxxx]
@@ -223,13 +226,13 @@ DEFWORD w_PLUSLOOP,		FLG_IMMEDIATE,	"+LOOP",		f_PLUSLOOP		; Compilation ( C: 0 b
 DEFWORD w_POS,			0,		"POS",			f_POS			; ( char addr len  -- (pos) flag ) return flag and if found also zero based position
 DEFWORD w_QUIT,			0,		"QUIT",			f_docol, yes		; Main loop,  : QUIT INIT BEGIN BEGIN TIB TIB.max ACCEPT UNTIL INTERPRET REPEAT ;  
 DEFWORD w_RAM_MOVE,		0,		"RAM-MOVE",		f_RAM_MOVE		; ( addr1 addr2 u -- ) in RAM only, move u bytes to addr2 (in right direction)
-DEFWORD w_RANDOM,			0,		"RANDOM",			f_RANDOM			; ( max -- rnd ) rnd 0..(max -1)
+DEFWORD w_RANDOM,		0,		"RANDOM",		f_RANDOM		; ( max -- rnd ) rnd 0..(max -1)
 DEFWORD w_RDROP,		0,		"RDROP",		f_RDROP			; ( -- ) ( R: x -- ) DROP for return stack
 DEFWORD w_REBOOT,		0,		"REBOOT",		f_REBOOT		; (  --  ) reboots computer [----]
 DEFWORD w_REPEAT,		FLG_IMMEDIATE,	"REPEAT",		f_REPEAT		; ( C: 0 [a .. a] do-sys   --  ) BEGIN condition WHILE action REPEAT [----]
 DEFWORD w_ROT,			0,		"ROT",			f_ROT			; ( a b c -- b c a ) rotate 3. item up [----]
-DEFWORD w_ROW_COLOR,			0,		"ROW_COLOR",			f_ROW_COLOR			; ( c --  ) set color c for actual row
-DEFWORD w_ROW_COLOR_Y,			0,		"ROW_COLOR_Y",			f_ROW_COLOR_Y			; ( c y --  ) set color c for given row
+DEFWORD w_ROW_COLOR,		0,		"ROW_COLOR",		f_ROW_COLOR		; ( c --  ) set color c for actual row
+DEFWORD w_ROW_COLOR_Y,		0,		"ROW_COLOR_Y",		f_ROW_COLOR_Y		; ( c y --  ) set color c for given row
 DEFWORD w_R_at,			0,		"R@",			f_R_at			; (  -- x ) ( R: x -- x ) copy CELL from return stack to data stack
 DEFWORD w_Rfrom,		0,		"R>",			f_Rfrom			; (  -- x ) ( R: x -- ) move CELL from return stack to data stack
 DEFWORD w_SEARCH_WORDLIST,	0,		"SEARCH_WORDLIST",	f_docol, yes		; ( c-addr u wid -- 0 | xt 1 | xt -1 ) search name, return xt 
@@ -248,6 +251,9 @@ DEFWORD w_UNLOOP,		0,		"UNLOOP",		f_docol, yes		; ( -- ) ( R: limit first -- ) r
 DEFWORD w_UNTIL,		FLG_IMMEDIATE,	"UNTIL",		f_UNTIL			; Compilation ( C: 0 [a .. a] do-sys --  ) compile 'do_until' to definition
 DEFWORD w_VALUE,		0,		"VALUE",		f_VALUE			; ( "name" val  --  ) create value  { 12 VALUE test 	test ( -- 12 ) }
 DEFWORD w_VARIABLE,		0,		"VARIABLE",		f_VARIABLE		; ( "name" --  ) create variable [----] { VARIABLE test 	12 test ! test @ ( -- 12 ) }
+DEFWORD w_VER,			0,		"VER",			f_CONSTSTRING		; (  -- addr u ) version string
+DEFWORD w_VERSION,		0,		"VERSION",		f_CONSTSTRING		; (  --  addr u ) just version
+DEFWORD w_VER_MESSAGE,		0,		"VER_MESSAGE",		f_CONSTSTRING		; (  --  addr u ) version message
 DEFWORD w_VRAM_yx_get,		0,		"VRAM_yx@",		f_VRAM_yx_get		; ( y x  --  c ) get c at X,Y [----]
 DEFWORD w_VRAM_yx_set,		0,		"VRAM_yx!",		f_VRAM_yx_set		; ( y x c --  ) store c to X,Y [----]
 DEFWORD w_WAIT,			0,		"WAIT",			f_WAIT			; ( x  --  ) wait x ticks (0 - no wait)
@@ -263,7 +269,7 @@ DEFWORD w_dot_hex,		0,		".h",			f_dot_hex		; ( x  --  ) print hexa value and spa
 DEFWORD w_double,		0,		"2*",			f_double		; ( a -- b ) b = a * 2 [xxxx]
 DEFWORD w_equals,		0,		"=",			f_equals		; ( x y -- flag ) x == y
 DEFWORD w_exit,			0,		"exit",			f_exit			; ( XX ) exit from word
-DEFWORD w_frames,			0,		"frames",			f_frames			; (  --  ) do something TODO [----]
+DEFWORD w_frames,		0,		"frames",		f_frames		; (  --  ) do something TODO [----]
 DEFWORD w_greater,		0,		">",			f_greater		; ( x y -- flag ) x > y
 DEFWORD w_half,			0,		"2/",			f_half			; ( a -- b ) b = a / 2 [xxxx]
 DEFWORD w_head2flags,		0,		"H>FLAGS",		f_head2flags		;  ( h -- flags )  : H>FLAGS  ( h -- flags )     3 +  ;

@@ -189,6 +189,8 @@ static uint8_t cursor_X = 0;
 static uint8_t cursor_Y = 0;
 static bool cursor_visible = true;
 static char cursor_char = 151; // block
+static uint8_t def_color = VGA_none;
+static uint8_t def_char = ' ';
 #define Fix_Cursor TextVGA_cursor_ptr=&VRAM[cursor_Y][cursor_X];
 
 void scroll () {	// {{{
@@ -197,10 +199,10 @@ void scroll () {	// {{{
 				for (uint8_t x=0; x < TextVGA_COLUMNS; x++) 
 					VRAM[y][x] = VRAM[y+1][x];
 			for (uint8_t x=0; x < TextVGA_COLUMNS; x++) 
-				VRAM[TextVGA_LINES-1][x] = ' ';
+				VRAM[TextVGA_LINES-1][x] = def_char;
 			for (uint8_t y=0; y < TextVGA_LINES-1; y++) 
 				CRAM[y]=CRAM[y+1];
-			CRAM[TextVGA_LINES-1]= VGA_none;
+			CRAM[TextVGA_LINES-1]= def_color;
 			Fix_Cursor;
 }	// }}}
 
@@ -215,13 +217,13 @@ void VGA_write_char(uint8_t c) {			// {{{  write char to cursor, move cursor, sc
 	};
 	Fix_Cursor;
 }	// }}}
-void VGA_cls(char c, uint8_t col) {			// {{{  clear screen with character and color, moves cursor to 0,0
+void VGA_cls() {			// {{{  clear screen with default character and color, moves cursor to 0,0
 	for (uint8_t y=0; y < TextVGA_LINES; y++) 
 		for (uint8_t x=0; x < TextVGA_COLUMNS; x++) 
-			VRAM[y][x] = c;
+			VRAM[y][x] = def_char;
 	
 	for (uint8_t y=0; y < TextVGA_LINES; y++) 
-		CRAM[y] = col;
+		CRAM[y] = def_color;
 	cursor_X = 0;
 	cursor_Y = 0;
 	Fix_Cursor;
@@ -248,6 +250,9 @@ void VGA_set_cursor_XY(uint8_t x, uint8_t y) {		// {{{  set new value
 void VGA_put_char_XY(char c, uint8_t x, uint8_t y) {	// {{{  put char on screen without moving cursor
 	VRAM[y][x] = c;
 }	// }}}
+void VGA_set_def_color(uint8_t col) {		// {{{  set current row color
+	def_color = col;
+}	// }}}
 void VGA_set_row_color(uint8_t col) {		// {{{  set current row color
 	CRAM[cursor_Y] = col;
 }	// }}}
@@ -271,4 +276,10 @@ void VGA_cr() {	// {{{  go to new line
 	};
 	Fix_Cursor;
 }	// }}}
+void VGA_HEADLESS() {
+	TextVGA_HEADLESS();
+}
+void VGA_HEADMORE(){
+	TextVGA_HEADMORE();
+}
 

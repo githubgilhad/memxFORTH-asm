@@ -1,9 +1,9 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  tags=./tags;,tags; 
 
 
-DEFWORD w_KEYpress,		0,		"KEYpress",		f_KEYpress		; (  --  ) return pressed key or zero [----]
-DEFWORD w_MAX_LINES,		0,		"MAX_LINES",		f_MAX_LINES		; (  --  ) return number of lines [----]
-DEFWORD w_MAX_COLUMNS,		0,		"MAX_COLUMNS",		f_MAX_COLUMNS		; (  --  ) return number of columns [----]
+DEFWORD w_KEYpress,		0,		"KEYpress",		f_KEYpress		; (  -- x ) return pressed key or zero [----]
+DEFWORD w_MAX_LINES,		0,		"MAX_LINES",		f_MAX_LINES		; (  -- x ) return number of lines [----]
+DEFWORD w_MAX_COLUMNS,		0,		"MAX_COLUMNS",		f_MAX_COLUMNS		; (  -- x ) return number of columns [----]
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_KEYpress	; {{{ 

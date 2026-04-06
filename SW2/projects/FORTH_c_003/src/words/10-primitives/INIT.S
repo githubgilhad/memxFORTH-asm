@@ -10,6 +10,8 @@ gfunc f_INIT	; {{{ #         DT2 = X, Z needed for elpm
 ;;		Ldi2	DT2, PROMPT_Y
 ;;		ldi	Tx, 10
 ;;		st	X, Tx
+	sbi	DDRD,0			; Debug - SCL Led blik
+	sbi	PORTD,0			; Debug - SCL Led blik
 	;
 	Ldi2	DT2, RX0_Count
 	Ldi3	Zx, .L_f_INIT__len

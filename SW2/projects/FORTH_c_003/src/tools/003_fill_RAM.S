@@ -11,6 +11,21 @@
 ;	.init9 call main
 .section .init3
 .global fill_ram_pattern
+no_interrupts:
+	clr	r1
+	; no interrupt on Timer1
+		; TIMSK1 = 0; 
+	sts TIMSK1, r1
+	
+	; no output pin for OCR1B
+	sts TCCR1A, r1
+
+	; no interrupt on Timer3
+		; TIMSK3 = 0; 
+	sts TIMSK3, r1
+	
+	; no output pin for OCR3B
+	sts TCCR3A, r1
 fill_ram_pattern:
 	ldi r30, lo8(__heap_start)
 	ldi r31, hi8(__heap_start)
