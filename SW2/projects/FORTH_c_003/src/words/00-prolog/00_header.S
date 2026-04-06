@@ -9,7 +9,7 @@
 
 #include "../../TCB_offsets.inc"
 #include "../../getc.inc"
-#include "TextVGA.def"
+#include "TextVGA.inc"
 
 ; External memory functions
 .extern W1at

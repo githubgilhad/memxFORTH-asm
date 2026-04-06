@@ -92,7 +92,7 @@ TextVGA_cursor_visible:	.byte 0 	; actual state
 
 TextVGA_TIMER1_OVF_vect_handler:	; {{{ VGA Hsync
 .type TextVGA_TIMER1_OVF_vect_handler, @function
-;	eor r0,r0	; in main handler
+;	eor r1,r1	; in main handler
 	lds r24, TextVGA_scanline
 	lds r25, TextVGA_scanline + 1
 	adiw r24,1
@@ -250,11 +250,11 @@ nop
 
 TextVGA_TIMER3_OVF_vect_handler:	; {{{  VGA VSync
 .type TextVGA_TIMER3_OVF_vect_handler, @function
-	eor r0,r0
-	sts TextVGA_scanline, r0
-	sts TextVGA_scanline+1, r0
-	sts TextVGA_textline, r0
-	sts TextVGA_subline, r0
+	eor r1,r1
+	sts TextVGA_scanline, r1
+	sts TextVGA_scanline+1, r1
+	sts TextVGA_textline, r1
+	sts TextVGA_subline, r1
 	lds r24, TextVGA_VRAM
 	lds r25, TextVGA_VRAM+1
 	sts TextVGA_VRAM_ptr, r24

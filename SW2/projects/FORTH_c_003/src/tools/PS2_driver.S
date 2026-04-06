@@ -117,8 +117,8 @@ gfunc INT6_vect	; {{{
 	out XCAT(PORT,PS2_DATA_PORT),r1
 	Ldi2	Zx2,	PS2_input
 	call	BUF_Write_ZP
-	sbi	DDRD,0
-	sbi	PIND,0
+;	sbi	DDRD,0				; SCL Led
+;	sbi	PIND,0
 	pop ZH
 	pop ZL
 	pop r24

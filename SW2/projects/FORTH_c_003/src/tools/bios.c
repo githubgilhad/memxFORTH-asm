@@ -188,7 +188,7 @@ uint8_t ps2_getc(void *state, char *out_char) { 	// {{{
 static uint8_t cursor_X = 0;
 static uint8_t cursor_Y = 0;
 static bool cursor_visible = true;
-static char cursor_char = 0x151; // block
+static char cursor_char = 151; // block
 #define Fix_Cursor TextVGA_cursor_ptr=&VRAM[cursor_Y][cursor_X];
 
 void scroll () {	// {{{

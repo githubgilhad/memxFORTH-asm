@@ -575,12 +575,6 @@ void C_show(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition of 
 // }}}
 
 // =======================vvvv VGA vvvv=============================== {{{
-isr_handler TIMER1_OVF_vect_handler;
-ISR(TIMER1_OVF_vect) { if (TIMER1_OVF_vect_handler) TIMER1_OVF_vect_handler(); }
-
-// VGA VSync:
-isr_handler TIMER3_OVF_vect_handler;
-ISR(TIMER3_OVF_vect) { if (TIMER3_OVF_vect_handler) TIMER3_OVF_vect_handler(); }
 
 volatile uint32_t frames;	// increase after frame displayed
 volatile bool VB_flag;		// set on start of each Vertical Blank
@@ -618,13 +612,12 @@ TEXT void setup(void) {
 	usart0_setup();
 	DebugLEDs_init();
 
+
 TextVGA_VRAM = &VRAM;
 TextVGA_CRAM = &CRAM;
 TextVGA_CharDef = pgm_get_far_address(StdTextCharDef);
 TextVGA_CharDef = pgm_get_far_address(SnakeCharDef);
 TextVGA_CharDef = pgm_get_far_address(SnakeCharDef2);
-TIMER1_OVF_vect_handler=TextVGA_TIMER1_OVF_vect_handler;
-TIMER3_OVF_vect_handler=TextVGA_TIMER3_OVF_vect_handler;
 TextVGA_VerticalBlank=VB_handler;
 TextVGA_begin();
 

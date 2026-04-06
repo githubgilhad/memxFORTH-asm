@@ -19,6 +19,7 @@
 #include "tools/getc.h"
 #include "tools/bios.h"
 #include "DebugLEDs.h"
+#include "tools/vectors.h"
 #include "TextVGA.h"
 
 extern T_TextVGA_VRAM VRAM;
