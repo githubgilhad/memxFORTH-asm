@@ -6,7 +6,7 @@
 
 #include "MHF-002.h"
 #include "TextVGA.inc"
-#include "FORTH-Macros.h"
+#include "FORTH-Macros.h"		//  ../../../FORTH/FORTH-Macros/include/FORTH-Macros.h
 
 
 #define	TIMER1_COMPA_start	39	// 0..511  position inside H line
@@ -38,7 +38,7 @@ gobj TextVGA_cursor_enabled	$	.byte 0 	; 0 = disabled
 obj TextVGA_cursor_visible	$	.byte 0 	; actual state 
 obj TextVGA_cursor_counter	$	.byte 0 	; counter down for alternating 
 
-jitter: .word 0
+jitter: .word 0,0
 .section .text.TextVGA
 
 #define	Ltmp1	r0
@@ -169,11 +169,6 @@ func vertical_start_handler	; {{{
 	PUSHX(0,29)	; Z=r30:31 already saved
 	eor r1,r1
 	
-	; {{{ enable interrupt TIMER1_COMPA by OCIE1A
-	lds	r24,	TIMSK1
-	ori	r24,	(1<<OCIE1A)
-	sts	TIMSK1,	 r24
-; }}}
 	; {{{ set constants here
 	mov	L_one,	r1
 	inc	L_one
@@ -212,7 +207,14 @@ func vertical_start_handler	; {{{
 	
 	ldi pinflip, 1<<VGA_LATCH_PIN
 
-	lds	jitter_min,	jitter
+	lds	temp_4,		jitter+2
+	dec	temp_4
+	sts	jitter+2,	temp_4
+	brne	1f
+	sts	jitter+1,	temp_4
+	sts	jitter+0,	temp_4
+1:
+	lds	jitter_min,	jitter+0
 	lds	jitter_max,	jitter+1
 ; }}}
 	; {{{ set pins
@@ -240,11 +242,27 @@ func vertical_start_handler	; {{{
 1:
 ; }}}
 	; enter loop
+	lds	temp_5,	TCNT3L
 1:
-	ldi	temp_4,	TCNT3L
-	cpi	temp_4,	lo8(TIMER3_COMPA_start+1)
+	lds	temp_4,	TCNT3L
+	cp	temp_4,	temp_5
+	breq	1b
+1:
+	lds	temp_4,	TCNT1L
+	cpi	temp_4,	lo8(TIMER1_COMPA_start+10)
 	brlo	1b
+1:
+	lds	temp_4,	TCNT1L
+	cpi	temp_4,	lo8(TIMER1_COMPA_start+20)
+	brsh	1b
 
+	ldi  temp_4, (1<<OCF1A)		; clear pending interrupt
+	out  TIFR1, temp_4
+	; {{{ enable interrupt TIMER1_COMPA by OCIE1A
+	lds	temp_4,	TIMSK1
+	ori	temp_4,	(1<<OCIE1A)
+	sts	TIMSK1,	temp_4
+; }}}
 	ldi  temp_4, (1<<OCF1A)		; clear pending interrupt
 	out  TIFR1, temp_4
 	sei

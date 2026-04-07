@@ -172,12 +172,14 @@ uint8_t ps2_getc(void *state, char *out_char) { 	// {{{
 		oShift=Shift;
 		oCaps =Caps ;
 		oNums =Nums ;
+#ifndef NO_VGA
 		DebugLEDs_setRGB(0,Caps?0x80:0,0,0);
 		DebugLEDs_setRGB(1,0,Nums?0x80:0,0);
 		DebugLEDs_setRGB(2,Ctrl?0x80:0,0,0);
 		DebugLEDs_setRGB(3,0,0,Alt?0x80:0);
 		DebugLEDs_setRGB(4,0,Shift?0x80:0,0);
 		DebugLEDs_show();
+#endif
 	};
 	ch = BUF_Read_C(&PS2_ASCII);
 	*out_char = (ch & 0xFF);

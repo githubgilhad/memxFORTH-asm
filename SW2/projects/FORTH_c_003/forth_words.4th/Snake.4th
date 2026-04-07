@@ -46,10 +46,11 @@ HEADLESS
 ( body )
 : show_body ( y x old new ) SWAP 4* + body_str_addr + C@ VRAM_yx! ;
 : is_body ( c -- flag ) body_str ISINSTR ;
+: is_grass ( c -- flag ) grass_str ISINSTR ;
 : test_body ( y x --  )  VRAM_yx@ is_body IF 2 TO crash THEN ;
 ( fruit )
 : random_fruit fruit_str RANDOM + C@ ;
-: place_fruit MAX_LINES 8 - RANDOM 5 + MAX_COLUMNS 2 - RANDOM 1+ DUP2 VRAM_yx@ BL = IF random_fruit VRAM_yx! ELSE DROP2 THEN ;
+: place_fruit MAX_LINES 8 - RANDOM 5 + MAX_COLUMNS 2 - RANDOM 1+ DUP2 VRAM_yx@ is_grass IF random_fruit VRAM_yx! ELSE DROP2 THEN ;
 : show_fruit ( -- ) 15 RANDOM IFNOT place_fruit THEN ;
 : is_fruit ( c -- flag ) fruit_str ISINSTR ;
 : test_fruit ( y x --  ) VRAM_yx@ is_fruit IF 1 TO grow 1 +TO score THEN ;
@@ -70,7 +71,7 @@ HEADLESS
 ( head )
 0 0 0 0 VALUE hx VALUE hy VALUE hd VALUE hdd
 10 VALUE speed
-: hide_head hy hx BL VRAM_yx! ;
+: hide_head hy hx random_grass VRAM_yx! ;
 : show_head hy hx head_str_addr hd + C@ VRAM_yx! ;
 : move_head
 	speed WAIT hide_head
@@ -115,8 +116,7 @@ HEADLESS
 		MAX_LINES 2 - 7 CUR_yx $4D ROW_COLOR SPACE ." Press Space / Esc " 
 		BEGIN 
 			BEGIN KEYpress ?DUP UNTIL ( non-zero key pressed)
-			DUP .
-			DUP kb_Esc = IF EXIT THEN 
+			DUP kb_Esc = IF DROP EXIT THEN 
 		kb_Space = UNTIL
 	REPEAT
 ;

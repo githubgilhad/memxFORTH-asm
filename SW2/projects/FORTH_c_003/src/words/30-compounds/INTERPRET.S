@@ -18,15 +18,11 @@ DEFWORD w_INTERPRET,		0,		"INTERPRET",		f_docol, yes		; ( -- )  : INTERPRET ... 
 ;	P24 w_THEN_cw
 3: ; IF				; 3: nothing to do
 	P24 w_FIND_NAME_cw
-	P24 w_qDUP_cw		;  ( c-addr u --  c-addr u xt flag flag | c-addr u 0 )
+	P24 w_qDUP_cw		;  ( c-addr u --  xt flag flag | c-addr u 0 )
 	
 ;	P24 w_IF_cw		; (3) word found
 	P24 w_0BRANCH_cw
 	P24 3f - .
-	
-	P24 w_2toR_cw
-	P24 w_2DROP_cw
-	P24 w_2Rfrom_cw		; zahodit jméno a delku, zbyde  xt flag
 	
 	P24 var_TCB_STATE_cw
 	P24 w_char_at_cw
@@ -116,9 +112,8 @@ DEFWORD w_INTERPRET,		0,		"INTERPRET",		f_docol, yes		; ( -- )  : INTERPRET ... 
 ;;				2DROP EXIT		\ nic ke zpracování
 ;;			THEN				\ 3:
 ;;			
-;;			FIND-NAME ?DUP			\ ( c-addr u --  c-addr u xt flag flag | c-addr u 0 )
+;;			FIND-NAME ?DUP			\ ( c-addr u -- u xt flag flag | c-addr u 0 )
 ;;			IF				\ (3) word found
-;;				2>R 2DROP 2R>		\ zahodit jméno a delku, zbyde  xt flag
 ;;				STATE C@ 
 ;;				IF			\ (4) state (0=interpret, 1=compile)
 ;;					1= IF		\ (5) IMMEDIATE

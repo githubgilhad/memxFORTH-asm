@@ -3,6 +3,9 @@
 // ,,g = gcc, exactly one space after "set"
 //
 #include "FORTH_c_003.h"
+// External FORTH primitives
+extern void f_dup(void);
+extern void run_in_FORTH_xt_in_IP(void);
 
 #define TEXT __attribute__((section(".text")))
 TEXT void write_char(char c){	// {{{
@@ -98,53 +101,12 @@ extern uint8_t VGA0_WriteHex8(uint8_t h);
 extern uint8_t VGA0_WriteHex16(uint16_t h);
 extern uint8_t VGA0_WriteHex24(uint32_t h);
 
-// External FORTH primitives
-extern void f_dup(void);
-extern void run_in_FORTH_xt_in_IP(void);
-
-typedef const __memx uint8_t *xpC;
-typedef const __memx uint8_t   xC;
-typedef const uint8_t *npC;
-typedef const uint8_t   nC;
-
-
-extern __memx const uint8_t w_TEST_cw;
-extern __memx const uint8_t w_QUIT_cw;
-extern __memx const uint8_t w_zzz_eol_1;
-extern __memx const uint8_t ww_zzz_eol_2;
-extern __memx const uint8_t ww_zzz_eol_3;
-extern xC FORTH_WORDS_START;
-extern xC FORTH_WORDS_END;
-extern xC f_docol;
-extern xC w_docol_cw;
-extern const __memx uint32_t	val_of_w_exit_cw;
-extern const __memx uint32_t	val_of_f_docol;
-
-extern uint8_t __data_start;
-extern uint8_t __data_end;
-extern uint8_t __highram_start;
-extern uint8_t __highram_end;
-extern uint8_t __bss_start;
-extern uint8_t __bss_end;
-extern uint8_t __noinit_start;
-extern uint8_t __noinit_end;
-extern uint8_t __heap_start;
 
 #define HERE_SIZE 0x3000
 uint8_t HERE1[HERE_SIZE] __attribute__((section(".highram")));
 
 
 // #define F(str) ((const __attribute__((__progmem__))char*)(str))
-#pragma GCC push_options
-#pragma GCC optimize ("no-strict-aliasing")
-
-static inline P16 U16_P16(uint16_t x){ return *(P16*)&x;  }
-static inline P24 U32_P24(uint32_t x){ return *(P24*)&x;  }
-static inline uint32_t P24_U32(P24 x) { uint32_t r; __asm__ ( "clr %D0" : "=r" (r) : "0" (x)); return r; }
-static inline uint32_t xpC_U32(xpC x) { uint32_t r; __asm__ ( "clr %D0" : "=r" (r) : "0" (x)); return r; }
-static inline uint32_t npC_U32(npC x) { uint32_t r; __asm__ ( "clr %D0" : "=r" (r) : "0" (x)); return r; }
-//static inline DOUBLE_t U32_D(uint32_t x){ return x & 0x00FFFFFFUL; }
-#pragma GCC pop_options
 static inline P24 u32_to_p24(uint32_t v) // {{{
 {
     P24 p;
@@ -610,8 +572,9 @@ uint32_t C_num2str(uint32_t num, Thread_Controll_Block *TCB) {
 // ========================vvvv setup vvvv========================================= {{{
 TEXT void setup(void) {
 	usart0_setup();
+#ifndef NO_VGA
 	DebugLEDs_init();
-
+#endif
 
 TextVGA_VRAM = &VRAM;
 TextVGA_CRAM = &CRAM;
@@ -619,8 +582,9 @@ TextVGA_CharDef = pgm_get_far_address(StdTextCharDef);
 TextVGA_CharDef = pgm_get_far_address(SnakeCharDef);
 TextVGA_CharDef = pgm_get_far_address(SnakeCharDef2);
 TextVGA_VerticalBlank=VB_handler;
+#ifndef NO_VGA
 TextVGA_begin();
-
+#endif
 char *pt=&VRAM[0][0];
 for (uint8_t j =24;j<TextVGA_LINES;j++) CRAM[j]=0xf4;
 CRAM[49]=0x28;

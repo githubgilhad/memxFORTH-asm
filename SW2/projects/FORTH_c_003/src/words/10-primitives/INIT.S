@@ -10,8 +10,8 @@ gfunc f_INIT	; {{{ #         DT2 = X, Z needed for elpm
 ;;		Ldi2	DT2, PROMPT_Y
 ;;		ldi	Tx, 10
 ;;		st	X, Tx
-	sbi	DDRD,0			; Debug - SCL Led blik
-	sbi	PORTD,0			; Debug - SCL Led blik
+	sbi	DDRD,0			; Debug - SCL Led off
+	sbi	PORTD,0			; Debug - SCL Led off
 	;
 	Ldi2	DT2, RX0_Count
 	Ldi3	Zx, .L_f_INIT__len
@@ -43,7 +43,7 @@ obj .L_f_INIT__len
 ;	.ascii " : foobar  INCLUDE TEST.4TH 1 2 + ; ' foobar EXPORT foobar "
 ;	.ascii " : x IF 5 ELSE 6 THEN 7 ; ' x EXPORT  "
 ;	.ascii " 12 3 DIVMOD .h .h "
-	.ascii " "
+	.ascii " 1 2 ' CLS  "
 2:
 	.byte 1
 .balign 2

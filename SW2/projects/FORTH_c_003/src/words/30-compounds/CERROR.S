@@ -6,6 +6,9 @@ DEFWORD w_CERROR,		0,		"CERROR",		f_docol, yes		; ( c-address u  -- ) reports er
 	.byte '<'
 	P24 w_EMIT_cw
 	P24 w_LIT1_cw
+	.byte 0xd8	// light yellow on red
+	P24 w_ROW_COLOR_cw
+	P24 w_LIT1_cw
 	.byte '?'
 	P24 w_EMIT_cw
 	P24 w_TYPE_cw

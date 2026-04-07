@@ -5,9 +5,6 @@ DEFWORD w_tick,			0,		"'",			f_docol, yes		; ( "name" -- 0 | xt  ) xt of next wo
 	P24 w_FIND_NAME_cw
 	P24 ww_do_IF_cw
 	P24 2f - .
-	P24 w_toR_cw
-	P24 w_2DROP_cw
-	P24 w_Rfrom_cw
 	P24 ww_do_ELSE_cw
 	P24 3f - .
 2:
@@ -15,7 +12,7 @@ DEFWORD w_tick,			0,		"'",			f_docol, yes		; ( "name" -- 0 | xt  ) xt of next wo
 	P24 w_zero_cw
 3:
 	P24 w_exit_cw
-; : ' PARSE-NAME FIND-NAME IF >R 2DROP R> ELSE 2DROP 0 THEN ;
+; : ' PARSE-NAME FIND-NAME IF ELSE 2DROP 0 THEN ;
 
 ;      '            -- addr                       M,83            "tick"
 ;           Used in the form:

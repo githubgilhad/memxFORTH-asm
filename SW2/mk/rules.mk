@@ -6,6 +6,12 @@ MK_DEP += Makefile config.mk $(ROOT_DIR)/mk/*
 BUILD_DIR ?= build
 OBJ_DIR   := $(BUILD_DIR)/obj
 
+NO_VGA ?= 0
+
+ifeq ($(NO_VGA),1)
+	CFLAGS +=  -DNO_VGA 
+endif
+
 CFLAGS += $(OPT) $(CSTD) $(WARN)
 CFLAGS += -DF_CPU=$(F_CPU)
 CFLAGS += $(addprefix -I,$(INC_DIRS))
@@ -59,7 +65,7 @@ else
 	LDFLAGS += $(LDFLAGS_COMMON)
 endif
 
-all: nums $(TARGET).hex $(TARGET).dis sizecheck TODO WORDS tags 
+all: nums $(TARGET).hex $(TARGET).dis sizecheck TODO WORDS tags version
 nums:
 	$(Q)for i in 1 2 3 4 5 6 7 8 9; do echo "#";done
 # ----------------------------------------------------

@@ -8,9 +8,8 @@ HEADLESS
 		2DROP EXIT		(  nic ke zpracování )
 	THEN				(  3: )
 	
-	FIND-NAME ?DUP			(  ( c-addr u --  c-addr u xt flag flag | c-addr u 0 ) )
+	FIND-NAME ?DUP			(  ( c-addr u --  xt flag flag | c-addr u 0 ) )
 	IF				(  (3) word found )
-		2>R 2DROP 2R>		(  zahodit jméno a delku, zbyde  xt flag )
 		DROP			( zahodit flag )
 		COMPILE,
 	ELSE				(  3:(4) word found  // nenalezeno -> číslo? )

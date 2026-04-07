@@ -117,6 +117,7 @@ DEFWORD w_SEARCH_WORDLIST,	0,		"SEARCH_WORDLIST",	f_docol, yes		; ( c-addr u wid
 	P24 w_strnonequ_cw
 	P24 w_0BRANCH_cw	; IF name
 	P24 4f - .
+	P24 w_2DROP_cw
 	P24 w_R_at_cw
 	P24 w_head2xt_cw
 	P24 w_R_at_cw
@@ -164,6 +165,7 @@ DEFWORD w_SEARCH_WORDLIST,	0,		"SEARCH_WORDLIST",	f_docol, yes		; ( c-addr u wid
 ; 	WHILE
 ; 		>R				\ save header
 ; 		2DUP R@ H>NAME COUNT STR<> IF
+; 			2DROP			\ c-addr u ( no longer needed)
 ; 			R@ H>XT			\ xt
 ; 			R@ H>FLAGS C@		\ flags value
 ; 			FLG_IMMEDIATE AND IF
@@ -254,7 +256,8 @@ gfunc f_wid_item	; {{{ #
 
 ; FIND-NAME ( c-addr u -- c-addr u 0 | xt 1 | xt -1 ) if word not found, leave args on stack and return 0, else eat args and return xt with flag - see FIND https://forth-standard.org/standard/core/FIND 
 
-DEFWORD w_FIND_NAME,		0,		"FIND-NAME",		f_docol, yes		; FIND-NAME ( c-addr u -- c-addr u 0 | xt 1 | xt -1 ) if word not found, leave args on stack and return 0, else eat args and return xt with flag - see FIND https://forth-standard.org/standard/core/FIND [xxx] 
+DEFWORD w_FIND_NAME_f,		0,		"FIND-NAME_f",		f_docol, yes		; FIND-NAME_f ( c-addr u -- c-addr u 0 | xt 1 | xt -1 )  1=immediate, -1=normal 0=not found - FORTH version, use C word instead
+		// if  word not found, leave args on stack and return 0, else eat args and return xt with flag - see FIND https://forth-standard.org/standard/core/FIND [xxx] 
 	P24 var_TCB_WL_ORDER_len_cw
 	P24 w_char_at_cw
 	P24 w_zero_cw
