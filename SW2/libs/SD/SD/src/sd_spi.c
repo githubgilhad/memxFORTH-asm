@@ -122,7 +122,7 @@ uint8_t sd_init(void)
 
         if (ocr[2] != 0x01 || ocr[3] != 0xAA)
             return 2;
-
+i=100;// %%% !!! pokus o zvyseni poctu pokusu ze 4
         // ACMD41
         do {
             sd_command(55,0,0x01);
@@ -171,7 +171,8 @@ uint8_t sd_read_block(uint32_t lba, uint8_t *buf)
     if (r) { SD_CS_HIGH(); return 1; }
 
     // čekání na token 0xFE
-    i = 50000;
+//    i = 50000;
+    i = 5000;
     while ((r = spi_txrx(0xFF)) == 0xFF && --i);
 
     if (r != 0xFE) { SD_CS_HIGH(); return 2; }

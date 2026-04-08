@@ -1,3 +1,4 @@
+#define __SFR_OFFSET 0x00		// set the Special Function Register Offset from 0x20 to 0x00 in order to use AVR PORT definitions
 #include <avr/io.h>
 ;	.init0 first part on boot, no stack
 ;	.init1 
@@ -26,6 +27,13 @@ no_interrupts:
 	
 	; no output pin for OCR3B
 	sts TCCR3A, r1
+spi_sd_ports:
+IN     r24, DDRB
+ORI    r24, 0x07
+OUT    DDRB, r24	; SPI out
+CBI    DDRB, 3		; MISO
+SBI    PORTB, 0		; SS = HIGH
+
 fill_ram_pattern:
 	ldi r30, lo8(__heap_start)
 	ldi r31, hi8(__heap_start)
