@@ -26,10 +26,7 @@ $(CURDIR)/src/TCB_offsets.inc: $(CURDIR)/src/TCB_offsets.func Makefile
 	$(Q)rm src/TCB_offsets.tmp
 
 
-.PHONY: FORCE
-FORCE:
 
-$(TARGET).o: version
 
 $(CURDIR)/src/words/all_words.S: $(INC_FILES) $(CURDIR)/src/TCB_offsets.inc FORCE
 	$(HEAD)

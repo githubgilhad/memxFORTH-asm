@@ -5,7 +5,7 @@
 #include "FORTH-Defines.h"
 #include "FORTH-Macros.h"
 #include "FORTH-Memory.h"
-#include "../../../version.h"
+#include "../../version.h"
 ;	#include "FORTH-Engine.h"
 
 #include "../../TCB_offsets.inc"
