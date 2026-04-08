@@ -3,6 +3,7 @@
 // ,,g = gcc, exactly one space after "set"
 //
 #include "FORTH_c_003.h"
+#include "version.h"
 // External FORTH primitives
 extern void f_dup(void);
 extern void run_in_FORTH_xt_in_IP(void);

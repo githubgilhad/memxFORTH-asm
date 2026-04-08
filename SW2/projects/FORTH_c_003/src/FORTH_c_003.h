@@ -21,7 +21,6 @@
 #include "DebugLEDs.h"
 #include "tools/vectors.h"
 #include "TextVGA.h"
-#include "version.h"
 
 extern T_TextVGA_VRAM VRAM;
 extern T_TextVGA_CRAM CRAM;
