@@ -20,7 +20,7 @@
 ; Interface:
 ;
 .section .bss.TextVGA
-
+gobj timer0_millis 		$	.word 0,0 	; extern volatile unsigned long timer0_millis;
 ; // 1. fill these pointer to point to your VideoRam structures in FAST RAM (0x200..0x2200)
 gobj TextVGA_VRAM		$	.word 0 	;  *T_VRAM
 gobj TextVGA_CRAM		$	.word 0 	;  *T_CRAM
@@ -265,9 +265,10 @@ func vertical_start_handler	; {{{
 ; }}}
 	ldi  temp_4, (1<<OCF1A)		; clear pending interrupt
 	out  TIFR1, temp_4
-	sei
+	sei				; let horizontal_line_handler interrupt at free will (and vertical_end_handler end it)
 1:	rjmp 1b
 vertical_start_handler_end:
+	cli				; back to IRQ status
 	sts	jitter,		jitter_min
 	sts	jitter+1,	jitter_max
 	lds XL, TextVGA_VRAM
@@ -294,6 +295,25 @@ vertical_start_handler_end:
 	lds	r24,	TIMSK1
 	andi	r24,	~ (1<<OCIE1A)
 	sts	TIMSK1,	 r24
+
+	clr r1
+	; vvvvv millis
+	ldi ZL, lo8(timer0_millis)
+	ldi ZH, hi8(timer0_millis)
+	ldi r25, 20	; +20 millis
+	ld r24, Z
+	adc r24,r25
+	st Z+,r24
+	ld r24, Z
+	adc r24,r1
+	st Z+,r24
+	ld r24, Z
+	adc r24,r1
+	st Z+,r24
+	ld r24, Z
+	adc r24,r1
+	st Z+,r24
+	; ^^^^ millis
 		lds Zl, TextVGA_VerticalBlank
 		lds ZH, TextVGA_VerticalBlank+1
 		sbiw ZL,0

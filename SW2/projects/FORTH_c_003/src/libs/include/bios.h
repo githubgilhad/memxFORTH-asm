@@ -3,7 +3,7 @@
 // ,,g = gcc, exactly one space after "set"
 //
 #pragma once
-#include "../FORTH_c_003.h"
+#include "../../FORTH_c_003.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <avr/pgmspace.h>

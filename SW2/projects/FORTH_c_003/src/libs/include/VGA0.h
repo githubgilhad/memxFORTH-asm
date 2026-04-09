@@ -1,5 +1,7 @@
 #pragma once
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 uint8_t VGA0_Write(char c);	// c=char to write, r24=buf_used. BLOCKS if buffer full
 uint8_t VGA0_WriteA(char c);	// c=char to write, r24=buf_used. BLOCKS if buffer full, writes only ASCII
 uint8_t VGA0_Used();		// used space in TX buffer
@@ -12,4 +14,6 @@ uint8_t VGA0_WriteHex16(uint16_t h);	//     0A0D , r24=buf_used. BLOCKS if buffe
 uint8_t VGA0_WriteHex24(uint32_t h);	//   0A0D0C , r24=buf_used. BLOCKS if buffer full
 uint8_t VGA0_WriteHex32(uint32_t h);	// 0A0D0C0D , r24=buf_used. BLOCKS if buffer full
 // char *VGA0_set_cursor_xy(uint8_t x, uint8_t y);	// return pointer to cursor
-
+#ifdef __cplusplus
+	}
+#endif

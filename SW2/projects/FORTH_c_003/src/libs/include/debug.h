@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include "defines.h"
 #include "colors.h"
-#include "../flags.h"
+#include "flags.h"
 #include "ptr24.h"
 #include "io.h"
 #define ERROR(X) error(F(X))

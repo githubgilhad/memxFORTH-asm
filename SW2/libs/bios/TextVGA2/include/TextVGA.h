@@ -44,3 +44,4 @@ extern volatile uint8_t TextVGA_subline; // 0..7 line of character
 extern volatile char* TextVGA_cursor_ptr;
 void TextVGA_HEADLESS();
 void TextVGA_HEADMORE();
+extern volatile unsigned long timer0_millis;

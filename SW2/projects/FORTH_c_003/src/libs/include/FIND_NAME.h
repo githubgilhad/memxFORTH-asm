@@ -6,5 +6,5 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "C_Bats.h"
-#include "../FORTH_c_003.h"
-#include "../TCB_offsets.h"
+#include "../../FORTH_c_003.h"
+#include "../../TCB_offsets.h"

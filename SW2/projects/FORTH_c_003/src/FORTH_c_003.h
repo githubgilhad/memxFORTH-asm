@@ -10,16 +10,16 @@
 
 #include "TCB_offsets.h"
 #include "usart0.h"
-#include "tools/VGA0.h"
+#include "VGA0.h"
 #include "FORTH-Engine.h"
 #include "C_Bats.h"		// ../../../libs/FORTH/C_Bats/include/C_Bats.h
-#include "tools/C2forth.h"
+#include "C2forth.h"
 #include "flags.h"
-#include "tools/debug.h"
-#include "tools/getc.h"
-#include "tools/bios.h"
+#include "debug.h"
+#include "getc.h"
+#include "bios.h"
 #include "DebugLEDs.h"
-#include "tools/vectors.h"
+#include "vectors.h"
 #include "TextVGA.h"
 
 extern T_TextVGA_VRAM VRAM;

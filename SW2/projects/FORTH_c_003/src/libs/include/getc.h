@@ -4,9 +4,12 @@
 #pragma once
 
 #include <stdint.h>
-#include "../getc.inc"
+#include "getc.inc"
 #include "usart0.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef uint8_t (*getc_fn)(void *state, char *out_char);	// universal funkction to get characters
 
@@ -29,3 +32,8 @@ void add_getc(input_stack_t *s,getc_fn fn, void *state) ;
 extern input_stack_t get_STK;
 
 void C_getc_init(input_stack_t *s);
+
+#ifdef __cplusplus
+	}
+#endif
+

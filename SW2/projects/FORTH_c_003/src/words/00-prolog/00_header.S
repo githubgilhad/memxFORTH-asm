@@ -1,6 +1,6 @@
 #define __SFR_OFFSET 0x00		// set the Special Function Register Offset from 0x20 to 0x00 in order to use AVR PORT definitions
 #include <avr/io.h>
-#include "../../flags.h"
+#include "flags.h"
 
 #include "FORTH-Defines.h"
 #include "FORTH-Macros.h"
@@ -9,7 +9,7 @@
 ;	#include "FORTH-Engine.h"
 
 #include "../../TCB_offsets.inc"
-#include "../../getc.inc"
+#include "getc.inc"
 #include "TextVGA.inc"
 
 ; External memory functions
