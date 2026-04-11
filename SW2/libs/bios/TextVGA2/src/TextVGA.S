@@ -1,4 +1,4 @@
-; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  tags=./tags;,tags; 
+; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  tags=./tags;,tags;
 
 
 #define __SFR_OFFSET 0x00		// set the Special Function Register Offset from 0x20 to 0x00 in order to use AVR PORT definitions
@@ -9,12 +9,11 @@
 #include "FORTH-Macros.h"		//  ../../../FORTH/FORTH-Macros/include/FORTH-Macros.h
 
 
-#define	TIMER1_COMPA_start	39	// 0..511  position inside H line
 #define	TIMER3_COMPA_start	(TextVGA_FIRST_SCAN_LINE *2)	// 0..1040  first horizontal line *2
 #define	TIMER3_COMPC_start	(TextVGA_LAST_SCAN_LINE  *2)	// 0..1040  last horizontal line  *2
 
-#define	HANDLER_OFFSET		25	// clocks from interrupt start to handler start
-#define TOO_LONG		2	// how many we can compensate
+#define	HANDLER_OFFSET		24	// clocks from interrupt start to handler start
+#define TOO_LONG		4	// how many we can compensate
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Interface:
@@ -29,16 +28,15 @@ gobj TextVGA_CharDef		$	.word 0,0 	; P_TextVGA_CharDef = uint32_t
 	
 ; // if not NULL called in ISR after last line is drawn and lot of free time is ahead.  it is still in IRQ, so best approach is to just set few flags and bussy wait for them in main program. called 60 times per second
 gobj TextVGA_VerticalBlank	$	.word 0 	; 16bits, gcc will use trampoline
-gobj TextVGA_cursor_ptr		$	.word 0 	; pointer into VRAM where cursor should be drawn 
-gobj TextVGA_cursor_char	$	.byte 0 	; Character for alternate as cursor 
-gobj TextVGA_cursor_c_temp	$	.byte 0 	; INTERNAL place for alternating character 
-gobj TextVGA_cursor_time	$	.byte 0 	; time for count down for alternating 
-gobj TextVGA_cursor_enabled	$	.byte 0 	; 0 = disabled 
+gobj TextVGA_cursor_ptr		$	.word 0 	; pointer into VRAM where cursor should be drawn
+gobj TextVGA_cursor_char	$	.byte 0 	; Character for alternate as cursor
+gobj TextVGA_cursor_c_temp	$	.byte 0 	; INTERNAL place for alternating character
+gobj TextVGA_cursor_time	$	.byte 0 	; time for count down for alternating
+gobj TextVGA_cursor_enabled	$	.byte 0 	; 0 = disabled
 
-obj TextVGA_cursor_visible	$	.byte 0 	; actual state 
-obj TextVGA_cursor_counter	$	.byte 0 	; counter down for alternating 
+obj TextVGA_cursor_visible	$	.byte 0 	; actual state
+obj TextVGA_cursor_counter	$	.byte 0 	; counter down for alternating
 
-jitter: .word 0,0
 .section .text.TextVGA
 
 #define	Ltmp1	r0
@@ -47,9 +45,6 @@ jitter: .word 0,0
 #define	subline_ptrHL	r5
 #define	line_startL	r6
 #define	line_startH	r7
-#define	jitter_act	r8
-#define	jitter_min	r9
-#define	jitter_max	r10
 #define	subline_cnt	r16
 #define	pinflip		r17
 #define	temp_2	r22
@@ -76,42 +71,25 @@ jitter: .word 0,0
  .endm						// }}}
 func horizontal_line_handler	; {{{
 				; all registers are saved and initialised in vertical_start_handler
-;	sbi	DDRD,0			; Debug - SCL Led blik
-;	sbi	PIND,0			; Debug - SCL Led blik
 	lds	temp_4,	TCNT1L	; {{{ synchronise
 	lds	temp_5,	TCNT1H
+;	sbi	DDRD,0			; Debug - SCL Led blik
+;	sbi	PIND,0			; Debug - SCL Led blik
 	clr	Ltmp1
 	subi	temp_4,	lo8(TIMER1_COMPA_start+HANDLER_OFFSET)	; should result in 0..3 depending on interrupted instruction
 	sbci	temp_5,	hi8(TIMER1_COMPA_start+HANDLER_OFFSET)
-	
-	; pokud byl borrow → přičti 1040
-	; vytvoříme masku 0xFFFF nebo 0x0000 podle C flagu
-	
-	sbc	Ltmp1,	Ltmp1      ; Ltmp1 = 0xFF pokud byl borrow, jinak 0x00
-	
-	ldi  temp_2, lo8(1040)	; 1040 = period
-	ldi  temp_3, hi8(1040)
-	
-	and  temp_2, r18
-	and  temp_3, r18
-	
-	add  temp_4, temp_2
-	adc  temp_5, temp_3
-
-	mov	jitter_act,	temp_4
 	cpse	temp_5,	r1
 	rjmp	horizontal_line_handler_end
 	cpi temp_4, TOO_LONG
 	brlo	1f
-	sbi	DDRD,0			; Debug - SCL Led blik
-	sbi	PIND,0			; Debug - SCL Led blik
+;	sbi	DDRD,0			; Debug - SCL Led blik
+;	sbi	PIND,0			; Debug - SCL Led blik
 	rjmp	horizontal_line_handler_end
 1:
 ;	}}}
-;	mov	jitter_act,	temp_4
 ;	check 4
-;	check 3
-;	check 2
+	check 3
+	check 2
 	check 1
 	
 	out RAMPZ, subline_ptrHL
@@ -130,19 +108,10 @@ func horizontal_line_handler	; {{{
 .endr
 
 ; VGA_ENABLE hi must be 8 clocks after last ONECHAR
-	nop $ nop $ nop $ nop $ nop $ nop 
+	nop $ nop $ nop $ nop $ nop $ nop
 	out_hi(VGA_ENABLE)
 
 horizontal_line_handler_end:
-	cp	jitter_act,	jitter_max
-	brlo	1f
-	mov	jitter_max,	jitter_act
-1:
-	cp	jitter_act,	jitter_min
-	brsh	1f
-	mov	jitter_min,	jitter_act
-1:
-
 	dec	subline_cnt
 	breq	horizontal_line_handler_new_line
 	add	subline_ptrH,	L_one
@@ -166,8 +135,12 @@ horizontal_line_handler_new_line:
 func vertical_start_handler	; {{{
 	in	ZL,	RAMPZ
 	push	ZL
+	in	ZL,	EIND
+	push	ZL
 	PUSHX(0,29)	; Z=r30:31 already saved
 	eor r1,r1
+;	sbi	DDRD,0			; Debug - SCL Led blik
+;	sbi	PIND,0			; Debug - SCL Led blik
 	
 	; {{{ set constants here
 	mov	L_one,	r1
@@ -206,16 +179,6 @@ func vertical_start_handler	; {{{
 	ldi	subline_cnt,	TextVGA_SUBLINES
 	
 	ldi pinflip, 1<<VGA_LATCH_PIN
-
-	lds	temp_4,		jitter+2
-	dec	temp_4
-	sts	jitter+2,	temp_4
-	brne	1f
-	sts	jitter+1,	temp_4
-	sts	jitter+0,	temp_4
-1:
-	lds	jitter_min,	jitter+0
-	lds	jitter_max,	jitter+1
 ; }}}
 	; {{{ set pins
 	set_output_all(VGA_COLOR,sts)	; output COLORs
@@ -242,22 +205,17 @@ func vertical_start_handler	; {{{
 1:
 ; }}}
 	; enter loop
-	lds	temp_5,	TCNT3L
-1:
-	lds	temp_4,	TCNT3L
-	cp	temp_4,	temp_5
-	breq	1b
 1:
 	lds	temp_4,	TCNT1L
-	cpi	temp_4,	lo8(TIMER1_COMPA_start+10)
-	brlo	1b
-1:
-	lds	temp_4,	TCNT1L
+	lds	temp_5,	TCNT1H
+	tst	temp_5
+	brne	1b					; block until we are on first part of 0..511
 	cpi	temp_4,	lo8(TIMER1_COMPA_start+20)
-	brsh	1b
-
+	brsh	1b					; and after trigger point
 	ldi  temp_4, (1<<OCF1A)		; clear pending interrupt
 	out  TIFR1, temp_4
+	ldi  temp_4, (1<<OCF3C)		; clear pending interrupt
+	out  TIFR3, temp_4
 	; {{{ enable interrupt TIMER1_COMPA by OCIE1A
 	lds	temp_4,	TIMSK1
 	ori	temp_4,	(1<<OCIE1A)
@@ -269,16 +227,6 @@ func vertical_start_handler	; {{{
 1:	rjmp 1b
 vertical_start_handler_end:
 	cli				; back to IRQ status
-	sts	jitter,		jitter_min
-	sts	jitter+1,	jitter_max
-	lds XL, TextVGA_VRAM
-	lds XH, TextVGA_VRAM+1
-	ldi temp_4, 'A'
-	add jitter_min, temp_4
-	st	X+,	jitter_min
-	add jitter_max, temp_4
-	st	X+,	jitter_max
-	nop		;;;
 	lds Ltmp1, TextVGA_cursor_enabled
 	tst Ltmp1
 	breq 1f
@@ -322,6 +270,8 @@ vertical_start_handler_end:
 1:
 	POPX(0,29)
 	pop	ZL
+	out	EIND, ZL
+	pop	ZL
 	out	RAMPZ, ZL
 	ret
 ;	}}}
@@ -360,9 +310,9 @@ gfunc TextVGA_begin	; {{{
 
 ; }}}
 ; === pins {{{
-	set_output(VGA_LATCH)		; 
+	set_output(VGA_LATCH)		;
 	out_hi(VGA_LATCH)		; hi=get data, low=clock out
-	set_output(VGA_ENABLE)		; 
+	set_output(VGA_ENABLE)		;
 	out_hi(VGA_ENABLE)		; hi=disabled, no output
 	set_output(VGA_VSYNC)
 	set_output(VGA_HSYNC)
@@ -409,7 +359,7 @@ gfunc TextVGA_begin	; {{{
 	// *****************************
 	// ***** Timer1: VGA HSYNC *****
 	// *****************************
-	//           PB[6] D12          
+	//           PB[6] D12
 		; write H, then L, read L, then H - pg.135
 		; TCNT1=0;
 	sts TCNT1H,r1
@@ -466,7 +416,7 @@ interrupt: TIMER1_COMPA_start → OCR1A = TIMER1_COMPA_start
 	// *****************************
 	// ***** Timer3: VGA VSYNC *****
 	// *****************************
-	//            PE[4] D2          
+	//            PE[4] D2
 
 		; write H, then L, read L, then H - pg.135
 		; TCNT3=0;
@@ -528,11 +478,6 @@ tick 13 → OCR3C
 	sts TIMSK3, r24
 
 ; }}}	Timer3: VGA VSYNC ends
-
-	ldi	r24,	0xFF
-	sts	jitter,	r24
-	ldi	r24,	0
-	sts	jitter+1,	r24
 	; GTCCR = 0;	// clear TSM => all timers start synchronously
 	out	GTCCR,	r1
 	pop	r0
@@ -546,14 +491,14 @@ TextVGA_end:		; {{{ disable interrupts and timers output
 .type TextVGA_end, @function
 
 	; no interrupt on Timer1
-		; TIMSK1 = 0; 
+		; TIMSK1 = 0;
 	sts TIMSK1, r1
 	
 	; no output pin for OCR1B
 	sts TCCR1A, r1
 
 	; no interrupt on Timer3
-		; TIMSK3 = 0; 
+		; TIMSK3 = 0;
 	sts TIMSK3, r1
 	
 	; no output pin for OCR3B

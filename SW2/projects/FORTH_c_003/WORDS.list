@@ -1,3 +1,35 @@
+DEFCONSTI1	"VGA_BLACK",		"VGA_BLACK",		VGA_BLACK,		line=3
+DEFCONSTI1	"VGA_BLUE",		"VGA_BLUE",		VGA_BLUE,		line=3
+DEFCONSTI1	"VGA_B_BLACK",		"VGA_B_BLACK",		VGA_B_BLACK,		line=3
+DEFCONSTI1	"VGA_B_BLUE",		"VGA_B_BLUE",		VGA_B_BLUE,		line=3
+DEFCONSTI1	"VGA_B_CYAN",		"VGA_B_CYAN",		VGA_B_CYAN,		line=3
+DEFCONSTI1	"VGA_B_DKBLUE",		"VGA_B_DKBLUE",		VGA_B_DKBLUE,		line=3
+DEFCONSTI1	"VGA_B_DKCYAN",		"VGA_B_DKCYAN",		VGA_B_DKCYAN,		line=3
+DEFCONSTI1	"VGA_B_DKGRAY",		"VGA_B_DKGRAY",		VGA_B_DKGRAY,		line=3
+DEFCONSTI1	"VGA_B_DKGREEN",	"VGA_B_DKGREEN",	VGA_B_DKGREEN,		line=3
+DEFCONSTI1	"VGA_B_DKMAGENTA",	"VGA_B_DKMAGENTA",	VGA_B_DKMAGENTA,	line=3
+DEFCONSTI1	"VGA_B_DKRED",		"VGA_B_DKRED",		VGA_B_DKRED,		line=3
+DEFCONSTI1	"VGA_B_DKYELLOW",	"VGA_B_DKYELLOW",	VGA_B_DKYELLOW,		line=3
+DEFCONSTI1	"VGA_B_GRAY",		"VGA_B_GRAY",		VGA_B_GRAY,		line=3
+DEFCONSTI1	"VGA_B_GREEN",		"VGA_B_GREEN",		VGA_B_GREEN,		line=3
+DEFCONSTI1	"VGA_B_MAGENTA",	"VGA_B_MAGENTA",	VGA_B_MAGENTA,		line=3
+DEFCONSTI1	"VGA_B_RED",		"VGA_B_RED",		VGA_B_RED,		line=3
+DEFCONSTI1	"VGA_B_WHITE",		"VGA_B_WHITE",		VGA_B_WHITE,		line=3
+DEFCONSTI1	"VGA_B_YELLOW",		"VGA_B_YELLOW",		VGA_B_YELLOW,		line=3
+DEFCONSTI1	"VGA_CYAN",		"VGA_CYAN",		VGA_CYAN,		line=3
+DEFCONSTI1	"VGA_DKBLUE",		"VGA_DKBLUE",		VGA_DKBLUE,		line=3
+DEFCONSTI1	"VGA_DKCYAN",		"VGA_DKCYAN",		VGA_DKCYAN,		line=3
+DEFCONSTI1	"VGA_DKGRAY",		"VGA_DKGRAY",		VGA_DKGRAY,		line=3
+DEFCONSTI1	"VGA_DKGREEN",		"VGA_DKGREEN",		VGA_DKGREEN,		line=3
+DEFCONSTI1	"VGA_DKMAGENTA",	"VGA_DKMAGENTA",	VGA_DKMAGENTA,		line=3
+DEFCONSTI1	"VGA_DKRED",		"VGA_DKRED",		VGA_DKRED,		line=3
+DEFCONSTI1	"VGA_DKYELLOW",		"VGA_DKYELLOW",		VGA_DKYELLOW,		line=3
+DEFCONSTI1	"VGA_GRAY",		"VGA_GRAY",		VGA_GRAY,		line=3
+DEFCONSTI1	"VGA_GREEN",		"VGA_GREEN",		VGA_GREEN,		line=3
+DEFCONSTI1	"VGA_MAGENTA",		"VGA_MAGENTA",		VGA_MAGENTA,		line=3
+DEFCONSTI1	"VGA_RED",		"VGA_RED",		VGA_RED	,		line=3
+DEFCONSTI1	"VGA_WHITE",		"VGA_WHITE",		VGA_WHITE,		line=3
+DEFCONSTI1	"VGA_YELLOW",		"VGA_YELLOW",		VGA_YELLOW,		line=3
 DEFCONSTI1	"kb_AltL",	"kb_AltL",	kb_AltL,	line=3
 DEFCONSTI1	"kb_AltR",	"kb_AltR",	kb_AltR,	line=3
 DEFCONSTI1	"kb_Alt_A",	"kb_Alt_A",	kb_Alt_A,	line=3
@@ -110,6 +142,7 @@ DEFCONSTI1	"kb_xSlash",	"kb_xSlash",	kb_xSlash,	line=3
 DEFCONSTI1	"kb_xStar",	"kb_xStar",	kb_xStar,	line=3
 DEFCONSTI1 "BL",		BL,		' ',		line=3
 DEFCONSTI2 "TCB.TIB.max", TCB_TIB_max, TIB_SIZE
+DEFTCBVAR "BASE", TCB_BASE
 DEFTCBVAR "HERE",TCB_HERE		; first free byte in RAM
 DEFTCBVAR "TCB.AIB", TCB_AIB
 DEFTCBVAR "TCB.AIB.cur", TCB_AIB_cur
@@ -153,7 +186,6 @@ DEFWORD w_CERROR,		0,		"CERROR",		f_docol, yes		; ( c-address u  -- ) reports er
 DEFWORD w_CLS,			0,		"CLS",			f_CLS			; (  --  ) clear screen, mocve cursor to 0,0 [----]
 DEFWORD w_COLON,		0,		":",			f_COLON			; ( C: "<spaces>name" -- colon-sys ) create new word [0450]
 DEFWORD w_COMMENT,		FLG_IMMEDIATE,	"(",			f_COMMENT		; ( "text)"  --  ) skip comment to paired ) [----]
-DEFWORD w_COMMIT,		0,		"COMMIT",		f_CONSTSTRING		; (  --  addr u ) just commit
 DEFWORD w_COMPARE,		0,		"COMPARE",		f_COMPARE		; ( c-addr1 u1 c-addr2 u2 -- n ) compare 2 strings  n=0 identical, n= -1 string1 is LESS than string2
 DEFWORD w_COMPILEcomma,		0,		"COMPILE,",		f_comma			; ( x --  ) compile x at HERE
 DEFWORD w_COUNT,		0,		"COUNT",		f_COUNT			; ( c-addr1  -- c-addr2 u2 ) counted string to string
@@ -210,6 +242,7 @@ DEFWORD w_LIT2,			FLG_ARG_2,	"LIT2",			f_LIT2			; ( -- value ) push literal valu
 DEFWORD w_LIT3,			FLG_ARG_3,	"LIT3",			f_LIT3			; ( -- value ) push literal value 3B
 DEFWORD w_LITERAL,		FLG_IMMEDIATE,	"LITERAL",		f_LITERAL		; ( x -- ) compile x to current word 3B (as LIT3 x)
 DEFWORD w_LITSTRING,		FLG_PSTRING,	"LITSTRING",		f_LITSTRING		; ( -- addr len ) push addr and len of string on the stack - similar to LIT
+DEFWORD w_LOGO,		0,		"LOGO",		f_docol, yes		; (  --  ) do something TODO [----]
 DEFWORD w_LOOP,			FLG_IMMEDIATE,	"LOOP",			f_LOOP			; Compilation ( C: 0 back1 .. backn do-sys --  ) compile 'do_loop' to definition
 DEFWORD w_LOR,			0,		"||",			f_LOR			; ( a b -- a||b ) logical OR of two stack items
 DEFWORD w_Lfrom,		0,		"L>",			f_Lfrom			; (  -- x ) ( L: x -- ) move CELL from L stack to data stack
@@ -240,10 +273,12 @@ DEFWORD w_SEARCH_WORDLIST,	0,		"SEARCH_WORDLIST",	f_docol, yes		; ( c-addr u wid
 DEFWORD w_SEMICOLON,		FLG_IMMEDIATE,	";",			f_SEMICOLON		; (  --  ) ends colon definition, make word visible [----]
 DEFWORD w_SET_CURRENT,		0,		"SET-CURRENT",		f_docol, yes		; ( wid -- ) set current wordlist : SET-CURRENT ( wid -- ) TCB_WL_CURRENT ! ;
 DEFWORD w_SHOW,			0,		"SHOW",			f_SHOW			; ( xt --  ) shows word [xxxx]
+DEFWORD w_SPACE,		0,		"SPACE",		f_SPACE		; (  -- ) push and EMIT SPACE
 DEFWORD w_SWAP,			0,		"SWAP",			f_SWAP			; ( a b -- b a ) SWAP top two stack items
 DEFWORD w_SWAP2,		0,		"SWAP2",		f_SWAP2			; ( a b c d -- c d b a ) SWAP top two pairs of stack items
 DEFWORD w_TELL,			0,		"TELL",			f_TELL			; ( addr len -- ) prints out string [----]
 DEFWORD w_TEST,			0,		"TEST",			f_docol, yes		; ( -- ) // just test
+DEFWORD w_TESTc,		0,		"TESTc",		f_TESTc			; ( -- ) // just test
 DEFWORD w_THEN,			FLG_IMMEDIATE,	"THEN",			f_THEN			; C:( addr  -- ) get addr from stack and fill offset here [----]
 DEFWORD w_TIMES,		0,		"*",			f_TIMES			// ( a b -- a*b ) multiply top two stack items (24-bit result, may overflow) 
 DEFWORD w_TO,			FLG_IMMEDIATE,	"TO",			f_docol, yes		; ( "name" val  --  ) change value  { 24 TO test 	test ( -- 24 ) }
@@ -253,8 +288,11 @@ DEFWORD w_UNTIL,		FLG_IMMEDIATE,	"UNTIL",		f_UNTIL			; Compilation ( C: 0 [a .. 
 DEFWORD w_VALUE,		0,		"VALUE",		f_VALUE			; ( "name" val  --  ) create value  { 12 VALUE test 	test ( -- 12 ) }
 DEFWORD w_VARIABLE,		0,		"VARIABLE",		f_VARIABLE		; ( "name" --  ) create variable [----] { VARIABLE test 	12 test ! test @ ( -- 12 ) }
 DEFWORD w_VER,			0,		"VER",			f_CONSTSTRING		; (  -- addr u ) version string
-DEFWORD w_VERSION,		0,		"VERSION",		f_CONSTSTRING		; (  --  addr u ) just version
+DEFWORD w_VER_DATE,		0,		"VER_DATE",		f_CONSTSTRING		; (  --  addr u ) just date
+DEFWORD w_VER_GIT,		0,		"VER_GIT",		f_CONSTSTRING		; (  --  addr u ) just commit
 DEFWORD w_VER_MESSAGE,		0,		"VER_MESSAGE",		f_CONSTSTRING		; (  --  addr u ) version message
+DEFWORD w_VER_NUM,		0,		"VER_NUM",		f_CONSTSTRING		; (  --  addr u ) just version
+DEFWORD w_VER_TIME,		0,		"VER_TIME",		f_CONSTSTRING		; (  --  addr u ) just time
 DEFWORD w_VRAM_yx_get,		0,		"VRAM_yx@",		f_VRAM_yx_get		; ( y x  --  c ) get c at X,Y [----]
 DEFWORD w_VRAM_yx_set,		0,		"VRAM_yx!",		f_VRAM_yx_set		; ( y x c --  ) store c to X,Y [----]
 DEFWORD w_WAIT,			0,		"WAIT",			f_WAIT			; ( x  --  ) wait x ticks (0 - no wait)

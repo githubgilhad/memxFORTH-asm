@@ -52,3 +52,17 @@ DEFWORD w_TEST,			0,		"TEST",			f_docol, yes		; ( -- ) // just test
 	.byte lo8(3f - . - 1 )
 	.ascii "### Hello World ###"
 3:
+
+
+
+DEFWORD w_TESTc,		0,		"TESTc",		f_TESTc			; ( -- ) // just test
+
+.section CURRENT_TEXT_SECTION,"ax",@progbits
+gfunc f_TESTc	; {{{ # FIXME
+	PUSH_R0_R31
+	Set3	Cpar2,Cpar1_lo,TOS
+	mov	Cpar1_hi, r1
+	call	C_test
+	POP_R0_R31
+	jmp NEXT
+; }}}

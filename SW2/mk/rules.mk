@@ -12,13 +12,17 @@ NO_VGA ?= 0
 ifeq ($(NO_VGA),1)
 	CFLAGS +=  -DNO_VGA 
 endif
+BUILD_DATE ?= -DBUILD_DATE=\"$(shell date +"%Y.%m.%d")\"
+BUILD_TIME ?= -DBUILD_TIME=\"$(shell date +"%H:%M:%S")\"
 
+CFLAGS += $(BUILD_DATE) $(BUILD_TIME)
 CFLAGS += $(OPT) $(CSTD) $(WARN)
 CFLAGS += -DF_CPU=$(F_CPU)
 CFLAGS += $(addprefix -I,$(INC_DIRS))
 CFLAGS_NODEP := $(CFLAGS)
 CFLAGS +=  $(DEPFLAGS)
 
+CXXFLAGS += $(BUILD_DATE) $(BUILD_TIME)
 CXXFLAGS += $(OPT) $(CXXSTD) $(WARN)
 CXXFLAGS += -DF_CPU=$(F_CPU)
 CXXFLAGS += $(addprefix -I,$(INC_DIRS))

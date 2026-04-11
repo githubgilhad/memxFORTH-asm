@@ -1,4 +1,4 @@
-; vim: filetype=asm noexpandtab fileencoding=utf-8 nomodified nowrap textwidth=270 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list: 
+; vim: filetype=asm noexpandtab fileencoding=utf-8 nomodified nowrap textwidth=270 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list:
 
 #pragma once
 // #include "../../FORTH-Defines/include/FORTH-Defines.h"
@@ -82,8 +82,8 @@
 	.if \N != 0
 		adiw ZL, \N*3
 	.endif
-	st  Z+, \a_lo 
-	st  Z+, \a_hi 
+	st  Z+, \a_lo
+	st  Z+, \a_hi
 	st  Z+, \a_hlo
 .endm
 	; }}}
@@ -103,8 +103,8 @@
 	.if \N != 0
 		addiw ZL, (\N-1)*3
 	.endif
-	st  Z+, \a_lo 
-	st  Z+, \a_hi 
+	st  Z+, \a_lo
+	st  Z+, \a_hi
 	st  Z+, \a_hlo
 .endm
 	; }}}
@@ -314,7 +314,7 @@
 	st Z+, Parsx_lo
 .endm			; }}}
 .macro	RW2at	; {{{ Z++, Parsx in 2B
-	st Z+, Parsx_lo 
+	st Z+, Parsx_lo
 	st Z+ ,Parsx_hi
 .endm			; }}}
 .macro	RW3at	; {{{ Z+++, Parsx in 3B
@@ -341,7 +341,7 @@
 	st Z+, \a_lo
 .endm			; }}}
 .macro	RW2atX	a_lo, a_hi	; {{{ Z++, a_lo, a_hi in 2B
-	st Z+, \a_lo 
+	st Z+, \a_lo
 	st Z+, \a_hi
 .endm			; }}}
 .macro	RW3atX	a_lo, a_hi, a_hlo	; {{{ Z+++, a_lo, a_hi, a_hlo in 3B
@@ -359,44 +359,46 @@
 	ldi Z_hlo, 0x80
 .endm	; }}}
 
-.macro	TCB_memberR1	ofset,	a_lo	; {{{ Read member to Ax1 - 1B 
+.macro	TCB_memberR1	ofset,	a_lo	; {{{ Read member to Ax1 - 1B
 	TCB_member \ofset
 	RB1atX \a_lo
 .endm	; }}}
-.macro	TCB_memberR2	ofset,	a_lo, a_hi	; {{{ Read member to Ax2 - 2B 
+.macro	TCB_memberR2	ofset,	a_lo, a_hi	; {{{ Read member to Ax2 - 2B
 	TCB_member \ofset
 	RB2atX \a_lo, \a_hi
 .endm	; }}}
-.macro	TCB_memberR3	ofset,	a_lo, a_hi, a_hlo	; {{{ Read member to Ax3 - 3B 
+.macro	TCB_memberR3	ofset,	a_lo, a_hi, a_hlo	; {{{ Read member to Ax3 - 3B
 	TCB_member \ofset
 	RB3atX \a_lo, \a_hi, \a_hlo
 .endm	; }}}
 
-.macro	TCB_memberW1	ofset,	a_lo	; {{{ Write member from Ax1 - 1B 
+.macro	TCB_memberW1	ofset,	a_lo	; {{{ Write member from Ax1 - 1B
 	TCB_member \ofset
 	RW1atX \a_lo
 .endm	; }}}
-.macro	TCB_memberW2	ofset,	a_lo, a_hi	; {{{ Write member from Ax2 - 2B 
+.macro	TCB_memberW2	ofset,	a_lo, a_hi	; {{{ Write member from Ax2 - 2B
 	TCB_member \ofset
 	RW2atX \a_lo, \a_hi
 .endm	; }}}
-.macro	TCB_memberW3	ofset,	a_lo, a_hi, a_hlo	; {{{ Write member from Ax3 - 3B 
+.macro	TCB_memberW3	ofset,	a_lo, a_hi, a_hlo	; {{{ Write member from Ax3 - 3B
 	TCB_member \ofset
 	RW3atX \a_lo, \a_hi, \a_hlo
 .endm	; }}}
 
 ; === VT members
-.macro	call_VT_member_C	ofset	; {{{ call VT member C style with params in Cpars??? 
+.macro	call_VT_member_C	ofset	; {{{ call VT member C style with params in Cpars; be low or use trampoline
 	push	r25
 	TCB_member TCB_VT
 	RB2atX	DT2
 	pop	r25
 	adiw	DT_lo, \ofset
 	ld	ZL, X+
-	ld	ZH, X+
-	ld	XL, X
-	out	EIND, XL
-	eicall
+	ld	ZH, X
+	icall
+;	ld	ZH, X+
+;	ld	XL, X
+;	out	EIND, XL
+;	eicall
 .endm	; }}}
 
 ; === P16, P24, func ...
@@ -459,14 +461,14 @@
 
 
 .macro	PUSH_R2_R17	; {{{
-	push r2 
-	push r3 
-	push r4 
-	push r5 
-	push r6 
-	push r7 
-	push r8 
-	push r9 
+	push r2
+	push r3
+	push r4
+	push r5
+	push r6
+	push r7
+	push r8
+	push r9
 	push r10
 	push r11
 	push r12
@@ -485,27 +487,27 @@
 	pop r12
 	pop r11
 	pop r10
-	pop r9 
-	pop r8 
-	pop r7 
-	pop r6 
-	pop r5 
-	pop r4 
-	pop r3 
+	pop r9
+	pop r8
+	pop r7
+	pop r6
+	pop r5
+	pop r4
+	pop r3
 	pop r2
 .endm	; }}}
 
 .macro	PUSH_R0_R31	; {{{
-	push r0 
-	push r1 
-	push r2 
-	push r3 
-	push r4 
-	push r5 
-	push r6 
-	push r7 
-	push r8 
-	push r9 
+	push r0
+	push r1
+	push r2
+	push r3
+	push r4
+	push r5
+	push r6
+	push r7
+	push r8
+	push r9
 	push r10
 	push r11
 	push r12
@@ -552,14 +554,14 @@
 	pop r12
 	pop r11
 	pop r10
-	pop r9 
-	pop r8 
-	pop r7 
-	pop r6 
-	pop r5 
-	pop r4 
-	pop r3 
-	pop r2 
+	pop r9
+	pop r8
+	pop r7
+	pop r6
+	pop r5
+	pop r4
+	pop r3
+	pop r2
 	pop r1
 	pop r0
 .endm	; }}}

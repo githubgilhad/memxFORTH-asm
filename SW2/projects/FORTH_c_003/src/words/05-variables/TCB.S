@@ -1,5 +1,6 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
+DEFTCBVAR "BASE", TCB_BASE
 DEFTCBVAR "TCB.STATE", TCB_STATE
 DEFTCBVAR "TCB.TIB", TCB_TIB
 DEFTCBVAR "TCB.TIB.len", TCB_TIB_len

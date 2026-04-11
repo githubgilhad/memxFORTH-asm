@@ -195,6 +195,12 @@ return;
 	write_char('H');
 	*/
 }	// }}}
+TEXT void C_test() {	// {{{
+	char nic;
+	while (GETC_OK != serial_getc(NULL, &nic)){ VGA0_Write('.');VGA0_Write(',');VGA0_Write('_');};
+	VGA0_Write('\r');
+	VGA0_Write('\n');
+}	// }}}
 TEXT void C_words() {	// {{{
 	uint32_t head, a;
 	uint32_t p;
@@ -552,7 +558,8 @@ void wait(uint32_t dt){
 	}
 
 T_TextVGA_VRAM VRAM;
-T_TextVGA_CRAM CRAM={0x0f, 0xcf, 0xd4,0xd4,0x9f,0xf9,0xf1,0xf2,0xf3,0xf4,0xf5,0xf6,0xf6,0xf7,0xf8,0xf9,0xfa,0xfb,0xfc,0xfd,0xfe,0xff,0xf0,0xf0,0xf0,};
+T_TextVGA_CRAM CRAM;
+// T_TextVGA_CRAM CRAM={0x0f, 0xcf, 0xd4,0xd4,0x9f,0xf9,0xf1,0xf2,0xf3,0xf4,0xf5,0xf6,0xf6,0xf7,0xf8,0xf9,0xfa,0xfb,0xfc,0xfd,0xfe,0xff,0xf0,0xf0,0xf0,};
 // =======================^^^^ VGA ^^^^=============================== }}}
 uint32_t C_RANDOM(uint32_t max) { 
 //	VGA0_WriteStr("RND(");
@@ -579,33 +586,39 @@ TEXT void setup(void) {
 
 TextVGA_VRAM = &VRAM;
 TextVGA_CRAM = &CRAM;
-TextVGA_CharDef = pgm_get_far_address(StdTextCharDef);
-TextVGA_CharDef = pgm_get_far_address(SnakeCharDef);
+// TextVGA_CharDef = pgm_get_far_address(StdTextCharDef);
+// TextVGA_CharDef = pgm_get_far_address(SnakeCharDef);
 TextVGA_CharDef = pgm_get_far_address(SnakeCharDef2);
 TextVGA_VerticalBlank=VB_handler;
 #ifndef NO_VGA
 TextVGA_begin();
 #endif
 char *pt=&VRAM[0][0];
-for (uint8_t j =24;j<TextVGA_LINES;j++) CRAM[j]=0xf4;
-CRAM[49]=0x28;
-CRAM[50]=0x48;
-for (uint16_t i =0;i<TextVGA_COLUMNS*TextVGA_LINES;i++) *pt++ = i & 0xff;
+for (uint16_t i =0;i<TextVGA_COLUMNS*TextVGA_LINES;i++) *pt++ = ' ';
+for (uint8_t j =0;j<TextVGA_LINES;j++) CRAM[j]=VGA_WHITE+VGA_B_DKGRAY;
+/*
+CRAM[0]=VGA_YELLOW+VGA_B_RED;
+VGA_set_cursor_XY(0,0);
+char ver0[] = "*** MEGA HOME FORTH ***";
+for (uint8_t i=0; i<strlen(ver0); i++) VGA_write_char(ver0[i]);
 
-for (uint16_t i =0 ; i< TextVGA_LINES;i++) {
-	VRAM[i][0] = '0'+(i/10);
-	VRAM[i][1] = '0'+(i%10);
-	};
-for (uint16_t i =0 ; i< TextVGA_COLUMNS;i++) {
-	VRAM[0][i] = '0'+(i/10);
-	VRAM[1][i] = '0'+(i%10);
-	};
-	VRAM[23][2] = '0'+(TextVGA_LINES/10);
-	VRAM[23][3] = '0'+(TextVGA_LINES%10);
+CRAM[1]=VGA_WHITE+VGA_B_GREEN;
+VGA_set_cursor_XY(0,1);
+char ver1[] = "*** ver." VERSION_STRING " ***";
+for (uint8_t i=0; i<strlen(ver1); i++) VGA_write_char(ver1[i]);
+
+CRAM[2]=VGA_YELLOW+VGA_B_GREEN;
 VGA_set_cursor_XY(0,2);
-char ver[] = "*** ver." VERSION_STRING " (" VERSION_MESSAGE ") ***";
-for (uint8_t i=0; i<strlen(ver); i++) VGA_write_char(ver[i]);
+char ver2[] = "(" VERSION_MESSAGE ")";
+for (uint8_t i=0; i<strlen(ver2); i++) VGA_write_char(ver2[i]);
 
+CRAM[3]=VGA_BLACK+VGA_B_WHITE;
+VGA_set_cursor_XY(0,3);
+char ver3[] = "from " BUILD_DATE " " BUILD_TIME " ";
+for (uint8_t i=0; i<strlen(ver3); i++) VGA_write_char(ver3[i]);
+
+VGA_set_cursor_XY(0,4);
+*/
 // while (1){;};
 	sei();
 	/*

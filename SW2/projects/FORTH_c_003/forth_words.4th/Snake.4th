@@ -126,36 +126,53 @@ HEADLESS
 ;
 
 : hb  ( c old new  -- ) ( hack body character ) SWAP 4* + body_str_addr + C! ;
+: _head ( y x d -- ) TO hd TO hx TO hy show_head ;
+: _tail ( y x d -- ) TO td TO tx TO ty show_tail ;
 : full_body 
-				3 1 '<' VRAM_yx!
-				0 0 3 2 show_body
-				0 1 2 2 show_body
-				0 2 2 0 show_body
-				1 2 0 0 show_body
-				2 2 0 1 show_body
-				2 1 1 1 show_body
-				2 0 1 3 show_body
-				1 0 3 3 show_body
+	CLS
+	3 1 1   _head
+	3 2 1   _tail
+	0 0 3 2 show_body
+	0 1 2 2 show_body
+	0 2 2 0 show_body
+	1 2 0 0 show_body
+	2 2 0 1 show_body
+	2 1 1 1 show_body
+	2 0 1 3 show_body
+	1 0 3 3 show_body
 	
-				3 5 '>' VRAM_yx!
-				0 4 3 2 show_body
-				0 5 2 2 show_body
-				0 6 2 0 show_body
-				1 6 0 0 show_body
-				2 6 0 1 show_body
-				2 5 1 1 show_body
-				2 4 1 3 show_body
-				1 4 3 3 show_body
+	3 6 2   _head
+	3 5 2   _tail
+	0 4 3 2 show_body
+	0 5 2 2 show_body
+	0 6 2 0 show_body
+	1 6 0 0 show_body
+	2 6 0 1 show_body
+	2 5 1 1 show_body
+	2 4 1 3 show_body
+	1 4 3 3 show_body
 	
-	4 1 CUR_yx
+	2 3 0   _head
+	1 3 0   _tail
+	
+	1 7 3   _head
+	2 7 3   _tail
+	
+	4 0 CUR_yx
+	grass_str TELL CR
+	fruit_str TELL CR
 ;
 
-6 VALUE sp
-: ascii_fill sp 0 DO SPACE LOOP ;
 : ascii 
-	  10   0 DO SPACE SPACE I . SPACE I EMIT ascii_fill  LOOP 
-	 100  10 DO SPACE       I . SPACE I EMIT ascii_fill  LOOP 
-	$100 100 DO             I . SPACE I EMIT ascii_fill  LOOP 
+	CR
+	BASE C@ $10 BASE C!
+	SPACE SPACE $10 0 DO I . LOOP CR CR
+	$10 0 DO I . SPACE 
+		$10 0 DO J 4* 4* I + EMIT LOOP 
+		CR
+	LOOP
+	BASE C!
+	CR
 ;
 ( 130 2 3 hb full_body )
 
