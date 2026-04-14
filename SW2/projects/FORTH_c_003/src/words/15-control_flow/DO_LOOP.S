@@ -1,13 +1,13 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  tags=./tags;,tags; 
 
-DEFWORD w_DO,			FLG_IMMEDIATE,	"DO",			f_DO			; Compilation ( C: -- 0 do-sys ) compile 'do_do' to definition
-DEFWORD ww_do_do,		FLG_HIDDEN,	"do_do",		do_do,		line=2	; Runtime: ( limit first -- ) ( R:  -- limit first ) set loop params
-DEFWORD w_LEAVE, 		FLG_IMMEDIATE,	"LEAVE",		f_LEAVE			; Compilation ( C: backn do-sys  -- backn backn+1 do-sys ) compile 'do_leave' to definition
-DEFWORD ww_do_leave, 	FLG_HIDDEN + FLG_ARG_3,	"do_leave",		do_leave	line=2	; Runtime: ( -- ) ( R: limit first -- ) leave loop, jump after LOOP
-DEFWORD w_LOOP,			FLG_IMMEDIATE,	"LOOP",			f_LOOP			; Compilation ( C: 0 back1 .. backn do-sys --  ) compile 'do_loop' to definition
-DEFWORD ww_do_loop,	FLG_HIDDEN + FLG_ARG_3,	"do_loop",		do_loop,	line=2	; Runtime: ( -- ) ( R: limit first -- | limit first+1 ) inc 'first' and maybe loop
-DEFWORD w_PLUSLOOP,		FLG_IMMEDIATE,	"+LOOP",		f_PLUSLOOP		; Compilation ( C: 0 back1 .. backn do-sys --  ) compile 'do_plusloop' to definition
-DEFWORD ww_do_plusloop,	FLG_HIDDEN + FLG_ARG_3,	"do_plusloop",		do_plusloop,	line=2	; Runtime: ( x -- ) ( R: limit first -- | limit first+x ) inc 'first' by 'x' and maybe loop
+DEFWORD w_DO,			FLG_IMMEDIATE,	"DO",			f_DO			; Compilation ( C: -- 0 do-sys ) compile '(do)' to definition
+DEFWORD w__do_,			FLG_HIDDEN,	"(do)",			f__do_,		line=2	; Runtime: ( limit first -- ) ( R:  -- limit first ) set loop params
+DEFWORD w_LEAVE, 		FLG_IMMEDIATE,	"LEAVE",		f_LEAVE			; Compilation ( C: backn do-sys  -- backn backn+1 do-sys ) compile '(leave)' to definition
+DEFWORD w__leave_, 	FLG_HIDDEN + FLG_ARG_3,	"(leave)",		f__leave_	line=2	; Runtime: ( -- ) ( R: limit first -- ) leave loop, jump after LOOP
+DEFWORD w_LOOP,			FLG_IMMEDIATE,	"LOOP",			f_LOOP			; Compilation ( C: 0 back1 .. backn do-sys --  ) compile '(loop)' to definition
+DEFWORD w__loop_,	FLG_HIDDEN + FLG_ARG_3,	"(loop)",		f__loop_,	line=2	; Runtime: ( -- ) ( R: limit first -- | limit first+1 ) inc 'first' and maybe loop
+DEFWORD w_PLUS_LOOP,		FLG_IMMEDIATE,	"+LOOP",		f_PLUSLOOP		; Compilation ( C: 0 back1 .. backn do-sys --  ) compile '(+loop)' to definition
+DEFWORD w__plus_loop_,	FLG_HIDDEN + FLG_ARG_3,	"(+loop)",		f__plus_loop_,	line=2	; Runtime: ( x -- ) ( R: limit first -- | limit first+x ) inc 'first' by 'x' and maybe loop
 DEFWORD w_UNLOOP,		0,		"UNLOOP",		f_docol, yes		; ( -- ) ( R: limit first -- ) remove one level of DO..LOOP to eventually enable EXIT
 	P24 w_Rfrom_cw
 	P24 w_2RDROP_cw
@@ -23,15 +23,15 @@ gfunc f_DO	; {{{ #
 	TCB_member	TCB_HERE	; &HERE
 		RB3at			; Parsx = value of HERE
 	Set3		Zx, Parsx
-	Ldi3		Parsx, ww_do_do_cw
-	call W3at			; compile do_do (~ 2>R)
+	Ldi3		Parsx, w__do__cw
+	call W3at			; compile (do) (~ 2>R)
 	Set3		TOS, Zx		; jump here
 	Set3		Parsx,Zx
 	TCB_member	TCB_HERE	; &HERE
 		RW3at			; write new HERE
 	rjmp NEXT
 ; }}}
-gfunc do_do	; {{{
+gfunc f__do_	; {{{
 	PopST Parsx
 	PushR_x Parsx
 	PushR_x TOS
@@ -43,8 +43,8 @@ gfunc f_LEAVE	; {{{ #
 	TCB_member	TCB_HERE	; &HERE
 		RB3at			; Parsx = value of HERE
 	Set3		Zx, Parsx
-	Ldi3		Parsx, ww_do_leave_cw
-	call	W3at			; compile do_leave (~ BRANCH)
+	Ldi3		Parsx, w__leave__cw
+	call	W3at			; compile (leave) (~ BRANCH)
 	Set3		Parsx, Zx
 	PushST		Parsx
 	Set3		Zx, Parsx
@@ -55,7 +55,7 @@ gfunc f_LEAVE	; {{{ #
 		RW3at			; write new HERE
 	rjmp NEXT
 ; }}}
-gfunc do_leave	; {{{ # 
+gfunc f__leave_	; {{{ # 
 	PopR_x	Parsx
 	PopR_x	Parsx
 	Set3 Zx, IP
@@ -68,9 +68,9 @@ gfunc f_LOOP	; {{{ #
 	TCB_member	TCB_HERE	; &HERE
 		RB3at			; Parsx = value of HERE
 	Set3		Zx, Parsx
-	Ldi3		Parsx, ww_do_loop_cw
+	Ldi3		Parsx, w__loop__cw
 f_LOOP.common:
-	call	W3at			; compile do_loop (~ 0BRANCH)
+	call	W3at			; compile (loop) (~ 0BRANCH)
 	Set3		DT, Zx		; here we need overwrite jump distance
 	Sub3		TOS, DT		; compute offset to HERE
 	Set3		Parsx, TOS
@@ -91,7 +91,7 @@ f_LOOP.common:
 	PopST		TOS
 	rjmp NEXT
 ; }}}
-gfunc do_loop	; {{{
+gfunc f__loop_	; {{{
 	PopR_x	Parsx
 	ldi 	Tx, 1
 	Add31	Parsx, Tx
@@ -117,31 +117,31 @@ gfunc f_PLUSLOOP	; {{{ #
 	TCB_member	TCB_HERE	; &HERE
 		RB3at			; Parsx = value of HERE
 	Set3		Zx, Parsx
-	Ldi3		Parsx, ww_do_plusloop_cw
+	Ldi3		Parsx, w__plus_loop__cw
 	rjmp	f_LOOP.common
 ; }}}
-gfunc do_plusloop	; {{{
+gfunc f__plus_loop_	; {{{
 	PopR_x	Parsx
 	Add3	TOS, Parsx
 	PushR_x	TOS
 	ReadR_N_x	1, DT		; old=Parsx, new=TOS, limit=DT
 	Cmp3	DT,Parsx
-	breq	do_plusloop.notCross	; same, departing from equal
-	brsh	do_plusloop.oldHigher	; cannot be same, so higher
-do_plusloop.oldLesser:
+	breq	f__plus_loop_.notCross	; same, departing from equal
+	brsh	f__plus_loop_.oldHigher	; cannot be same, so higher
+f__plus_loop_.oldLesser:
 	Cmp3	DT,TOS
-	brsh	do_plusloop.Cross	; same or higher is (arrival or) cross
-	rjmp	do_plusloop.notCross	; both lower
-do_plusloop.oldHigher:
+	brsh	f__plus_loop_.Cross	; same or higher is (arrival or) cross
+	rjmp	f__plus_loop_.notCross	; both lower
+f__plus_loop_.oldHigher:
 	Cmp3	DT,TOS
-	brlo	do_plusloop.Cross	; lower is cross (or departure)
-;	rjmp	do_plusloop.notCross	; both higher (or departure) ; fall thrue
-do_plusloop.notCross: ; next pass of loop = NOT crossed
+	brlo	f__plus_loop_.Cross	; lower is cross (or departure)
+;	rjmp	f__plus_loop_.notCross	; both higher (or departure) ; fall thrue
+f__plus_loop_.notCross: ; next pass of loop = NOT crossed
 	Set3 Zx, IP
 	call B3at
 	Add3 IP, Parsx
 	rjmp NEXT
-do_plusloop.Cross: ; end of loop = crossed
+f__plus_loop_.Cross: ; end of loop = crossed
 	PopR_x	Parsx
 	PopR_x	Parsx
 	ldi	Tx,3

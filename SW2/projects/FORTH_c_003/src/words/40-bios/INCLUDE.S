@@ -2,7 +2,7 @@
 
 
 DEFWORD w_INCLUDE,		FLG_IMMEDIATE,	"INCLUDE",		f_INCLUDE		; ( "filename" --  ) include text from filename; C:( "filename" --  ) compile reading file to actual word  [----]
-DEFWORD ww_do_INCLUDE,		FLG_PSTRING,	"do_INCLUDE",		f_do_INCLUDE	line=2	; ( <filename> --  ) interpret text from filename [----]
+DEFWORD w__include_,		FLG_PSTRING,	"(include)",		f__include_	line=2	; ( <filename> --  ) interpret text from filename [----]
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_INCLUDE	; {{{ # 
@@ -13,8 +13,8 @@ gfunc f_INCLUDE	; {{{ #
 	call	func_PARSE_NAME
 	TCB_memberR3	TCB_HERE,	Parsx
 	Set3	Zx, Parsx
-	Ldi3	Parsx, ww_do_INCLUDE_cw
-	call	W3at				; compile do_INCLUDE
+	Ldi3	Parsx, w__include__cw
+	call	W3at				; compile (include)
 	Set1	Parsx_lo, TOS_lo
 	call	W1at				; compile len
 	PopST	DT
@@ -37,7 +37,7 @@ f_INCLUDE.interpretting:
 	PopST	TOS
 	jmp	NEXT
 ; }}}
-gfunc f_do_INCLUDE	; {{{ 
+gfunc f__include_	; {{{ 
 	PushST	TOS
 	Set3	Zx, IP
 	call	B1at

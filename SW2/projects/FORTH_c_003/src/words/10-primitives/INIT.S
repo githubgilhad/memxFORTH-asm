@@ -43,7 +43,7 @@ obj .L_f_INIT__len
 ;	.ascii " : foobar  INCLUDE TEST.4TH 1 2 + ; ' foobar EXPORT foobar "
 ;	.ascii " : x IF 5 ELSE 6 THEN 7 ; ' x EXPORT  "
 ;	.ascii " 12 3 DIVMOD .h .h "
-	.ascii " LOGO "
+	.ascii " LOGO  "
 2:
 	.byte 1
 .balign 2

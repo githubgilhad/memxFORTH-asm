@@ -2,17 +2,17 @@
 
 
 DEFWORD w_DOES,			FLG_IMMEDIATE,	"DOES>",		f_DOES			; (  --  ) DOES> runtime part of new word [----]
-DEFWORD ww_does,		FLG_ARG_3,	"(does>)",		f_does,		line=2	; (  -- addr ) fix new word's CW with DoubleIndirect address of runtime part [----]
-; do_does receive DoubleIndirect call, push addr to stack and does ~ f_docol 
+DEFWORD w__does_,		FLG_ARG_3,	"(does>)",		f__does_,	line=2	; (  -- addr ) fix new word's CW with DoubleIndirect address of runtime part [----]
+; do__does_ receive DoubleIndirect call, push addr to stack and does ~ f_docol 
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
-gfunc f_DOES	; {{{ # zakompiluje adresy f_does a do_does do noveho slova
+gfunc f_DOES	; {{{ # zakompiluje adresy f__does_ a do__does_ do noveho slova
 	TCB_member	TCB_HERE
 			RB3at
 		Set3	Zx, Parsx
-		Ldi3i	Parsx, ww_does_cw
+		Ldi3i	Parsx, w__does__cw
 			RW3at
-		Ldi3i	Parsx, do_does
+		Ldi3i	Parsx, do__does_
 			RW3at
 		Set3	Parsx, Zx
 	TCB_member	TCB_HERE
@@ -20,13 +20,13 @@ gfunc f_DOES	; {{{ # zakompiluje adresy f_does a do_does do noveho slova
 	jmp NEXT
 ; }}}
 
-gfunc f_does	; {{{ #  do CW noveho slova da DoubleIndirect odkaz na do_does
+gfunc f__does_	; {{{ #  do CW noveho slova da DoubleIndirect odkaz na do__does_
 	Set3 Parsx,IP
 ;	Set3 Zx, IP
 ;	call B3at
-;	Set3 IP, Zx		; IP += 3, Parsx=addr of do_does
+;	Set3 IP, Zx		; IP += 3, Parsx=addr of do__does_
 	ori  Parsx_hlo,FLAG_DoubleIndirect
-	Set3 DT, Parsx		; DT=addr of do_does DoubleIndirect
+	Set3 DT, Parsx		; DT=addr of do__does_ DoubleIndirect
 	TCB_member TCB_WL_CURRENT	; &TCB_WL_CURRENT
 		RB3at			; &wid
 	Set3 Zx,Parsx
@@ -40,7 +40,7 @@ gfunc f_does	; {{{ #  do CW noveho slova da DoubleIndirect odkaz na do_does
 	call	W3at
 	jmp EXIT
 ; }}}
-gfunc do_does	; {{{ # po DoubleIndirect zavolani ulozi parametry a provede runtime slova ve stylu f_docol
+gfunc do__does_	; {{{ # po DoubleIndirect zavolani ulozi parametry a provede runtime slova ve stylu f_docol
 	PushST		TOS
 	Set3		TOS,DT
 	Set3 		DT,Temp

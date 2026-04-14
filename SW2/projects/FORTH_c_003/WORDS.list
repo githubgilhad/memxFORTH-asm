@@ -171,7 +171,7 @@ DEFWORD w_ADDR_L,		0,		"&L",			f_ADDR_L		; (  -- &L ) secondary L stack address 
 DEFWORD w_ADDR_R,		0,		"&R",			f_ADDR_R		; (  -- &R ) return R stack address [xxxx]
 DEFWORD w_ADDR_S,		0,		"&S",			f_ADDR_S		; (  -- &S ) data Stack address [xxxx]
 DEFWORD w_AND,			0,		"AND",			f_AND			; ( a b -- a&b ) bitwise AND of two stack items
-DEFWORD w_BEGIN,		FLG_IMMEDIATE,	"BEGIN",		f_BEGIN			; Compilation ( C: -- 0 do-sys ) compile 'do_begin' to definition
+DEFWORD w_BEGIN,		FLG_IMMEDIATE,	"BEGIN",		f_BEGIN			; Compilation ( C: -- 0 do-sys ) compile '(begin)' to definition
 DEFWORD w_BINSTR,		0,		"BINSTR",		f_BINSTR		;  ( "name" x1 x2 .. xn-1 xn n -- ) CREATE word for binary string:  save binary string (1B bytes) to memory, 10 20 30 3 BINSTR THREE create word THREE ( -- addr len ) returning string "\10\20\30"
 DEFWORD w_BRANCH,		FLG_ARG_3,	"BRANCH",		f_BRANCH		; ( -- ) add following P24 to IP and NEXT there; -3 is endless loop [----]
 DEFWORD w_BRK,			0,		"BRK",			f_BRK			; (  --  ) do nothing, breakpoint may be set here [xxxx]
@@ -199,7 +199,7 @@ DEFWORD w_DEFINITIONS,		0,		"DEFINITIONS",		f_DEFINITIONS		; ( -- ) set CURRENT 
 DEFWORD w_DEF_COLOR,		0,		"DEF_COLOR",		f_DEF_COLOR		; ( c --  ) set default color c
 DEFWORD w_DIV,			0,		"/",			f_DIV			// ( a b -- div ) divide second by top, get quotient [xxxx]
 DEFWORD w_DIVMOD,		0,		"DIVMOD",		f_DIVMOD		// ( a b -- mod div ) divide second by top, get remainder and quotient [xxxx]
-DEFWORD w_DO,			FLG_IMMEDIATE,	"DO",			f_DO			; Compilation ( C: -- 0 do-sys ) compile 'do_do' to definition
+DEFWORD w_DO,			FLG_IMMEDIATE,	"DO",			f_DO			; Compilation ( C: -- 0 do-sys ) compile '(do)' to definition
 DEFWORD w_DOES,			FLG_IMMEDIATE,	"DOES>",		f_DOES			; (  --  ) DOES> runtime part of new word [----]
 DEFWORD w_DOT_D,		0,		".D",			f_DOT_S			; (  --  ) list data D stack [xxxx]
 DEFWORD w_DOT_L,		0,		".L",			f_DOT_L			; (  --  ) list secondary L stack [xxxx]
@@ -211,7 +211,7 @@ DEFWORD w_DROPat,		0,		"DROP@",		f_DROPat		; ( xn .. x1 n -- xn-1 .. x1) DROP it
 DEFWORD w_DUMP,			0,		"DUMP",			f_DUMP			; ( addr  --  ) dump memory around addr  [----]
 DEFWORD w_DUP,			0,		"DUP",			f_DUP			; ( a -- a a ) duplicate top of stack
 DEFWORD w_DUP2,			0,		"DUP2",			f_2DUP			; ( a b -- a b a b ) duplicate 2 CELLs on top of stack [0380] (aka 2DUP)
-DEFWORD w_ELSE,			FLG_IMMEDIATE,	"ELSE",			f_ELSE			; C:( addr  -- addr ) compile do_ELSE, 0,get addr from stack and fill offset after 0, push addr of 0 to stack [----]
+DEFWORD w_ELSE,			FLG_IMMEDIATE,	"ELSE",			f_ELSE			; C:( addr  -- addr ) compile (else), 0,get addr from stack and fill offset after 0, push addr of 0 to stack [----]
 DEFWORD w_EMIT,			0,		"EMIT",			f_EMIT			; ( c  --  ) output character [----]
 DEFWORD w_EXECUTE,		0,		"EXECUTE",		f_EXECUTE		; ( xt -- ) execute xt  [1370]
 DEFWORD w_EXIT,			0,		"EXIT",			f_exit			; ( XX ) synonymum exit, not catched by show (for exit in middle od WORD)
@@ -223,8 +223,8 @@ DEFWORD w_GET_ORDER,		0,		"GET-ORDER",		f_docol, yes		; ( -- wid_n .. wid_1 n ) 
 DEFWORD w_HEADLESS,		0,		"HEADLESS",		f_HEADLESS		; (  --  ) stop generation of VGA signal [----]
 DEFWORD w_HEADMORE,		0,		"HEADMORE",		f_HEADMORE		; (  --  ) start generation of VGA signal again [----]
 DEFWORD w_I,			0,		"I",			f_I			; (  -- x ) return value of inner loop control variable
-DEFWORD w_IF,			FLG_IMMEDIATE,	"IF",			f_IF			; C:(  -- addr ) compile do_IF, 0, push addr of 0 to stack [----]
-DEFWORD w_IFNOT,		FLG_IMMEDIATE,	"IFNOT",		f_IFNOT			; C:(  -- addr ) compile do_IFNOT, 0, push addr of 0 to stack [----]
+DEFWORD w_IF,			FLG_IMMEDIATE,	"IF",			f_IF			; C:(  -- addr ) compile (if), 0, push addr of 0 to stack [----]
+DEFWORD w_IFNOT,		FLG_IMMEDIATE,	"IFNOT",		f_IFNOT			; C:(  -- addr ) compile (ifnot), 0, push addr of 0 to stack [----]
 DEFWORD w_IMMEDIATE,		FLG_IMMEDIATE,	"IMMEDIATE",		f_IMMEDIATE		; (  --  ) mark last defined word as IMMEDIATE [----]
 DEFWORD w_INCLUDE,		FLG_IMMEDIATE,	"INCLUDE",		f_INCLUDE		; ( "filename" --  ) include text from filename; C:( "filename" --  ) compile reading file to actual word  [----]
 DEFWORD w_INIT,			0,		"INIT",			f_INIT			; (  -- ) Set stacks and all other data to init values
@@ -234,7 +234,7 @@ DEFWORD w_J,			0,		"J",			f_J			; (  -- x ) return value of next loop control va
 DEFWORD w_KEY,			0,		"KEY",			f_KEY			; ( -- 0 | char ) read character from serial (\0 if not avaiable)
 DEFWORD w_KEYpress,		0,		"KEYpress",		f_KEYpress		; (  -- x ) return pressed key or zero [----]
 DEFWORD w_LAND,			0,		"&&",			f_LAND			; ( a b -- a&&b ) logical AND of two stack items
-DEFWORD w_LEAVE, 		FLG_IMMEDIATE,	"LEAVE",		f_LEAVE			; Compilation ( C: backn do-sys  -- backn backn+1 do-sys ) compile 'do_leave' to definition
+DEFWORD w_LEAVE, 		FLG_IMMEDIATE,	"LEAVE",		f_LEAVE			; Compilation ( C: backn do-sys  -- backn backn+1 do-sys ) compile '(leave)' to definition
 DEFWORD w_LEDS_get,		0,		"LEDS@",		f_LEDS_get		; ( num  -- RGB  ) get LED # num  RGB value [xxxx]
 DEFWORD w_LEDS_set,		0,		"LEDS!",		f_LEDS_set		; ( RGB num  --  ) set LED # num to RGB and shine it [xxxx]
 DEFWORD w_LIT1,			FLG_ARG_1,	"LIT1",			f_LIT1			; ( -- value ) push literal value 1B
@@ -243,7 +243,7 @@ DEFWORD w_LIT3,			FLG_ARG_3,	"LIT3",			f_LIT3			; ( -- value ) push literal valu
 DEFWORD w_LITERAL,		FLG_IMMEDIATE,	"LITERAL",		f_LITERAL		; ( x -- ) compile x to current word 3B (as LIT3 x)
 DEFWORD w_LITSTRING,		FLG_PSTRING,	"LITSTRING",		f_LITSTRING		; ( -- addr len ) push addr and len of string on the stack - similar to LIT
 DEFWORD w_LOGO,		0,		"LOGO",		f_docol, yes		; (  --  ) do something TODO [----]
-DEFWORD w_LOOP,			FLG_IMMEDIATE,	"LOOP",			f_LOOP			; Compilation ( C: 0 back1 .. backn do-sys --  ) compile 'do_loop' to definition
+DEFWORD w_LOOP,			FLG_IMMEDIATE,	"LOOP",			f_LOOP			; Compilation ( C: 0 back1 .. backn do-sys --  ) compile '(loop)' to definition
 DEFWORD w_LOR,			0,		"||",			f_LOR			; ( a b -- a||b ) logical OR of two stack items
 DEFWORD w_Lfrom,		0,		"L>",			f_Lfrom			; (  -- x ) ( L: x -- ) move CELL from L stack to data stack
 DEFWORD w_MAX_COLUMNS,		0,		"MAX_COLUMNS",		f_MAX_COLUMNS		; (  -- x ) return number of columns [----]
@@ -256,7 +256,7 @@ DEFWORD w_NUMBER,		0,		"NUMBER",		f_NUMBER		; ( c-addr u -- 0 | x -1 ) convert s
 DEFWORD w_OR,			0,		"OR",			f_OR			; ( a b -- a|b ) bitwise OR of two stack items
 DEFWORD w_OVER,			0,		"OVER",			f_OVER			; ( a b -- a b a ) copy second stack item to top
 DEFWORD w_PARSE_NAME,		0,		"PARSE-NAME",		f_PARSE_NAME		; ( -- c-address u ) parse name from getc, save it to TIB with len prefix and C-zero after end  [xxxx]
-DEFWORD w_PLUSLOOP,		FLG_IMMEDIATE,	"+LOOP",		f_PLUSLOOP		; Compilation ( C: 0 back1 .. backn do-sys --  ) compile 'do_plusloop' to definition
+DEFWORD w_PLUS_LOOP,		FLG_IMMEDIATE,	"+LOOP",		f_PLUSLOOP		; Compilation ( C: 0 back1 .. backn do-sys --  ) compile '(+loop)' to definition
 DEFWORD w_POS,			0,		"POS",			f_POS			; ( char addr len  -- (pos) flag ) return flag and if found also zero based position
 DEFWORD w_QUIT,			0,		"QUIT",			f_docol, yes		; Main loop,  : QUIT INIT BEGIN BEGIN TIB TIB.max ACCEPT UNTIL INTERPRET REPEAT ;  
 DEFWORD w_RAM_MOVE,		0,		"RAM-MOVE",		f_RAM_MOVE		; ( addr1 addr2 u -- ) in RAM only, move u bytes to addr2 (in right direction)
@@ -281,11 +281,11 @@ DEFWORD w_TEST,			0,		"TEST",			f_docol, yes		; ( -- ) // just test
 DEFWORD w_TESTc,		0,		"TESTc",		f_TESTc			; ( -- ) // just test
 DEFWORD w_THEN,			FLG_IMMEDIATE,	"THEN",			f_THEN			; C:( addr  -- ) get addr from stack and fill offset here [----]
 DEFWORD w_TIMES,		0,		"*",			f_TIMES			// ( a b -- a*b ) multiply top two stack items (24-bit result, may overflow) 
-DEFWORD w_TO,			FLG_IMMEDIATE,	"TO",			f_docol, yes		; ( "name" val  --  ) change value  { 24 TO test 	test ( -- 24 ) }
+DEFWORD w_TO,			FLG_IMMEDIATE,	"TO",			f_TO			; ( "name" val  --  ) change value   { 24 TO test 	test ( -- 24 ) }
 DEFWORD w_TYPE,			0,		"TYPE",			f_TYPE			; ( c-addr u --  ) EMITs string [2310]
 DEFWORD w_UNLOOP,		0,		"UNLOOP",		f_docol, yes		; ( -- ) ( R: limit first -- ) remove one level of DO..LOOP to eventually enable EXIT
-DEFWORD w_UNTIL,		FLG_IMMEDIATE,	"UNTIL",		f_UNTIL			; Compilation ( C: 0 [a .. a] do-sys --  ) compile 'do_until' to definition
-DEFWORD w_VALUE,		0,		"VALUE",		f_VALUE			; ( "name" val  --  ) create value  { 12 VALUE test 	test ( -- 12 ) }
+DEFWORD w_UNTIL,		FLG_IMMEDIATE,	"UNTIL",		f_UNTIL			; Compilation ( C: 0 [a .. a] do-sys --  ) compile '(until)' to definition
+DEFWORD w_VALUE,		0,		"VALUE",		f_VALUE			; ( "name" val  --  ) create value   { 12 VALUE test 	test ( -- 12 ) }
 DEFWORD w_VARIABLE,		0,		"VARIABLE",		f_VARIABLE		; ( "name" --  ) create variable [----] { VARIABLE test 	12 test ! test @ ( -- 12 ) }
 DEFWORD w_VER,			0,		"VER",			f_CONSTSTRING		; (  -- addr u ) version string
 DEFWORD w_VER_DATE,		0,		"VER_DATE",		f_CONSTSTRING		; (  --  addr u ) just date
@@ -299,6 +299,23 @@ DEFWORD w_WAIT,			0,		"WAIT",			f_WAIT			; ( x  --  ) wait x ticks (0 - no wait)
 DEFWORD w_WHILE,		FLG_IMMEDIATE,	"WHILE",		f_WHILE			; ( do-sys -- addr do-sys ) BEGIN condition WHILE action REPEAT
 DEFWORD w_WORDLIST,		0,		"WORDLIST",		f_docol, yes		; ( -- wid ) create wordlist : WORDLIST ( -- wid ) HERE 0 , ; \ reserve CELL, store zeroes there, return its address
 DEFWORD w_WORDS,		0,		"WORDS",		f_WORDS			; (  --  ) print all words [xxxx]
+DEFWORD w__begin_,		FLG_HIDDEN,	"(begin)",		f__begin_,	line=2	; Runtime: ( -- ) just label
+DEFWORD w__create_,		FLG_HIDDEN,	"(create)",		f__create_,	line=2	; Runtime ( -- a-addr ) push address of datafield for name  [1000]
+DEFWORD w__do_,			FLG_HIDDEN,	"(do)",			f__do_,		line=2	; Runtime: ( limit first -- ) ( R:  -- limit first ) set loop params
+DEFWORD w__does_,		FLG_ARG_3,	"(does>)",		f__does_,	line=2	; (  -- addr ) fix new word's CW with DoubleIndirect address of runtime part [----]
+DEFWORD w__else_,		FLG_ARG_3,	"(else)",		f_BRANCH,	line=2	; (  --  ) jump  [----]
+DEFWORD w__if_,			FLG_ARG_3,	"(if)",			f_0BRANCH,	line=2	; ( flag --  ) jump if ZERO [----]
+DEFWORD w__ifnot_,		FLG_ARG_3,	"(ifnot)",		f_1BRANCH,	line=2	; ( flag --  ) jump if NOT ZERO [----]
+DEFWORD w__include_,		FLG_PSTRING,	"(include)",		f__include_	line=2	; ( <filename> --  ) interpret text from filename [----]
+DEFWORD w__leave_, 	FLG_HIDDEN + FLG_ARG_3,	"(leave)",		f__leave_	line=2	; Runtime: ( -- ) ( R: limit first -- ) leave loop, jump after LOOP
+DEFWORD w__loop_,	FLG_HIDDEN + FLG_ARG_3,	"(loop)",		f__loop_,	line=2	; Runtime: ( -- ) ( R: limit first -- | limit first+1 ) inc 'first' and maybe loop
+DEFWORD w__minus_to_,		FLG_ARG_3,	"(-to)",		f__minus_to_	line=2	; ( val -- ) Arg:VALUE, runtime -TO  { 2 -TO test 	test ( -- 22 ) }
+DEFWORD w__plus_loop_,	FLG_HIDDEN + FLG_ARG_3,	"(+loop)",		f__plus_loop_,	line=2	; Runtime: ( x -- ) ( R: limit first -- | limit first+x ) inc 'first' by 'x' and maybe loop
+DEFWORD w__plus_to_,		FLG_ARG_3,	"(+to)",		f__plus_to_	line=2	; ( val -- ) Arg:VALUE, runtime -TO  { 3 +TO test 	test ( -- 25 ) }
+DEFWORD w__repeat_,		FLG_ARG_3,	"(repeat)",		f_BRANCH,	line=2	; (  --  ) jump to BEGIN [----]
+DEFWORD w__to_,			FLG_ARG_3,	"(to)",			f__to_,		line=2	; ( val -- ) Arg:VALUE, runtime TO   { 24 TO test 	test ( -- 24 ) }
+DEFWORD w__until_,	FLG_HIDDEN + FLG_ARG_3,	"(until)",		f_0BRANCH,	line=2	; Runtime: ( flag -- ) loop if not zero
+DEFWORD w__while_,		FLG_ARG_3,	"(while)",		f_0BRANCH,	line=2	; ( flag --  ) jump if ZERO [----]
 DEFWORD w_at,			0,		"@",			f_at			; ( addr -- value ) fetch cell from address
 DEFWORD w_char_at,		0,		"C@",			f_char_at		; ( addr -- byte ) fetch byte from address
 DEFWORD w_char_store,		0,		"C!",			f_char_store		; ( byte addr -- )  store byte to address
@@ -318,7 +335,7 @@ DEFWORD w_head2xt,		0,		"H>XT",			f_head2xt		;  ( h -- xt )  : H>XT  ( h -- xt )
 DEFWORD w_left_bracket,		FLG_IMMEDIATE,	"[",			f_left_bracket		; (  --  ) leave compilation, enter interpretation [2500]
 DEFWORD w_less,			0,		"<",			f_less			; ( x y -- flag ) x < y
 DEFWORD w_minus,		0,		"-",			f_minus			; ( a b -- a-b ) subtract top from second
-DEFWORD w_minus_TO,		FLG_IMMEDIATE,	"-TO",			f_docol, yes		; ( "name" val  --  ) substract from value { 2 -TO test 	test ( -- 22 ) }
+DEFWORD w_minus_TO,		FLG_IMMEDIATE,	"-TO",			f_minus_TO		; ( "name" val  --  ) sub from value { 2 -TO test 	test ( -- 22 ) }
 DEFWORD w_minus_char_store,	0,		"-C!",			f_minus_char_store	; ( byte addr -- )  sub byte from address
 DEFWORD w_minus_one,		0,		"-1",			f_minus_one		; (  -- 0 ) push minus one on stack : -1 -1 ;
 DEFWORD w_minus_store,		0,		"-!",			f_minus_store		; ( value addr -- ) sub cell from address
@@ -330,7 +347,7 @@ DEFWORD w_one_minus,		0,		"1-",			f_one_minus		; ( a -- b ) b = a - 1 [xxxx]
 DEFWORD w_one_non_equals,	0,		"1<>",			f_one_non_equals	; ( x -- flag ) x <> 0
 DEFWORD w_one_plus,		0,		"1+",			f_one_plus		; ( a -- b ) b = a + 1 [0290]
 DEFWORD w_plus,			0,		"+",			f_plus			; ( a b -- a+b ) add top two stack items
-DEFWORD w_plus_TO,		FLG_IMMEDIATE,	"+TO",			f_docol, yes		; ( "name" val  --  ) change value  { 3 TO +test 	test ( -- 25 ) }
+DEFWORD w_plus_TO,		FLG_IMMEDIATE,	"+TO",			f_plus_TO		; ( "name" val  --  ) add to value   { 3 +TO test 	test ( -- 25 ) }
 DEFWORD w_plus_char_store,	0,		"+C!",			f_plus_char_store	; ( byte addr -- )  add byte to address
 DEFWORD w_plus_store,		0,		"+!",			f_plus_store		; ( value addr -- ) add cell to address
 DEFWORD w_plus_word_store,	0,		"+W!",			f_plus_word_store	; ( word addr -- )  add word to address
@@ -353,20 +370,6 @@ DEFWORD w_zero,			0,		"0",			f_zero			; (  -- 0 ) push zero on stack : 0 0 ;
 DEFWORD w_zero_equals,		0,		"0=",			f_zero_equals		; ( x -- flag ) x == 0
 DEFWORD w_zero_non_equals,	0,		"0<>",			f_zero_non_equals	; ( x -- flag ) x <> 0
 DEFWORD w_zzz_eol_1,		0,		"zzz_eol_1",		f_zzz_eol_1		; (  -- h ) return its head [----]
-DEFWORD ww_do_ELSE,		FLG_ARG_3,	"do_ELSE",		f_BRANCH,	line=2	; (  --  ) jump  [----]
-DEFWORD ww_do_IF,		FLG_ARG_3,	"do_IF",		f_0BRANCH,	line=2	; ( flag --  ) jump if ZERO [----]
-DEFWORD ww_do_IFNOT,		FLG_ARG_3,	"do_IFNOT",		f_1BRANCH,	line=2	; ( flag --  ) jump if NOT ZERO [----]
-DEFWORD ww_do_INCLUDE,		FLG_PSTRING,	"do_INCLUDE",		f_do_INCLUDE	line=2	; ( <filename> --  ) interpret text from filename [----]
-DEFWORD ww_do_begin,		FLG_HIDDEN,	"do_begin",		do_begin,	line=2	; Runtime: ( -- ) just label
-DEFWORD ww_do_create,		FLG_HIDDEN,	"do_create",		do_create,	line=2	; Runtime ( -- a-addr ) push address of datafield for name  [1000]
-DEFWORD ww_do_do,		FLG_HIDDEN,	"do_do",		do_do,		line=2	; Runtime: ( limit first -- ) ( R:  -- limit first ) set loop params
-DEFWORD ww_do_leave, 	FLG_HIDDEN + FLG_ARG_3,	"do_leave",		do_leave	line=2	; Runtime: ( -- ) ( R: limit first -- ) leave loop, jump after LOOP
-DEFWORD ww_do_loop,	FLG_HIDDEN + FLG_ARG_3,	"do_loop",		do_loop,	line=2	; Runtime: ( -- ) ( R: limit first -- | limit first+1 ) inc 'first' and maybe loop
-DEFWORD ww_do_plusloop,	FLG_HIDDEN + FLG_ARG_3,	"do_plusloop",		do_plusloop,	line=2	; Runtime: ( x -- ) ( R: limit first -- | limit first+x ) inc 'first' by 'x' and maybe loop
-DEFWORD ww_do_repeat,		FLG_ARG_3,	"do_repeat",		f_BRANCH,	line=2	; (  --  ) jump to BEGIN [----]
-DEFWORD ww_do_until,	FLG_HIDDEN + FLG_ARG_3,	"do_until",		f_0BRANCH,	line=2	; Runtime: ( flag -- ) loop if not zero
-DEFWORD ww_do_while,		FLG_ARG_3,	"do_while",		f_0BRANCH,	line=2	; ( flag --  ) jump if ZERO [----]
-DEFWORD ww_does,		FLG_ARG_3,	"(does>)",		f_does,		line=2	; (  -- addr ) fix new word's CW with DoubleIndirect address of runtime part [----]
 DEFWORD ww_zzz_eol_2,		0,		"zzz_eol_2",		f_zzz_eol_2,	line=2	; (  -- h ) return its head [----]
 DEFWORD ww_zzz_eol_3,		0,		"zzz_eol_3",		f_zzz_eol_3,	line=3	; (  -- h ) return its head [----]
 DEF_BUFF PS2_ASCII, 16

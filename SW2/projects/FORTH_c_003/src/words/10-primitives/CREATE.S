@@ -2,7 +2,7 @@
 
 
 DEFWORD w_CREATE,		0,		"CREATE",		f_CREATE		; ( "<spaces>name" -- ) Create a definition for name  [1000]
-DEFWORD ww_do_create,		FLG_HIDDEN,	"do_create",		do_create,	line=2	; Runtime ( -- a-addr ) push address of datafield for name  [1000]
+DEFWORD w__create_,		FLG_HIDDEN,	"(create)",		f__create_,	line=2	; Runtime ( -- a-addr ) push address of datafield for name  [1000]
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_CREATE	; {{{ # 
@@ -51,7 +51,7 @@ gfunc func_CREATE	; {{{ #
 	brne 2b
 3:
 ;	Ldi3 Parsx,ww_do_create_cw
-	Ldi3 Parsx,do_create
+	Ldi3 Parsx,f__create_
 	Set3 Zx,Temp
 	call W3at
 	Set3 Parsx,Zx
@@ -60,7 +60,7 @@ gfunc func_CREATE	; {{{ #
 	PopST TOS
 	ret
 ; }}}
-gfunc do_create	; {{{ # ( -- addr ) return DT
+gfunc f__create_	; {{{ # ( -- addr ) return DT
 	PushST TOS
 	Set3 TOS, DT
 	jmp NEXT

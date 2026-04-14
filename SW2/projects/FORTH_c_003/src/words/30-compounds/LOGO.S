@@ -3,20 +3,20 @@
 
 DEFWORD w_LOGO,		0,		"LOGO",		f_docol, yes		; (  --  ) do something TODO [----]
 	P24s	w_LIT3_cw, 0x0000F0, w_DEF_COLOR_cw, w_CLS_cw												; $F0 ( VGA_WHITE ) DEF_COLOR CLS
-	P24s w_MAX_COLUMNS_cw, w_zero_cw, ww_do_do_cw													; MAX_COLUMNS 0 DO ( lines )
+	P24s w_MAX_COLUMNS_cw, w_zero_cw, w__do__cw													; MAX_COLUMNS 0 DO ( lines )
 2:
 		P24s w_zero_cw, w_I_cw, w_LIT3_cw, 0x000089, w_VRAM_yx_set_cw										; 	0 I $89  VRAM_yx!
 		P24s w_LIT3_cw, 0x000002, w_I_cw, w_LIT3_cw, 0x000089, w_VRAM_yx_set_cw									; 	2 I $89  VRAM_yx!
 		P24s w_LIT3_cw, 0x000005, w_I_cw, w_LIT3_cw, 0x000089, w_VRAM_yx_set_cw									; 	5 I $89  VRAM_yx!
 		P24s w_MAX_LINES_cw, w_one_minus_cw, w_I_cw, w_LIT3_cw, 0x000089, w_VRAM_yx_set_cw							; 	MAX_LINES 1- I $89  VRAM_yx!
 		P24s w_MAX_LINES_cw, w_LIT3_cw, 0x000003, w_minus_cw, w_I_cw, w_LIT3_cw, 0x000089, w_VRAM_yx_set_cw					; 	MAX_LINES 3 - I $89  VRAM_yx! 
-	P24s ww_do_loop_cw, /*0xFFFFA0,*/ 2b - .														; LOOP
+	P24s w__loop__cw, /*0xFFFFA0,*/ 2b - .														; LOOP
 	
-	P24s w_MAX_LINES_cw, w_zero_cw, ww_do_do_cw													; MAX_LINES 0  DO ( columns )
+	P24s w_MAX_LINES_cw, w_zero_cw, w__do__cw													; MAX_LINES 0  DO ( columns )
 2:
 		P24s w_I_cw, w_zero_cw, w_LIT3_cw, 0x00007C, w_VRAM_yx_set_cw										; 	I 0 $7c VRAM_yx!
 		P24s w_I_cw, w_MAX_COLUMNS_cw, w_one_minus_cw, w_LIT3_cw, 0x00007C, w_VRAM_yx_set_cw							; 	I MAX_COLUMNS 1- $7c VRAM_yx!
-	P24s ww_do_loop_cw, /* 0xFFFFDC */  2b - .														; LOOP
+	P24s w__loop__cw, /* 0xFFFFDC */  2b - .													; LOOP
 	P24s w_LITSTRING_cw																; S" MEGA HOME FORTH"
 		.byte	0x0F
 		.ascii "MEGA HOME FORTH"

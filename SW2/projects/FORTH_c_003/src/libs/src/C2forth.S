@@ -100,9 +100,7 @@ C2FORTH:	; {{{ C2FORTH(User *data, void (*fn)(void));
 	ret
 	; }}}
 
-run_in_FORTH_xt_in_IP:	; {{{ run_in_FORTH_xt_in_IP(User *data); run xt stored in IP and returns
-.global run_in_FORTH_xt_in_IP
-.type   run_in_FORTH_xt_in_IP, @function
+gfunc run_in_FORTH_xt_in_IP	; {{{ run_in_FORTH_xt_in_IP(User *data); run xt stored in IP and returns
 	
 	Set3 Zx, IP
 	Ldi3i IP, return_home	; DT=*IP; IP = return_home ~ next word ptr
@@ -114,14 +112,14 @@ run_in_FORTH_xt_in_IP:	; {{{ run_in_FORTH_xt_in_IP(User *data); run xt stored in
 	eicall			; call, so we return *Parsx (it is FORTH function with NEXT)
 	ret
 	; }}}
-f_return_home:
-	ret	; here we return to calling function, no NEXT
+gfunc f_return_home	$	ret	; here we return to calling function, no NEXT
+
 .section .FORTH_data ,"a",@progbits
-return_home:
-	.global return_home
-	.type return_home, @object
-	P24 return_home2
-return_home2:
-	.global return_home2
-	.type return_home2, @object
+
+; FICTION:  Some WORD f_docol contain ... xt, &w_return_home2_cw ... and return_home is the address where w_return_home2_cw is stored 
+;	(so the address in IP inside xt word, where the execution should continue after returning from cw)
+gobj return_home
+	P24 w_return_home2_cw
+; FICTION: there is WORD like "RETURN_HOME2" with this cw, so its execution starts jumping to f_return_home
+gobj w_return_home2_cw
 	P24 f_return_home

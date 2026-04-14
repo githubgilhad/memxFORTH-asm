@@ -4,7 +4,7 @@
 DEFWORD w_FIND_NAME,		0,		"FIND-NAME",		f_FIND_NAME		; ( addr u  -- addr u 0 | xt 1 | xt -1 ) 1=immediate, -1=normal,  0=not found
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
-gfunc f_FIND_NAME	; {{{ 
+gfunc func_FIND_NAME	; {{{ 
 	ReadST_N_x	 0,	Parsx
 	Set2		Cpar1,	TCB
 	Set2		Cpar3,	TOS2
@@ -23,6 +23,10 @@ gfunc f_FIND_NAME	; {{{
 	jmp NEXT
 2:
 	Set3	TOS, r25,r25,r25
+	ret
+; }}}
+gfunc f_FIND_NAME	; {{{ 
+	call func_FIND_NAME
 	jmp NEXT
 ; }}}
 

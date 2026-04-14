@@ -32,7 +32,7 @@ DEFWORD w_GET_ORDER,		0,		"GET-ORDER",		f_docol, yes		; ( -- wid_n .. wid_1 n ) 
 	P24 w_I_cw
 	P24 w_CELLS_plus_cw
 	P24 w_at_cw
-	P24 ww_do_loop_cw
+	P24 w__loop__cw
 	P24 2b - .
 	P24 var_TCB_WL_ORDER_len_cw
 	P24 w_char_at_cw
@@ -280,7 +280,7 @@ DEFWORD w_FIND_NAME_f,		0,		"FIND-NAME_f",		f_docol, yes		; FIND-NAME_f ( c-addr
 	P24 w_EXIT_cw
 ;	P24 w_THEN_cw
 3:
-	P24 ww_do_loop_cw
+	P24 w__loop__cw
 	P24 2b - .
 	P24 w_zero_cw
 	P24 w_exit_cw
