@@ -1,6 +1,9 @@
 HEADLESS
 0 VALUE is_demo
 ' KEYpress DEFER get_key
+
+0 0 0 0 VALUE hx VALUE hy VALUE hd VALUE hdd ( head )
+0 0 VALUE tgx VALUE tgy ( target fruit  )
 ( item )
 ( : brick $A0 ; )
 : brick 235 ;
@@ -11,7 +14,7 @@ HEADLESS
 236 237 238 239 4 BINSTR tail_str : tail_str_addr tail_str DROP ;
 240 241 242 243 4 BINSTR head_str : head_str_addr head_str DROP ;
 244 245 246 '#' 247 248 '#' 249 250 '#' 251 252 '#' 253 254 255 16 BINSTR body_str : body_str_addr body_str DROP ;
-: can_go ( c -- flag ) DUP is_grass is_fruit || ;
+: can_go ( c -- flag ) DUP is_grass SWAP is_fruit || ;
 
 ( score, max )
 0 0 0 0 VALUE score VALUE maxscore VALUE crash VALUE grow
@@ -27,6 +30,7 @@ HEADLESS
 	MAX_LINES 4 - 5   DO  MAX_COLUMNS 1- 1 DO J I random_grass VRAM_yx! LOOP LOOP 
 	1 2 CUR_yx ." SCORE: " 0 . SPACE
 	3 10 CUR_yx ." Go reptile !"
+	is_demo IF 3 30 CUR_yx ." DEMO SNAKE !"  $4D ROW_COLOR  THEN
 	MAX_LINES 2 - 10 CUR_yx ." Eat them all !"
 	HEADMORE
 	;
@@ -54,8 +58,17 @@ HEADLESS
 : test_body ( y x --  )  VRAM_yx@ is_body IF 2 TO crash THEN ;
 ( fruit )
 : random_fruit fruit_str RANDOM + C@ ;
-: place_fruit MAX_LINES 8 - RANDOM 5 + MAX_COLUMNS 2 - RANDOM 1+ DUP2 VRAM_yx@ is_grass IF random_fruit VRAM_yx! ELSE DROP2 THEN ;
+: place_fruit is_demo IF EXIT THEN MAX_LINES 8 - RANDOM 5 + MAX_COLUMNS 2 - RANDOM 1+ DUP2 VRAM_yx@ is_grass IF random_fruit VRAM_yx! ELSE DROP2 THEN ;
 : show_fruit ( -- ) 15 RANDOM IFNOT place_fruit THEN ;
+: test_target ( -- ) ( hx tgx = hy tgy = && ) 1
+	IF 
+		BEGIN 
+			MAX_LINES 8 - RANDOM 5 + MAX_COLUMNS 2 - RANDOM 1+ DUP2 VRAM_yx@ ( y x c )  
+			DUP	is_fruit	IF DROP TO tgx TO tgy EXIT THEN 
+				is_grass	IF DUP2 random_fruit VRAM_yx! TO tgx TO tgy EXIT 
+						ELSE DROP2 THEN 
+		REPEAT
+	THEN ;
 : test_fruit ( y x --  ) VRAM_yx@ is_fruit IF 1 TO grow is_demo IF test_target ELSE 1 +TO score THEN THEN ;
 ( tail )
 0 0 0 VALUE tx VALUE ty VALUE td
@@ -72,7 +85,6 @@ HEADLESS
 	THEN
 	;
 ( head )
-0 0 0 0 VALUE hx VALUE hy VALUE hd VALUE hdd
 10 VALUE speed
 : hide_head hy hx random_grass VRAM_yx! ;
 : show_head hy hx head_str_addr hd + C@ VRAM_yx! ;
@@ -95,13 +107,14 @@ HEADLESS
 
 : snake_game 
 		wall show_score
-		place_fruit place_fruit place_fruit
+		is_demo IFNOT place_fruit place_fruit place_fruit THEN
 		MAX_COLUMNS 2/ TO hx
 		MAX_LINES 2/ TO hy
 		2 TO hd
 		0 TO score
 		show_head
 		hx 1- TO tx hy TO ty hd TO td show_tail
+		is_demo IF hx TO tgx hy TO tgy test_target THEN
 		0 TO crash
 		BEGIN
 			0 TO grow
@@ -109,42 +122,33 @@ HEADLESS
 			move_tail
 			show_fruit
 			show_score
+			is_demo IF KEYpress IF 3 TO crash THEN THEN
 (			BEGIN KEYpress 0= UNTIL )
 		crash UNTIL
-		3 7 CUR_yx $D8 ROW_COLOR SPACE crash 1 = IF  ." * Avoid Walls ! *" ELSE ." * Avoid yourself *" THEN SPACE
+		3 7 CUR_yx $D8 ROW_COLOR SPACE crash 1 = IF  ." * Avoid Walls ! *" ELSE crash 2 = IF ." * Avoid yourself ! *" ELSE ." * Avoid users ! * "  THEN THEN SPACE
 	;
 ( DEMO words ) 
-0 0 VALUE tgx VALUE tgy ( target fruit  )
-: test_target ( -- ) hx tgx = hy tgy = && 
-	IF 
-		BEGIN 
-			MAX_LINES 8 - RANDOM 5 + MAX_COLUMNS 2 - RANDOM 1+ DUP2 VRAM_yx@ ( y x c )  
-			DUP	is_fruit	IF DROP TO tgx TO tgy EXIT THEN 
-				is_grass	IF DUP2 random_fruit VRAM_yx! TO tgx TO tgy EXIT 
-						ELSE DROP2 THEN 
-		REPEAT
-	THEN ;
 
 VARIABLE dirs 1 ALLOT ( dirs is 4 byte array of char  )
-: choose_dirs ( set preffered moves to dirs )
+: choose_dirs ( -- ) ( set preffered moves to dirs )
 	hx tgx - ABS hy tgy - ABS > IF ( x first )
-		hx tgx > IF ( go right ) kb_Right dirs    C! kb_Left  dirs 3 + C! 
+		hx tgx < IF ( go right ) kb_Right dirs    C! kb_Left  dirs 3 + C! 
 			ELSE ( go left ) kb_Left  dirs    C! kb_Right dirs 3 + C! THEN
-		hy tgy > IF ( go down ) kb_Down   dirs 1+ C! kb_Up    dirs 2 + C! 
+		hy tgy < IF ( go down ) kb_Down   dirs 1+ C! kb_Up    dirs 2 + C! 
 			ELSE ( go up )  kb_Up     dirs 1+ C! kb_Down  dirs 2 + C! THEN
 		ELSE ( y first )
-		hy tgy > IF ( go down ) kb_Down   dirs    C! kb_Up    dirs 3 + C! 
+		hy tgy < IF ( go down ) kb_Down   dirs    C! kb_Up    dirs 3 + C! 
 			ELSE ( go up )  kb_Up     dirs    C! kb_Down  dirs 3 + C! THEN
-		hx tgx > IF ( go right ) kb_Right dirs 1+ C! kb_Left  dirs 2 + C! 
+		hx tgx < IF ( go right ) kb_Right dirs 1+ C! kb_Left  dirs 2 + C! 
 			ELSE ( go left ) kb_Left  dirs 1+ C! kb_Right dirs 2 + C! THEN
 		THEN ;
 : try_dirs ( -- key )
-	0 ( fake moves ) 3 0 DO hy hx dirs I + @ DUP >R key_to_dir do_step VRAM_yx@ can_go IF DROP R> LEAVE ELSE DROP R> THEN LOOP ;
+	0 ( fake moves ) choose_dirs 4 0 DO hy hx hd dirs  I + C@ DUP >R key_to_dir do_step VRAM_yx@ can_go IF DROP R> LEAVE ELSE DROP R> THEN LOOP ;
 
 : demo_key ( -- key ) try_dirs ;
-: demo ' demo_key IS get_key 1 TO is_demo ;
+: demo LIT3 demo_key  IS get_key 1 TO is_demo ;
 ( GAME )
-: game ' KEYpress IS get_key 0 TO is_demo ;
+: game LIT3 KEYpress  IS get_key 0 TO is_demo ;
 game 
 
 : snake_wrap
@@ -154,8 +158,8 @@ game
 		demo 
 		60 10 *  0 DO
 			1 WAIT KEYpress 
-			DUP kb_Esc = IF DROP game EXIT  THEN 
-			kb_Space   = IF      game LEAVE THEN
+			DUP kb_Esc = IF DROP game UNLOOP EXIT THEN 
+			kb_Space   = IF      game       LEAVE THEN
 		LOOP
 	REPEAT
 ;

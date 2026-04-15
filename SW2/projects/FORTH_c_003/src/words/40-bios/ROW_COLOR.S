@@ -3,7 +3,8 @@
 
 DEFWORD w_ROW_COLOR,		0,		"ROW_COLOR",		f_ROW_COLOR		; ( c --  ) set color c for actual row
 DEFWORD w_ROW_COLOR_Y,		0,		"ROW_COLOR_Y",		f_ROW_COLOR_Y		; ( c y --  ) set color c for given row
-DEFWORD w_DEF_COLOR,		0,		"DEF_COLOR",		f_DEF_COLOR		; ( c --  ) set default color c
+DEFWORD w_DEF_COLOR,		0,		"DEF_COLOR",		f_DEF_COLOR		; ( c --  ) set default color c for CLS and scroll
+DEFWORD w_DEF_CHAR,		0,		"DEF_CHAR",		f_DEF_CHAR		; ( c --  ) set default character for CLS and scroll
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_ROW_COLOR	; {{{ 
@@ -22,6 +23,12 @@ gfunc f_ROW_COLOR_Y	; {{{
 gfunc f_DEF_COLOR	; {{{ 
 	Set2	Cpar1,	TOS2
 	call_VT_member_C	VT_set_def_color
+	PopST	TOS
+	jmp NEXT
+; }}}
+gfunc f_DEF_CHAR	; {{{ 
+	Set2	Cpar1,	TOS2
+	call_VT_member_C	VT_set_def_char
 	PopST	TOS
 	jmp NEXT
 ; }}}

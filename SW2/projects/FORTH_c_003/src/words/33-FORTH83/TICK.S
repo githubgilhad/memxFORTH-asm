@@ -12,6 +12,19 @@ DEFWORD w_tick,			0,		"'",			f_docol, yes		; ( "name" -- 0 | xt  ) xt of next wo
 	P24 w_zero_cw
 3:
 	P24 w_exit_cw
+DEFWORD w_brackettick,			FLG_IMMEDIATE,		"[']",			f_docol, yes		; ( "name" --  ) xt of next word is compiled
+	P24 w_PARSE_NAME_cw
+	P24 w_FIND_NAME_cw
+	P24 w__if__cw
+	P24 2f - .
+	P24 w__else__cw
+	P24 3f - .
+2:
+	P24 w_2DROP_cw
+	P24 w_zero_cw
+3:
+	P24s w_comma_cw
+	P24 w_exit_cw
 ; : ' PARSE-NAME FIND-NAME IF ELSE 2DROP 0 THEN ;
 
 ;      '            -- addr                       M,83            "tick"

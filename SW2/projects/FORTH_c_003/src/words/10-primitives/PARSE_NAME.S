@@ -87,6 +87,12 @@ gfunc func_PARSE_NAME	; {{{ #
 			Set2	t_in, DT2
 			Set2	t_start, t_min
 		4:
+		cpi	Tx,	kb_Back
+		brne	8f
+		Sub2	t_in, r0,r1
+		Sub2	t_in, r0,r1
+		rjmp 2b
+		8:
 		cpi	Tx, ' ' + 1
 		brsh 2b				; }}}
 		6:				; end of word

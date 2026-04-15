@@ -2,7 +2,7 @@
 
 
 DEFWORD w_LOGO,		0,		"LOGO",		f_docol, yes		; (  --  ) do something TODO [----]
-	P24s	w_LIT3_cw, 0x0000F0, w_DEF_COLOR_cw, w_CLS_cw												; $F0 ( VGA_WHITE ) DEF_COLOR CLS
+	P24s	w_LIT3_cw, 0x0000F0, w_DEF_COLOR_cw, w_LIT3_cw, 32, w_DEF_CHAR_cw, w_CLS_cw								; $F0 ( VGA_WHITE ) DEF_COLOR 32 DEF_CHAR CLS
 	P24s w_MAX_COLUMNS_cw, w_zero_cw, w__do__cw													; MAX_COLUMNS 0 DO ( lines )
 2:
 		P24s w_zero_cw, w_I_cw, w_LIT3_cw, 0x000089, w_VRAM_yx_set_cw										; 	0 I $89  VRAM_yx!

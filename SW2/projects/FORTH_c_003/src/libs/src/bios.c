@@ -19,9 +19,6 @@
 	HIGHRAM static bool oCaps = false;
 	HIGHRAM static bool oNums = false;
 	//
-TEXT uint8_t process_scan_code(uint8_t code) {										// {{{
-//
-	//
 #define PS2_NONE	0
 #define PS2_E0		1
 #define PS2_F0		2
@@ -29,7 +26,10 @@ TEXT uint8_t process_scan_code(uint8_t code) {										// {{{
 #define PS2_E1		4
 #define PS2_E1_2	5
 #define PS2_E1F0	6
+	//
 	HIGHRAM static uint8_t state = PS2_NONE;
+TEXT uint8_t process_scan_code(uint8_t code) {										// {{{
+//
 	uint8_t c;
 	if (code == 0xE0) {	// {{{
 		switch (state) { 
@@ -196,6 +196,29 @@ HIGHRAM static char cursor_char = 151; // block
 HIGHRAM static uint8_t def_color = VGA_none;
 HIGHRAM static uint8_t def_char = ' ';
 #define Fix_Cursor TextVGA_cursor_ptr=&VRAM[cursor_Y][cursor_X];
+TEXT void bios_setup() {	// {{{
+	Ctrl = false;
+	Alt = false;
+	Shift = false;
+	
+	Caps = false;
+	Nums = true;
+	
+	oCtrl = false;
+	oAlt = false;
+	oShift = false;
+	
+	oCaps = false;
+	oNums = false;
+	
+	state = PS2_NONE;
+	cursor_X = 0;
+	cursor_Y = 0;
+	cursor_visible = true;
+	cursor_char = 151; // block
+	def_color = VGA_none;
+	def_char = ' ';
+}	// }}}
 
 TEXT void scroll () {	// {{{
 			cursor_Y--;
@@ -256,6 +279,9 @@ TEXT void VGA_put_char_XY(char c, uint8_t x, uint8_t y) {	// {{{  put char on sc
 }	// }}}
 TEXT void VGA_set_def_color(uint8_t col) {		// {{{  set current row color
 	def_color = col;
+}	// }}}
+TEXT void VGA_set_def_char(uint8_t c) {		// {{{  set current row color
+	def_char = c;
 }	// }}}
 TEXT void VGA_set_row_color(uint8_t col) {		// {{{  set current row color
 	CRAM[cursor_Y] = col;

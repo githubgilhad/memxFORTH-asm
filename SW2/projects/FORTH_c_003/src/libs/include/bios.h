@@ -19,6 +19,7 @@
 #include "TextVGA.h"
 uint8_t process_scan_code(uint8_t code);
 
+void bios_setup(); 
 
 // VT candidates:
 uint8_t ps2_getc(void *state, char *out_char);		// ignore state, return GETC_OK==0 on success, write char 
@@ -32,6 +33,7 @@ void VGA_set_cursor_Y(uint8_t y);			// set new value, return old
 void VGA_set_cursor_XY(uint8_t x, uint8_t y);		// set new value
 void VGA_put_char_XY(char c, uint8_t x, uint8_t y);	// put char on screen without moving cursor
 void VGA_set_def_color(uint8_t col);			// set current row color
+void VGA_set_def_char(uint8_t c);			// set default char for cls and scroll
 void VGA_set_row_color(uint8_t col);			// set current row color
 void VGA_set_row_color_Y(uint8_t col, uint8_t y);	// set row color
 uint8_t VGA_char_at_XY(uint8_t x, uint8_t y);		// return char at X,Y

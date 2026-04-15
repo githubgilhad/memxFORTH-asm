@@ -31,6 +31,7 @@ typedef struct __attribute__((packed)) {
 	P24 set_def_color;
 	P24 set_row_color;
 	P24 set_row_color_Y;
+	P24 set_def_char;
 	P24 char_at_XY;
 	P24 MAX_LINES;
 	P24 MAX_COLUMNS;

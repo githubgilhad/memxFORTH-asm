@@ -1,3 +1,4 @@
+.S 1 2 3 4 5 .S
 HEADLESS
 
 : ALLOT HERE +! ;
@@ -105,7 +106,7 @@ THEN
 
 
 : DEFER CREATE , DOES> @ EXECUTE ;
-: IS [ ' TO , ] ;
+: IS IMMEDIATE [ ' TO , ] ;
 
 HEADMORE
 

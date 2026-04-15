@@ -664,6 +664,7 @@ Virtual_Table VT_test  __attribute__((section(".bss.VT")));
 TEXT int main(void) {
 	setup();
 	PS2_init();
+	bios_setup();
 //	C_words();
 	VGA0_Write('\r');
 	VGA0_Write('\n');
@@ -681,6 +682,7 @@ TEXT int main(void) {
 	VT_test.set_cursor_XY.ptr = (__memx const void *)(uintptr_t)			VGA_set_cursor_XY;
 	VT_test.put_char_XY.ptr = (__memx const void *)(uintptr_t)			VGA_put_char_XY;
 	VT_test.set_def_color.ptr = (__memx const void *)(uintptr_t)			VGA_set_def_color;
+	VT_test.set_def_char.ptr = (__memx const void *)(uintptr_t)			VGA_set_def_char;
 	VT_test.set_row_color.ptr = (__memx const void *)(uintptr_t)			VGA_set_row_color;
 	VT_test.set_row_color_Y.ptr = (__memx const void *)(uintptr_t)			VGA_set_row_color_Y;
 	VT_test.char_at_XY.ptr = (__memx const void *)(uintptr_t)			VGA_char_at_XY;

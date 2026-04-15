@@ -166,6 +166,7 @@ DEFWORD w_2R_at,		0,		"2R@",			f_2R_at			; (  -- x y ) ( R: x y -- x y ) copy 2 
 DEFWORD w_2Rfrom,		0,		"2R>",			f_2Rfrom		; (  -- x y ) ( R: x y -- ) move 2 CELLs from return stack to data stack (in order)
 DEFWORD w_2toL,			0,		"2>L",			f_2toL			; ( x y  --  )( L: -- x y ) move 2 CELLs from data stack to L stack (in order)
 DEFWORD w_2toR,			0,		"2>R",			f_2toR			; ( x y  --  )( R: -- x y ) move 2 CELLs from data stack to return stack (in order)
+DEFWORD w_ABS,		0,		"ABS",		f_ABS		; ( x -- |x| ) absolute value
 DEFWORD w_ADDR_D,		0,		"&D",			f_ADDR_S		; (  -- &D ) data D stack address [xxxx]
 DEFWORD w_ADDR_L,		0,		"&L",			f_ADDR_L		; (  -- &L ) secondary L stack address [xxxx]
 DEFWORD w_ADDR_R,		0,		"&R",			f_ADDR_R		; (  -- &R ) return R stack address [xxxx]
@@ -196,7 +197,8 @@ DEFWORD w_CUR_char,		0,		"CUR_char",		f_CUR_char		; ( c --  ) set c as cursor ma
 DEFWORD w_CUR_visible,		0,		"CUR_visible",		f_CUR_visible		; ( flag --  ) set cursor visibility
 DEFWORD w_CUR_yx,		0,		"CUR_yx",		f_CUR_yx		; ( y x  --  ) move cursor to Y,X  [----]
 DEFWORD w_DEFINITIONS,		0,		"DEFINITIONS",		f_DEFINITIONS		; ( -- ) set CURRENT to first WL in ORDER
-DEFWORD w_DEF_COLOR,		0,		"DEF_COLOR",		f_DEF_COLOR		; ( c --  ) set default color c
+DEFWORD w_DEF_CHAR,		0,		"DEF_CHAR",		f_DEF_CHAR		; ( c --  ) set default character for CLS and scroll
+DEFWORD w_DEF_COLOR,		0,		"DEF_COLOR",		f_DEF_COLOR		; ( c --  ) set default color c for CLS and scroll
 DEFWORD w_DIV,			0,		"/",			f_DIV			// ( a b -- div ) divide second by top, get quotient [xxxx]
 DEFWORD w_DIVMOD,		0,		"DIVMOD",		f_DIVMOD		// ( a b -- mod div ) divide second by top, get remainder and quotient [xxxx]
 DEFWORD w_DO,			FLG_IMMEDIATE,	"DO",			f_DO			; Compilation ( C: -- 0 do-sys ) compile '(do)' to definition
@@ -250,6 +252,7 @@ DEFWORD w_MAX_COLUMNS,		0,		"MAX_COLUMNS",		f_MAX_COLUMNS		; (  -- x ) return nu
 DEFWORD w_MAX_LINES,		0,		"MAX_LINES",		f_MAX_LINES		; (  -- x ) return number of lines [----]
 DEFWORD w_MOD,			0,		"%",			f_MOD			// ( a b -- mod ) divide second by top, get remainder (modulo)  [xxxx]
 DEFWORD w_NDROP,		0,		"NDROP",		f_NDROP			; ( xn .. x1 n -- ) DROP N items from top of stack
+DEFWORD w_NEG,		0,		"NEG",		f_NEG		; ( x -- -x ) negation
 DEFWORD w_NEXTcounter,		0,		"NEXTcounter",		f_NEXTcounter		; (  -- x1 x2  ) returns NEXTcounter as Double (# of jumps to NEXT)  [xxxx]
 DEFWORD w_NIP,			0,		"NIP",			f_NIP			; ( a b -- b ) DROP second item in stack
 DEFWORD w_NUMBER,		0,		"NUMBER",		f_NUMBER		; ( c-addr u -- 0 | x -1 ) convert string to number (using TCB_AIB) [xxxx]
@@ -317,6 +320,7 @@ DEFWORD w__to_,			FLG_ARG_3,	"(to)",			f__to_,		line=2	; ( val -- ) Arg:VALUE, r
 DEFWORD w__until_,	FLG_HIDDEN + FLG_ARG_3,	"(until)",		f_0BRANCH,	line=2	; Runtime: ( flag -- ) loop if not zero
 DEFWORD w__while_,		FLG_ARG_3,	"(while)",		f_0BRANCH,	line=2	; ( flag --  ) jump if ZERO [----]
 DEFWORD w_at,			0,		"@",			f_at			; ( addr -- value ) fetch cell from address
+DEFWORD w_brackettick,			FLG_IMMEDIATE,		"[']",			f_docol, yes		; ( "name" --  ) xt of next word is compiled
 DEFWORD w_char_at,		0,		"C@",			f_char_at		; ( addr -- byte ) fetch byte from address
 DEFWORD w_char_store,		0,		"C!",			f_char_store		; ( byte addr -- )  store byte to address
 DEFWORD w_comma,		0,		",",			f_comma			; ( x --  ) compile x at HERE
