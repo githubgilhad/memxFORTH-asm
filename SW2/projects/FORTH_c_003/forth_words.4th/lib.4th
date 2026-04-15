@@ -104,5 +104,8 @@ THEN
 ;
 
 
+: DEFER CREATE , DOES> @ EXECUTE ;
+: IS [ ' TO , ] ;
+
 HEADMORE
 
