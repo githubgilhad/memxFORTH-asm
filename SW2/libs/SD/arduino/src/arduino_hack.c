@@ -3,7 +3,11 @@
 // ,,g = gcc, exactly one space after "set"
 //
 #include "arduino_hack.h"
-unsigned long millis()
+
+#define TEXT __attribute__((section(".text.Arduino")))
+
+
+TEXT unsigned long millis()
 {
 	unsigned long m;
 	uint8_t oldSREG = SREG;

@@ -2,7 +2,8 @@
 // ,,g = gcc, exactly one space after "set"
 //
 #include "io.h"
-char wait_for_char() {	// {{{
+#define TEXT __attribute__((section(".text.C_libs")))
+TEXT char wait_for_char() {	// {{{
 	char c=0;
 	while (c ==0) {c=read_char();};
 	write_char(c);
@@ -10,10 +11,10 @@ char wait_for_char() {	// {{{
 	if (c=='\n') write_char('\r');
 	return c;
 }	// }}}
-void write_str(const __memx char *c) { 	// {{{
+TEXT void write_str(const __memx char *c) { 	// {{{
 	while (*c){write_char(*c++);};
 }	// }}}
-void write_eoln() { 	// {{{
+TEXT void write_eoln() { 	// {{{
 	write_char('\r');
 	write_char('\n');
 }	// }}}

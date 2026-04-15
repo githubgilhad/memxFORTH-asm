@@ -3,12 +3,12 @@
 // ,,g = gcc, exactly one space after "set"
 //
 #include "FIND_NAME.h"
-
+#define TEXT __attribute__((section(".text.C_words")))
 
 
 // TCB = r24:25, addr = r22:r23, len = r20
 
-uint32_t find_name_tcb(Thread_Controll_Block *TCB, const char *addr, uint8_t len) {	 // {{{ returns xt+(flag<<24) flag is byte
+TEXT uint32_t find_name_tcb(Thread_Controll_Block *TCB, const char *addr, uint8_t len) {	 // {{{ returns xt+(flag<<24) flag is byte
 	uint32_t head, a;
 	uint32_t p;
 	bool fog;

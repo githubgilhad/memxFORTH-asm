@@ -60,7 +60,7 @@ way of generating a software interrupt.
     2914:	ee 9a       	sbi	0x1d, 6	; 29
     2916:	08 95       	ret
 */
-
+.section .text.PS2 ,"ax",@progbits
 gfunc PS2_init	; {{{
 	Ldi3	Zx,	PS2_ASCII_ROM_Size
 	in	r24,	RAMPZ
@@ -135,7 +135,7 @@ gfunc INT6_vect	; {{{
 
 ; }}}
 
-.section .bss
+.section .bss.PS2
 DEF_BUFF PS2_input, 16
 DEF_BUFF PS2_ASCII, 16
 

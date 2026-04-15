@@ -2,22 +2,24 @@
  * */
 // ,,g = gcc, exactly one space after "set"
 //
+#define TEXT __attribute__((section(".text.bios")))
+#define HIGHRAM __attribute__((section(".highram.bios")))
 #include "bios.h"
-	static bool Ctrl = false;
-	static bool Alt = false;
-	static bool Shift = false;
+	HIGHRAM static bool Ctrl = false;
+	HIGHRAM static bool Alt = false;
+	HIGHRAM static bool Shift = false;
 	//
-	static bool Caps = false;
-	static bool Nums = true;
+	HIGHRAM static bool Caps = false;
+	HIGHRAM static bool Nums = true;
 	//
-	static bool oCtrl = false;
-	static bool oAlt = false;
-	static bool oShift = false;
+	HIGHRAM static bool oCtrl = false;
+	HIGHRAM static bool oAlt = false;
+	HIGHRAM static bool oShift = false;
 	//
-	static bool oCaps = false;
-	static bool oNums = false;
+	HIGHRAM static bool oCaps = false;
+	HIGHRAM static bool oNums = false;
 	//
-uint8_t process_scan_code(uint8_t code) {										// {{{
+TEXT uint8_t process_scan_code(uint8_t code) {										// {{{
 //
 	//
 #define PS2_NONE	0
@@ -27,7 +29,7 @@ uint8_t process_scan_code(uint8_t code) {										// {{{
 #define PS2_E1		4
 #define PS2_E1_2	5
 #define PS2_E1F0	6
-	static uint8_t state = PS2_NONE;
+	HIGHRAM static uint8_t state = PS2_NONE;
 	uint8_t c;
 	if (code == 0xE0) {	// {{{
 		switch (state) { 
@@ -156,7 +158,7 @@ uint8_t process_scan_code(uint8_t code) {										// {{{
 		};
 	return 0;	// should not came here
 }	// }}}
-uint8_t ps2_getc(void *state, char *out_char) { 	// {{{
+TEXT uint8_t ps2_getc(void *state, char *out_char) { 	// {{{
 	(void)state;	// state UNUSED, no compiler complains
 	uint16_t ch;
 	while (BUF_Free_C(&PS2_ASCII) && BUF_Used_C(&PS2_input))	{
@@ -187,15 +189,15 @@ uint8_t ps2_getc(void *state, char *out_char) { 	// {{{
 }	// }}}
 
 
-static uint8_t cursor_X = 0;
-static uint8_t cursor_Y = 0;
-static bool cursor_visible = true;
-static char cursor_char = 151; // block
-static uint8_t def_color = VGA_none;
-static uint8_t def_char = ' ';
+HIGHRAM static uint8_t cursor_X = 0;
+HIGHRAM static uint8_t cursor_Y = 0;
+HIGHRAM static bool cursor_visible = true;
+HIGHRAM static char cursor_char = 151; // block
+HIGHRAM static uint8_t def_color = VGA_none;
+HIGHRAM static uint8_t def_char = ' ';
 #define Fix_Cursor TextVGA_cursor_ptr=&VRAM[cursor_Y][cursor_X];
 
-void scroll () {	// {{{
+TEXT void scroll () {	// {{{
 			cursor_Y--;
 			for (uint8_t y=0; y < TextVGA_LINES-1; y++) 
 				for (uint8_t x=0; x < TextVGA_COLUMNS; x++) 
@@ -208,7 +210,7 @@ void scroll () {	// {{{
 			Fix_Cursor;
 }	// }}}
 
-void VGA_write_char(uint8_t c) {			// {{{  write char to cursor, move cursor, scroll screen if needed
+TEXT void VGA_write_char(uint8_t c) {			// {{{  write char to cursor, move cursor, scroll screen if needed
 	VRAM[cursor_Y][cursor_X++] = c;
 	if (cursor_X >=TextVGA_COLUMNS) {
 		cursor_X = 0;
@@ -219,7 +221,7 @@ void VGA_write_char(uint8_t c) {			// {{{  write char to cursor, move cursor, sc
 	};
 	Fix_Cursor;
 }	// }}}
-void VGA_cls() {			// {{{  clear screen with default character and color, moves cursor to 0,0
+TEXT void VGA_cls() {			// {{{  clear screen with default character and color, moves cursor to 0,0
 	for (uint8_t y=0; y < TextVGA_LINES; y++) 
 		for (uint8_t x=0; x < TextVGA_COLUMNS; x++) 
 			VRAM[y][x] = def_char;
@@ -230,47 +232,47 @@ void VGA_cls() {			// {{{  clear screen with default character and color, moves 
 	cursor_Y = 0;
 	Fix_Cursor;
 }	// }}}
-void VGA_set_cursor_visible(bool c) {			// {{{  set new value, return old
+TEXT void VGA_set_cursor_visible(bool c) {			// {{{  set new value, return old
 	cursor_visible = c;
 }	// }}}
-void VGA_set_cursor_char(uint8_t c) {		// {{{  set new value, return old
+TEXT void VGA_set_cursor_char(uint8_t c) {		// {{{  set new value, return old
 	cursor_char = c;
 }	// }}}
-void VGA_set_cursor_X(uint8_t x) {			// {{{  set new value, return old
+TEXT void VGA_set_cursor_X(uint8_t x) {			// {{{  set new value, return old
 	cursor_X = x;
 	Fix_Cursor;
 }	// }}}
-void VGA_set_cursor_Y(uint8_t y) {			// {{{  set new value, return old
+TEXT void VGA_set_cursor_Y(uint8_t y) {			// {{{  set new value, return old
 	cursor_Y = y;
 	Fix_Cursor;
 }	// }}}
-void VGA_set_cursor_XY(uint8_t x, uint8_t y) {		// {{{  set new value
+TEXT void VGA_set_cursor_XY(uint8_t x, uint8_t y) {		// {{{  set new value
 	cursor_X = x;
 	cursor_Y = y;
 	Fix_Cursor;
 }	// }}}
-void VGA_put_char_XY(char c, uint8_t x, uint8_t y) {	// {{{  put char on screen without moving cursor
+TEXT void VGA_put_char_XY(char c, uint8_t x, uint8_t y) {	// {{{  put char on screen without moving cursor
 	VRAM[y][x] = c;
 }	// }}}
-void VGA_set_def_color(uint8_t col) {		// {{{  set current row color
+TEXT void VGA_set_def_color(uint8_t col) {		// {{{  set current row color
 	def_color = col;
 }	// }}}
-void VGA_set_row_color(uint8_t col) {		// {{{  set current row color
+TEXT void VGA_set_row_color(uint8_t col) {		// {{{  set current row color
 	CRAM[cursor_Y] = col;
 }	// }}}
-void VGA_set_row_color_Y(uint8_t col, uint8_t y) {	// {{{  set row color
+TEXT void VGA_set_row_color_Y(uint8_t col, uint8_t y) {	// {{{  set row color
 	CRAM[y] = col;
 }	// }}}
-uint8_t VGA_char_at_XY(uint8_t x, uint8_t y) {		// {{{  return char at X,Y
+TEXT uint8_t VGA_char_at_XY(uint8_t x, uint8_t y) {		// {{{  return char at X,Y
 	return VRAM[y][x];
 }	// }}}
-uint8_t VGA_MAX_LINES() {				// {{{
+TEXT uint8_t VGA_MAX_LINES() {				// {{{
 	return TextVGA_LINES;
 }	// }}}
-uint8_t VGA_MAX_COLUMNS() {				// {{{
+TEXT uint8_t VGA_MAX_COLUMNS() {				// {{{
 	return TextVGA_COLUMNS;
 }	// }}}
-void VGA_cr() {	// {{{  go to new line
+TEXT void VGA_cr() {	// {{{  go to new line
 	cursor_X=0;
 	cursor_Y++;
 	if (cursor_Y >=TextVGA_LINES) {
@@ -278,10 +280,10 @@ void VGA_cr() {	// {{{  go to new line
 	};
 	Fix_Cursor;
 }	// }}}
-void VGA_HEADLESS() {
+TEXT void VGA_HEADLESS() {
 	TextVGA_HEADLESS();
 }
-void VGA_HEADMORE(){
+TEXT void VGA_HEADMORE(){
 	TextVGA_HEADMORE();
 }
 

@@ -1,3 +1,6 @@
+#define HIGHRAM __attribute__((section(".highram.ArduinoSD" )))
+#define TEXT __attribute__((section(".text.ArduinoSD")))
+
 /*
 
   SD - a slightly more friendly wrapper for sdfatlib
@@ -14,11 +17,13 @@
 
 #include "SD.h"
 
+
+
 /* for debugging file open/close leaks
    uint8_t nfilecount=0;
 */
 
-File::File(SdFile f, const char *n) {
+TEXT File::File(SdFile f, const char *n) {
   // oh man you are kidding me, new() doesn't exist? Ok we do it by hand!
   _file = (SdFile *)malloc(sizeof(SdFile));
   if (_file) {
@@ -37,28 +42,28 @@ File::File(SdFile f, const char *n) {
   }
 }
 
-File::File(void) {
+TEXT File::File(void) {
   _file = 0;
   _name[0] = 0;
   //Serial.print("Created empty file object");
 }
 
 // returns a pointer to the file name
-char *File::name(void) {
+TEXT char *File::name(void) {
   return _name;
 }
 
 // a directory is a special type of file
-boolean File::isDirectory(void) {
+TEXT boolean File::isDirectory(void) {
   return (_file && _file->isDir());
 }
 
 
-size_t File::write(uint8_t val) {
+TEXT size_t File::write(uint8_t val) {
   return write(&val, 1);
 }
 
-size_t File::write(const uint8_t *buf, size_t size) {
+TEXT size_t File::write(const uint8_t *buf, size_t size) {
   size_t t;
   if (!_file) {
     setWriteError();
@@ -73,14 +78,14 @@ size_t File::write(const uint8_t *buf, size_t size) {
   return t;
 }
 
-int File::availableForWrite() {
+TEXT int File::availableForWrite() {
   if (_file) {
     return _file->availableForWrite();
   }
   return 0;
 }
 
-int File::peek() {
+TEXT int File::peek() {
   if (! _file) {
     return 0;
   }
@@ -92,7 +97,7 @@ int File::peek() {
   return c;
 }
 
-int File::read() {
+TEXT int File::read() {
   if (_file) {
     return _file->read();
   }
@@ -100,14 +105,14 @@ int File::read() {
 }
 
 // buffered read for more efficient, high speed reading
-int File::read(void *buf, uint16_t nbyte) {
+TEXT int File::read(void *buf, uint16_t nbyte) {
   if (_file) {
     return _file->read(buf, nbyte);
   }
   return 0;
 }
 
-int File::available() {
+TEXT int File::available() {
   if (! _file) {
     return 0;
   }
@@ -117,13 +122,13 @@ int File::available() {
   return n > 0X7FFF ? 0X7FFF : n;
 }
 
-void File::flush() {
+TEXT void File::flush() {
   if (_file) {
     _file->sync();
   }
 }
 
-boolean File::seek(uint32_t pos) {
+TEXT boolean File::seek(uint32_t pos) {
   if (! _file) {
     return false;
   }
@@ -131,21 +136,21 @@ boolean File::seek(uint32_t pos) {
   return _file->seekSet(pos);
 }
 
-uint32_t File::position() {
+TEXT uint32_t File::position() {
   if (! _file) {
     return -1;
   }
   return _file->curPosition();
 }
 
-uint32_t File::size() {
+TEXT uint32_t File::size() {
   if (! _file) {
     return 0;
   }
   return _file->fileSize();
 }
 
-void File::close() {
+TEXT void File::close() {
   if (_file) {
     _file->close();
     free(_file);
@@ -159,7 +164,7 @@ void File::close() {
   }
 }
 
-File::operator bool() {
+TEXT File::operator bool() {
   if (_file) {
     return  _file->isOpen();
   }

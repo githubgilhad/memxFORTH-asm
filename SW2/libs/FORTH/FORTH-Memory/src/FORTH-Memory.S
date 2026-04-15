@@ -4,7 +4,7 @@
 
 // B?at and W?at are safe (modify only their params, no other regs)
 
-.section .text.FORTH.main.libs
+.section .text.FORTH.libs
 .global B1at, B2at, B3at, W1at, W2at, W3at, Memory_failed
 
 

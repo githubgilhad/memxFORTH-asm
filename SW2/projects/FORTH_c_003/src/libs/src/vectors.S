@@ -23,16 +23,16 @@
 #include <avr/io.h>			// include PORTB, DDRD, ... symbols for easier register access
 #include "FORTH-Macros.h"
 
-.section .text
+.section .text.vectors
 
 gfunc EMPTY_HANDLER		; just returns
 	ret
 ;
 .macro	vector	name, cname	; {{{	16bit word addres handler, use hi8/lo8(gs(function))
-.section	.bss
+.section	.bss.vectors
 gobj	\cname\()_handler
 	.word 0		; 16bit word address, maybe trampoline
-.section	.text
+.section	.text.vectors
 gfunc \name
 	push	ZL
 	push	ZH

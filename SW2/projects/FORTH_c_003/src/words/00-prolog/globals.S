@@ -3,6 +3,6 @@
 #include "FORTH-Macros.h"
 
 
-.section .bss.FORTH
+.section .bss.FORTH.words
 gobj scratch_byte
 	.byte 0

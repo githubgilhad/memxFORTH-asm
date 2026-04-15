@@ -23,6 +23,10 @@
 #undef CURRENT_DATA_SECTION
 #define CURRENT_TEXT_SECTION .text.FORTH.words
 #define CURRENT_DATA_SECTION .FORTH_data.headers
+#undef CURRENT_TEXT_SECTION
+#undef CURRENT_DATA_SECTION
+#define CURRENT_TEXT_SECTION .text.FORTH.words.header
+#define CURRENT_DATA_SECTION .FORTH_data.headers
 .section CURRENT_DATA_SECTION,"a",@progbits
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 .balign 2

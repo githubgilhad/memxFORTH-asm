@@ -1,3 +1,6 @@
+#define HIGHRAM __attribute__((section(".highram.SD" )))
+#define TEXT __attribute__((section(".text.SD")))
+
 #include "Arduino.h"
 #include "SD.h"
 #include "SPI.h"
@@ -20,14 +23,14 @@ typedef struct {
 
 #define SD_MAX_STCK 4
 
-sd_input_t sd_stack[SD_MAX_STCK] __attribute__((section(".highram")));
-uint8_t sd_used_mask = 0;
+HIGHRAM sd_input_t sd_stack[SD_MAX_STCK] ;
+HIGHRAM uint8_t sd_used_mask = 0 ;
 
 // =========================
 // Alokace
 // =========================
 
-static sd_input_t* sd_alloc(void)
+TEXT static sd_input_t* sd_alloc(void)
 {
 	for (int i = 0; i < SD_MAX_STCK; i++)
 	{
@@ -40,7 +43,7 @@ static sd_input_t* sd_alloc(void)
 	return NULL;
 }
 
-static void sd_free(sd_input_t* ptr)
+TEXT static void sd_free(sd_input_t* ptr)
 {
 	if (ptr < sd_stack || ptr >= sd_stack + SD_MAX_STCK)
 		return;
@@ -53,7 +56,7 @@ static void sd_free(sd_input_t* ptr)
 // Refill bufferu
 // =========================
 
-static uint8_t sd_refill(void *ctx)
+TEXT static uint8_t sd_refill(void *ctx)
 {
 	sd_input_t *in = (sd_input_t*)ctx;
 
@@ -94,7 +97,7 @@ uint8_t sd_getc(void *ptr, char *c)
 // Close
 // =========================
 
-static void sd_close(void *ptr)
+TEXT static void sd_close(void *ptr)
 {
 	sd_input_t *in = (sd_input_t*)ptr;
 
@@ -108,7 +111,7 @@ static void sd_close(void *ptr)
 // LOAD (hlavní vstup)
 // =========================
 extern "C" 
-void C_SD_LOAD(char *C_filename)
+TEXT void C_SD_LOAD(char *C_filename)
 {
 	VGA0_WriteStr((char*)"SD init...\r\n");
 

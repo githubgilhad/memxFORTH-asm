@@ -3,6 +3,8 @@
 #include "FORTH-Macros.h"
 #include "FORTH-Memory.h"
 ;	#include "FORTH-Engine.h"
+.section .text.C_libs ,"ax",@progbits
+
 .macro TCB_2_Z member	; {{{
 	movw r30, r24   ; Z = user*
 	ldi Tx, lo8(\member)

@@ -19,7 +19,7 @@ FORTH_END: nop
 .global FORTH_START
 FORTH_START: nop
 ; }}}
-.section .bss.FORTH
+.section .bss.FORTH.Engine
 gobj FORTH_IRQ
 	.byte 0		; bit.0 = IRQ, rest ignored
 gobj FORTH_IRQ_addr

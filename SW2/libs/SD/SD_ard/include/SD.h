@@ -78,33 +78,23 @@ namespace SDLib {
       // write, etc). Returns a File object for interacting with the file.
       // Note that currently only one file can be open at a time.
       File open(const char *filename, uint8_t mode = FILE_READ);
-      File open(const String &filename, uint8_t mode = FILE_READ) {
-        return open(filename.c_str(), mode);
-      }
+      File open(const String &filename, uint8_t mode = FILE_READ);
 
       // Methods to determine if the requested file path exists.
       boolean exists(const char *filepath);
-      boolean exists(const String &filepath) {
-        return exists(filepath.c_str());
-      }
+      boolean exists(const String &filepath) ;
 
       // Create the requested directory heirarchy--if intermediate directories
       // do not exist they will be created.
       boolean mkdir(const char *filepath);
-      boolean mkdir(const String &filepath) {
-        return mkdir(filepath.c_str());
-      }
+      boolean mkdir(const String &filepath); 
 
       // Delete the file.
       boolean remove(const char *filepath);
-      boolean remove(const String &filepath) {
-        return remove(filepath.c_str());
-      }
+      boolean remove(const String &filepath); 
 
       boolean rmdir(const char *filepath);
-      boolean rmdir(const String &filepath) {
-        return rmdir(filepath.c_str());
-      }
+      boolean rmdir(const String &filepath); 
 
     private:
 

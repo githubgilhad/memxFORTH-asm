@@ -5,6 +5,7 @@
 #include "FORTH-Macros.h"
 #include "FORTH-Memory.h"
 ;	#include "FORTH-Engine.h"
+.section .text.FORTH.words.libs ,"ax",@progbits
 gfunc call_FORTH_cw	; {{{ in: Zx, out: C-regs mangled
 	Push3_x	IP
 	Ldi3i IP, return_home	; DT=*IP; IP = return_home ~ next word ptr

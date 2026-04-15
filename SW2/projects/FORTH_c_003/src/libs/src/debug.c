@@ -1,5 +1,6 @@
 /* vim: set ft=cpp noexpandtab fileencoding=utf-8 nomodified wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list: tabstop=8 linebreak showbreak=»\   */
 // ,,g = gcc, exactly one space after "set"
+#define TEXT __attribute__((section(".text.C_libs")))
 #include "debug.h"
 bool nodebug=true;
 bool noinfo=true;
@@ -10,19 +11,19 @@ extern void write_char(char c);
 extern void write_charA(char c);
 //
 
-void error(const __memx char *c) { 	// {{{
+TEXT void error(const __memx char *c) { 	// {{{
 	write_str(F(BG_RED CLR_BLUE STYLE_BOLD STR_2LESS )); //0xC2 0xAB);//'«'
 	while (*c){write_char(*c++);};
 	write_str(F(STR_2MORE CLR_RESET "\r\n"));// 0xC2 0xBB);//'»'
 }	// }}}
-void info(const __memx char *c) { 	// {{{
+TEXT void info(const __memx char *c) { 	// {{{
 	if (noinfo) return;
 	write_str(F(BG_BLUE STYLE_BOLD STR_2LESS )); //0xC2 0xAB);//'«'
 	while (*c){write_char(*c++);};
 	write_str(F(STR_2MORE CLR_RESET ));// 0xC2 0xBB);//'»'
 //	write_str(F( "\r\n"));
 }	// }}}
-void trace(const __memx char *c) { 	// {{{
+TEXT void trace(const __memx char *c) { 	// {{{
 	if (notrace) return;
 	write_str(F(BG_GREEN STYLE_BOLD STR_2LESS )); //0xC2 0xAB);//'«'
 	while (*c){write_char(*c++);};
@@ -32,22 +33,22 @@ void trace(const __memx char *c) { 	// {{{
 
 // {{{ write_hexXX
 const __memx char hex[] = "0123456789ABCDEF";
-void write_hex8(uint8_t b) {
+TEXT void write_hex8(uint8_t b) {
 	write_char(hex[(b >> 4) & 0xF]);
 	write_char(hex[b & 0xF]);
 }
 
-void write_hex16(uint16_t w) {
+TEXT void write_hex16(uint16_t w) {
 	write_hex8(w >> 8);
 	write_hex8(w & 0xFF);
 }
 
-void write_hex24(uint32_t w) {
+TEXT void write_hex24(uint32_t w) {
 	write_hex8((w >> 16) & 0xFF);
 	write_hex8((w >> 8) & 0xFF);
 	write_hex8(w & 0xFF);
 }
-void write_hex32(uint32_t w) {
+TEXT void write_hex32(uint32_t w) {
 	write_hex8((w >> 24) & 0xFF);
 	write_hex8((w >> 16) & 0xFF);
 	write_hex8((w >> 8) & 0xFF);
@@ -60,18 +61,18 @@ void write_hex32(uint32_t w) {
 #define FLASH_START   ((uint32_t)0x000001)
 #define FLASH_END     ((uint32_t)0x040000)
 
-bool is_in_range(uint32_t addr) {	 // {{{
+TEXT bool is_in_range(uint32_t addr) {	 // {{{
 	return	((addr >= RAM_START)	&& (addr < RAM_END)) ||
 		((addr >= FLASH_START)	&& (addr < FLASH_END));
 }	// }}}
-bool is_in_Wrange(uint32_t addr) {	 // {{{
+TEXT bool is_in_Wrange(uint32_t addr) {	 // {{{
 	return	((addr >= RAM_START)	&& (addr < RAM_END));
 }	// }}}
 
 #elif defined(__PC__)
  #include <stdio.h>
 
-bool is_in_range(uintptr_t addr /* void *addr*/) {
+TEXT bool is_in_range(uintptr_t addr /* void *addr*/) {
     FILE *fp = fopen("/proc/self/maps", "r");
     if (!fp) return false;
 
@@ -93,7 +94,7 @@ bool is_in_range(uintptr_t addr /* void *addr*/) {
     fclose(fp);
     return false;
 }
-bool is_in_Wrange(uintptr_t addr /* void *addr*/) {
+TEXT bool is_in_Wrange(uintptr_t addr /* void *addr*/) {
     FILE *fp = fopen("/proc/self/maps", "r");
     if (!fp) return false;
 
@@ -121,7 +122,7 @@ static inline uint8_t read_memx(uint32_t addr) {	 // {{{
 	return *(volatile const __memx uint8_t*)x.p24;
 }	// }}}
 //void debug_dump(const __memx void * address, const __memx char* label) {	 
-void debug_dump(uint32_t address, const __memx char* label) {	 // {{{
+TEXT void debug_dump(uint32_t address, const __memx char* label) {	 // {{{
 	if (nodebug) return;
 //	uint32_t addr = p24u32(address);
 	uint32_t addr = address;

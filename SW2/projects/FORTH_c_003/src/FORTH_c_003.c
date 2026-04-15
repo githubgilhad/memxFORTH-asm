@@ -8,7 +8,9 @@
 extern void f_dup(void);
 extern void run_in_FORTH_xt_in_IP(void);
 
-#define TEXT __attribute__((section(".text")))
+#define TEXT __attribute__((section(".text.C_main")))
+#define BSS(x) __attribute__((section(".bss" x)))
+#define HIGHRAM(x) __attribute__((section(".highram" x)))
 TEXT void write_char(char c){	// {{{
 	VGA0_Write(c);
 }	// }}}
@@ -97,14 +99,14 @@ TEXT void c_cursor_xy(uint8_t x, uint8_t y) {	// {{{
 	write_char('H');
 }	// }}}
 
-Thread_Controll_Block TCB_test __attribute__((section(".highram")));
+Thread_Controll_Block TCB_test __attribute__((section(".highram.TCB")));
 extern uint8_t VGA0_WriteHex8(uint8_t h);
 extern uint8_t VGA0_WriteHex16(uint16_t h);
 extern uint8_t VGA0_WriteHex24(uint32_t h);
 
 
 #define HERE_SIZE 0x3000
-uint8_t HERE1[HERE_SIZE] __attribute__((section(".highram")));
+uint8_t HERE1[HERE_SIZE] __attribute__((section(".highram.HERE")));
 
 
 // #define F(str) ((const __attribute__((__progmem__))char*)(str))
@@ -287,7 +289,7 @@ TEXT void C_dump(uint32_t MEM) {	// {{{
 	debug_dump (MEM,F("DEBUG"));
 }	// }}}
 
-uint8_t serial_getc(void *state, char *out_char) {	// {{{
+TEXT uint8_t serial_getc(void *state, char *out_char) {	// {{{
 	(void)state;	// state UNUSED, no compiler complains
 	uint16_t ch;
 	uint8_t ps2_res;
@@ -301,8 +303,8 @@ uint8_t serial_getc(void *state, char *out_char) {	// {{{
 
 // {{{ old FORTH
 typedef uint32_t DOUBLE_t;	// 2 cell on data stack 4B
-char buf[32];	// temporary buffer - stack eating structures cannot be in NEXT-chained functions, or stack will overflow !!!
-DOUBLE_t cw2h(DOUBLE_t cw) {	// {{{ codeword address to head address
+HIGHRAM(".C_main") char buf[32];	// temporary buffer - stack eating structures cannot be in NEXT-chained functions, or stack will overflow !!!
+TEXT DOUBLE_t cw2h(DOUBLE_t cw) {	// {{{ codeword address to head address
 //VGA0_WriteStr("cw2h( ");
 // VGA0_WriteHex24(xpC_U32(&FORTH_WORDS_START));
 // VGA0_Write('<');
@@ -331,12 +333,12 @@ DOUBLE_t cw2h(DOUBLE_t cw) {	// {{{ codeword address to head address
 	if (i<33) return cw-5;
 	return 0;
 }	// }}}
-DOUBLE_t h2cw(DOUBLE_t h) {	// {{{ convert head address to codeword address
+TEXT DOUBLE_t h2cw(DOUBLE_t h) {	// {{{ convert head address to codeword address
 	h+=5;
 	h+=1+C_B1at(h);
 	return h;
 }	// }}}
-uint8_t name_to_buf(DOUBLE_t cw) {	// {{{ fill name into global buf codeword - return flags
+TEXT uint8_t name_to_buf(DOUBLE_t cw) {	// {{{ fill name into global buf codeword - return flags
 	DOUBLE_t h=cw2h(cw);
 	if (!h) {strcpy_P(buf,F(" Not a word "));return 0;};
 	uint8_t flags,len;
@@ -348,7 +350,7 @@ uint8_t name_to_buf(DOUBLE_t cw) {	// {{{ fill name into global buf codeword - r
 	return flags;
 }	// }}}
 
-void C_export(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition of WORD
+TEXT void C_export(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition of WORD
 	uint32_t val;
 	uint8_t flags;
 	bool new;
@@ -451,7 +453,7 @@ void C_export(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition o
 	VGA0_Write('\n');
 
 }	// }}}
-void C_show(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition of WORD
+TEXT void C_show(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition of WORD
 	uint32_t val;
 	uint8_t flags;
 	if ( ! cw2h(cw)) { VGA0_WriteStr("Not valid CW."); return;};
@@ -545,23 +547,23 @@ void C_show(uint32_t cw) {	// {{{ ; ' WORD export - try to export definition of 
 
 // =======================vvvv VGA vvvv=============================== {{{
 
-volatile uint32_t frames;	// increase after frame displayed
-volatile bool VB_flag;		// set on start of each Vertical Blank
-void VB_handler(){
+HIGHRAM(".C_main") volatile uint32_t frames;	// increase after frame displayed
+HIGHRAM(".C_main") volatile bool VB_flag;		// set on start of each Vertical Blank
+TEXT void VB_handler(){
 	frames++;
 	VB_flag=true;
 }
-void wait(uint32_t dt){ 
+TEXT void wait(uint32_t dt){ 
 	uint32_t f; 
 	f=frames;
 	while (frames-f < dt) func_yield(); 
 	}
 
-T_TextVGA_VRAM VRAM;
-T_TextVGA_CRAM CRAM;
+BSS(".VRAM") T_TextVGA_VRAM VRAM;
+BSS(".CRAM") T_TextVGA_CRAM CRAM;
 // T_TextVGA_CRAM CRAM={0x0f, 0xcf, 0xd4,0xd4,0x9f,0xf9,0xf1,0xf2,0xf3,0xf4,0xf5,0xf6,0xf6,0xf7,0xf8,0xf9,0xfa,0xfb,0xfc,0xfd,0xfe,0xff,0xf0,0xf0,0xf0,};
 // =======================^^^^ VGA ^^^^=============================== }}}
-uint32_t C_RANDOM(uint32_t max) { 
+TEXT uint32_t C_RANDOM(uint32_t max) { 
 //	VGA0_WriteStr("RND(");
 //	VGA0_WriteHex24(max);
 	uint32_t r = rand() % max ; 
@@ -569,8 +571,8 @@ uint32_t C_RANDOM(uint32_t max) {
 //	VGA0_WriteHex24(r);
 	return r;
 	}
-char str_buf[80];
-uint32_t C_num2str(uint32_t num, Thread_Controll_Block *TCB) {
+HIGHRAM(".C_main") char str_buf[80];
+TEXT uint32_t C_num2str(uint32_t num, Thread_Controll_Block *TCB) {
 	ltoa(num,str_buf,TCB->BASE);
 	uint32_t adr=(uint16_t)str_buf;
 	uint32_t len=strlen(str_buf);
@@ -652,12 +654,12 @@ static inline uint16_t p16_to_u16(P16 p)	// {{{
             ((uint16_t)p.hi  << 8);
 }	// }}}
 // static
-P24 WL_all;
-P24 WL_all_2;
-P24 WL_all_3;
-P24 WL_all_4;
+P24 WL_all  __attribute__((section(".bss.WL")));
+P24 WL_all_2  __attribute__((section(".bss.WL")));
+P24 WL_all_3   __attribute__((section(".bss.WL")));
+P24 WL_all_4  __attribute__((section(".bss.WL")));
 // input_stack_t input_stack_serial; get_STK
-Virtual_Table VT_test;
+Virtual_Table VT_test  __attribute__((section(".bss.VT")));
 // ========================vvvv main vvvv========================================== {{{
 TEXT int main(void) {
 	setup();

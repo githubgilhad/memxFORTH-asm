@@ -1,3 +1,5 @@
+#define HIGHRAM __attribute__((section(".highram.ArduinoSD" )))
+#define TEXT __attribute__((section(".text.ArduinoSD")))
 /*
 
   SD - a slightly more friendly wrapper for sdfatlib
@@ -58,7 +60,7 @@ namespace SDLib {
 #define MAX_COMPONENT_LEN 12 // What is max length?
 #define PATH_COMPONENT_BUFFER_LEN MAX_COMPONENT_LEN+1
 
-  bool getNextPathComponent(const char *path, unsigned int *p_offset,
+  TEXT bool getNextPathComponent(const char *path, unsigned int *p_offset,
                             char *buffer) {
     /*
 
@@ -117,7 +119,7 @@ namespace SDLib {
 
 
 
-  boolean walkPath(const char *filepath, SdFile& parentDir,
+TEXT  boolean walkPath(const char *filepath, SdFile& parentDir,
                    boolean(*callback)(SdFile& parentDir,
                                       const char *filePathComponent,
                                       boolean isLastComponent,
@@ -232,7 +234,7 @@ namespace SDLib {
 
   */
 
-  boolean callback_pathExists(SdFile& parentDir, const char *filePathComponent,
+  TEXT boolean callback_pathExists(SdFile& parentDir, const char *filePathComponent,
                               boolean /* isLastComponent */, void * /* object */) {
     /*
 
@@ -255,7 +257,7 @@ namespace SDLib {
 
 
 
-  boolean callback_makeDirPath(SdFile& parentDir, const char *filePathComponent,
+  TEXT boolean callback_makeDirPath(SdFile& parentDir, const char *filePathComponent,
                                boolean isLastComponent, void *object) {
     /*
 
@@ -310,7 +312,7 @@ namespace SDLib {
 
 
 
-  boolean callback_remove(SdFile& parentDir, const char *filePathComponent,
+  TEXT boolean callback_remove(SdFile& parentDir, const char *filePathComponent,
                           boolean isLastComponent, void * /* object */) {
     if (isLastComponent) {
       return SdFile::remove(parentDir, filePathComponent);
@@ -318,7 +320,7 @@ namespace SDLib {
     return true;
   }
 
-  boolean callback_rmdir(SdFile& parentDir, const char *filePathComponent,
+  TEXT boolean callback_rmdir(SdFile& parentDir, const char *filePathComponent,
                          boolean isLastComponent, void * /* object */) {
     if (isLastComponent) {
       SdFile f;
@@ -336,7 +338,7 @@ namespace SDLib {
 
 
 
-  boolean SDClass::begin(uint8_t csPin) {
+  TEXT boolean SDClass::begin(uint8_t csPin) {
     if (root.isOpen()) {
       root.close();
     }
@@ -353,7 +355,7 @@ namespace SDLib {
            root.openRoot(volume);
   }
 
-  boolean SDClass::begin(uint32_t clock, uint8_t csPin) {
+  TEXT boolean SDClass::begin(uint32_t clock, uint8_t csPin) {
     if (root.isOpen()) {
       root.close();
     }
@@ -365,12 +367,12 @@ namespace SDLib {
   }
 
   //call this when a card is removed. It will allow you to insert and initialise a new card.
-  void SDClass::end() {
+  TEXT void SDClass::end() {
     root.close();
   }
 
   // this little helper is used to traverse paths
-  SdFile SDClass::getParentDir(const char *filepath, int *index) {
+  TEXT SdFile SDClass::getParentDir(const char *filepath, int *index) {
     // get parent directory
     SdFile d1;
     SdFile d2;
@@ -429,7 +431,22 @@ namespace SDLib {
   }
 
 
-  File SDClass::open(const char *filepath, uint8_t mode) {
+      TEXT File SDClass::open(const String &filename, uint8_t mode ) {
+        return open(filename.c_str(), mode);
+      }
+      TEXT boolean SDClass::exists(const String &filepath) {
+        return exists(filepath.c_str());
+      }
+      TEXT boolean SDClass::mkdir(const String &filepath) {
+        return mkdir(filepath.c_str());
+      }
+      TEXT boolean SDClass::remove(const String &filepath) {
+        return remove(filepath.c_str());
+      }
+      TEXT boolean SDClass::rmdir(const String &filepath) {
+        return rmdir(filepath.c_str());
+      }
+  TEXT File SDClass::open(const char *filepath, uint8_t mode) {
     /*
 
        Open the supplied file path for reading or writing.
@@ -533,7 +550,7 @@ namespace SDLib {
   //}
 
 
-  boolean SDClass::exists(const char *filepath) {
+  TEXT boolean SDClass::exists(const char *filepath) {
     /*
 
        Returns true if the supplied file path exists.
@@ -554,7 +571,7 @@ namespace SDLib {
   //}
 
 
-  boolean SDClass::mkdir(const char *filepath) {
+  TEXT boolean SDClass::mkdir(const char *filepath) {
     /*
 
       Makes a single directory or a hierarchy of directories.
@@ -565,7 +582,7 @@ namespace SDLib {
     return walkPath(filepath, root, callback_makeDirPath);
   }
 
-  boolean SDClass::rmdir(const char *filepath) {
+  TEXT boolean SDClass::rmdir(const char *filepath) {
     /*
 
       Remove a single directory or a hierarchy of directories.
@@ -576,13 +593,13 @@ namespace SDLib {
     return walkPath(filepath, root, callback_rmdir);
   }
 
-  boolean SDClass::remove(const char *filepath) {
+  TEXT boolean SDClass::remove(const char *filepath) {
     return walkPath(filepath, root, callback_remove);
   }
 
 
   // allows you to recurse into a directory
-  File File::openNextFile(uint8_t mode) {
+  TEXT File File::openNextFile(uint8_t mode) {
     dir_t p;
 
     //Serial.print("\t\treading dir...");
@@ -626,12 +643,12 @@ namespace SDLib {
     return File();
   }
 
-  void File::rewindDirectory(void) {
+  TEXT void File::rewindDirectory(void) {
     if (isDirectory()) {
       _file->rewind();
     }
   }
 
-  SDClass SD;
+HIGHRAM  SDClass SD;
 
 };

@@ -81,6 +81,7 @@ $(TARGET).elf: $(OBJ)
 	$(HEAD)
 	$(Q)mkdir -p $(BUILD_DIR)
 	$(Q)$(CC) $(LDFLAGS) $^ -o $@ -Wl,-Map=$(TARGET).map
+	$(Q)map2sizes.py $(TARGET).map | sort -k 1,1 -k 3,3r -k 6 | sizes2tree.py > $(TARGET).sizes
 
 $(TARGET).hex: $(TARGET).elf $(MK_DEP)
 	$(HEAD)

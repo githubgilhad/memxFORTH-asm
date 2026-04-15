@@ -1,3 +1,6 @@
+#define HIGHRAM __attribute__((section(".highram.ArduinoSD" )))
+#define TEXT __attribute__((section(".text.ArduinoSD")))
+
 /* Arduino Sd2Card Library
    Copyright (C) 2009 by William Greiman
 
@@ -33,7 +36,7 @@
 #endif
 // functions for hardware SPI
 /** Send a byte to the card */
-static void spiSend(uint8_t b) {
+TEXT static void spiSend(uint8_t b) {
   #ifndef USE_SPI_LIB
   SPDR = b;
   while (!(SPSR & (1 << SPIF)))
@@ -43,7 +46,7 @@ static void spiSend(uint8_t b) {
   #endif
 }
 /** Receive a byte from the card */
-static  uint8_t spiRec(void) {
+TEXT static  uint8_t spiRec(void) {
   #ifndef USE_SPI_LIB
   spiSend(0XFF);
   return SPDR;
@@ -57,7 +60,7 @@ static  uint8_t spiRec(void) {
 #define nop asm volatile ("nop\n\t")
 //------------------------------------------------------------------------------
 /** Soft SPI receive */
-uint8_t spiRec(void) {
+TEXT uint8_t spiRec(void) {
   uint8_t data = 0;
   // no interrupts during byte receive - about 8 us
   cli();
@@ -85,7 +88,7 @@ uint8_t spiRec(void) {
 }
 //------------------------------------------------------------------------------
 /** Soft SPI send */
-void spiSend(uint8_t data) {
+TEXT void spiSend(uint8_t data) {
   // no interrupts during byte send - about 8 us
   cli();
   for (uint8_t i = 0; i < 8; i++) {
@@ -110,7 +113,7 @@ void spiSend(uint8_t data) {
 #endif  // SOFTWARE_SPI
 //------------------------------------------------------------------------------
 // send command and return error code.  Return zero for OK
-uint8_t Sd2Card::cardCommand(uint8_t cmd, uint32_t arg) {
+TEXT uint8_t Sd2Card::cardCommand(uint8_t cmd, uint32_t arg) {
   // end read if in partialBlockRead mode
   readEnd();
 
@@ -150,7 +153,7 @@ uint8_t Sd2Card::cardCommand(uint8_t cmd, uint32_t arg) {
    \return The number of 512 byte data blocks in the card
            or zero if an error occurs.
 */
-uint32_t Sd2Card::cardSize(void) {
+TEXT uint32_t Sd2Card::cardSize(void) {
   csd_t csd;
   if (!readCSD(&csd)) {
     return 0;
@@ -174,7 +177,7 @@ uint32_t Sd2Card::cardSize(void) {
 //------------------------------------------------------------------------------
 static uint8_t chip_select_asserted = 0;
 
-void Sd2Card::chipSelectHigh(void) {
+TEXT void Sd2Card::chipSelectHigh(void) {
   digitalWrite(chipSelectPin_, HIGH);
   #ifdef USE_SPI_LIB
   if (chip_select_asserted) {
@@ -184,7 +187,7 @@ void Sd2Card::chipSelectHigh(void) {
   #endif
 }
 //------------------------------------------------------------------------------
-void Sd2Card::chipSelectLow(void) {
+TEXT void Sd2Card::chipSelectLow(void) {
   #ifdef USE_SPI_LIB
   if (!chip_select_asserted) {
     chip_select_asserted = 1;
@@ -207,7 +210,7 @@ void Sd2Card::chipSelectLow(void) {
    \return The value one, true, is returned for success and
    the value zero, false, is returned for failure.
 */
-uint8_t Sd2Card::erase(uint32_t firstBlock, uint32_t lastBlock) {
+TEXT uint8_t Sd2Card::erase(uint32_t firstBlock, uint32_t lastBlock) {
   if (!eraseSingleBlockEnable()) {
     error(SD_CARD_ERROR_ERASE_SINGLE_BLOCK);
     goto fail;
@@ -239,7 +242,7 @@ fail:
    \return The value one, true, is returned if single block erase is supported.
    The value zero, false, is returned if single block erase is not supported.
 */
-uint8_t Sd2Card::eraseSingleBlockEnable(void) {
+TEXT uint8_t Sd2Card::eraseSingleBlockEnable(void) {
   csd_t csd;
   return readCSD(&csd) ? csd.v1.erase_blk_en : 0;
 }
@@ -254,7 +257,7 @@ uint8_t Sd2Card::eraseSingleBlockEnable(void) {
    the value zero, false, is returned for failure.  The reason for failure
    can be determined by calling errorCode() and errorData().
 */
-uint8_t Sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin) {
+TEXT uint8_t Sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin) {
   errorCode_ = inBlock_ = partialBlockRead_ = type_ = 0;
   chipSelectPin_ = chipSelectPin;
   // 16-bit init start time allows over a minute
@@ -371,7 +374,7 @@ fail:
 
    \param[in] value The value TRUE (non-zero) or FALSE (zero).)
 */
-void Sd2Card::partialBlockRead(uint8_t value) {
+TEXT void Sd2Card::partialBlockRead(uint8_t value) {
   readEnd();
   partialBlockRead_ = value;
 }
@@ -385,7 +388,7 @@ void Sd2Card::partialBlockRead(uint8_t value) {
    \return The value one, true, is returned for success and
    the value zero, false, is returned for failure.
 */
-uint8_t Sd2Card::readBlock(uint32_t block, uint8_t* dst) {
+TEXT uint8_t Sd2Card::readBlock(uint32_t block, uint8_t* dst) {
   return readData(block, 0, 512, dst);
 }
 //------------------------------------------------------------------------------
@@ -399,7 +402,7 @@ uint8_t Sd2Card::readBlock(uint32_t block, uint8_t* dst) {
    \return The value one, true, is returned for success and
    the value zero, false, is returned for failure.
 */
-uint8_t Sd2Card::readData(uint32_t block,
+TEXT uint8_t Sd2Card::readData(uint32_t block,
                           uint16_t offset, uint16_t count, uint8_t* dst) {
   if (count == 0) {
     return true;
@@ -472,7 +475,7 @@ fail:
 }
 //------------------------------------------------------------------------------
 /** Skip remaining data in a block when in partial block read mode. */
-void Sd2Card::readEnd(void) {
+TEXT void Sd2Card::readEnd(void) {
   if (inBlock_) {
     // skip data and crc
     #ifdef OPTIMIZE_HARDWARE_SPI
@@ -497,7 +500,7 @@ void Sd2Card::readEnd(void) {
 }
 //------------------------------------------------------------------------------
 /** read CID or CSR register */
-uint8_t Sd2Card::readRegister(uint8_t cmd, void* buf) {
+TEXT uint8_t Sd2Card::readRegister(uint8_t cmd, void* buf) {
   uint8_t* dst = reinterpret_cast<uint8_t*>(buf);
   if (cardCommand(cmd, 0)) {
     error(SD_CARD_ERROR_READ_REG);
@@ -532,7 +535,7 @@ fail:
    \return The value one, true, is returned for success and the value zero,
    false, is returned for an invalid value of \a sckRateID.
 */
-uint8_t Sd2Card::setSckRate(uint8_t sckRateID) {
+TEXT uint8_t Sd2Card::setSckRate(uint8_t sckRateID) {
   if (sckRateID > 6) {
     error(SD_CARD_ERROR_SCK_RATE);
     return false;
@@ -563,14 +566,14 @@ uint8_t Sd2Card::setSckRate(uint8_t sckRateID) {
 #ifdef USE_SPI_LIB
 //------------------------------------------------------------------------------
 // set the SPI clock frequency
-uint8_t Sd2Card::setSpiClock(uint32_t clock) {
+TEXT uint8_t Sd2Card::setSpiClock(uint32_t clock) {
   settings = SPISettings(clock, MSBFIRST, SPI_MODE0);
   return true;
 }
 #endif
 //------------------------------------------------------------------------------
 // wait for card to go not busy
-uint8_t Sd2Card::waitNotBusy(unsigned int timeoutMillis) {
+TEXT uint8_t Sd2Card::waitNotBusy(unsigned int timeoutMillis) {
   unsigned int t0 = millis();
   unsigned int d;
   do {
@@ -583,7 +586,7 @@ uint8_t Sd2Card::waitNotBusy(unsigned int timeoutMillis) {
 }
 //------------------------------------------------------------------------------
 /** Wait for start block token */
-uint8_t Sd2Card::waitStartBlock(void) {
+TEXT uint8_t Sd2Card::waitStartBlock(void) {
   unsigned int t0 = millis();
   while ((status_ = spiRec()) == 0XFF) {
     unsigned int d = millis() - t0;
@@ -612,7 +615,7 @@ fail:
    \return The value one, true, is returned for success and
    the value zero, false, is returned for failure.
 */
-uint8_t Sd2Card::writeBlock(uint32_t blockNumber, const uint8_t* src, uint8_t blocking) {
+TEXT uint8_t Sd2Card::writeBlock(uint32_t blockNumber, const uint8_t* src, uint8_t blocking) {
   #if SD_PROTECT_BLOCK_ZERO
   // don't allow write to first block
   if (blockNumber == 0) {
@@ -653,7 +656,7 @@ fail:
 }
 //------------------------------------------------------------------------------
 /** Write one data block in a multiple block write sequence */
-uint8_t Sd2Card::writeData(const uint8_t* src) {
+TEXT uint8_t Sd2Card::writeData(const uint8_t* src) {
   // wait for previous write to finish
   if (!waitNotBusy(SD_WRITE_TIMEOUT)) {
     error(SD_CARD_ERROR_WRITE_MULTIPLE);
@@ -664,7 +667,7 @@ uint8_t Sd2Card::writeData(const uint8_t* src) {
 }
 //------------------------------------------------------------------------------
 // send one block of data for write block or write multiple blocks
-uint8_t Sd2Card::writeData(uint8_t token, const uint8_t* src) {
+TEXT uint8_t Sd2Card::writeData(uint8_t token, const uint8_t* src) {
   #ifdef OPTIMIZE_HARDWARE_SPI
 
   // send data - optimized loop
@@ -713,7 +716,7 @@ uint8_t Sd2Card::writeData(uint8_t token, const uint8_t* src) {
    \return The value one, true, is returned for success and
    the value zero, false, is returned for failure.
 */
-uint8_t Sd2Card::writeStart(uint32_t blockNumber, uint32_t eraseCount) {
+TEXT uint8_t Sd2Card::writeStart(uint32_t blockNumber, uint32_t eraseCount) {
   #if SD_PROTECT_BLOCK_ZERO
   // don't allow write to first block
   if (blockNumber == 0) {
@@ -746,7 +749,7 @@ fail:
   \return The value one, true, is returned for success and
    the value zero, false, is returned for failure.
 */
-uint8_t Sd2Card::writeStop(void) {
+TEXT uint8_t Sd2Card::writeStop(void) {
   if (!waitNotBusy(SD_WRITE_TIMEOUT)) {
     goto fail;
   }
@@ -768,7 +771,7 @@ fail:
   \return The value one, true, is returned when is busy and
    the value zero, false, is returned for when is NOT busy.
 */
-uint8_t Sd2Card::isBusy(void) {
+TEXT uint8_t Sd2Card::isBusy(void) {
   chipSelectLow();
   byte b = spiRec();
   chipSelectHigh();

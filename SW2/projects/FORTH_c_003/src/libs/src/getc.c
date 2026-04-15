@@ -6,10 +6,11 @@
 
 // VGA_write_char
 #include "bios.h"
+#define TEXT __attribute__((section(".text.C_libs")))
+#define HIGRAM __attribute__((section(".highram.C_libs")))
 
 
-
-uint8_t C_getc(input_stack_t *s, char *out) {	// {{{ FORTH will use this to get next character
+TEXT uint8_t C_getc(input_stack_t *s, char *out) {	// {{{ FORTH will use this to get next character
 //	    TX0_WriteStr(" C_getc ");
 	while (s->count > 0) {
 //		TX0_WriteHex8(s->count);
@@ -48,7 +49,7 @@ uint8_t C_getc(input_stack_t *s, char *out) {	// {{{ FORTH will use this to get 
 	return GETC_EOF;
 }	// }}}
 
-void add_getc(input_stack_t *s,getc_fn fn, void *state) {	// {{{
+TEXT void add_getc(input_stack_t *s,getc_fn fn, void *state) {	// {{{
 //TX0_WriteStr(" add_getc("); TX0_WriteHex16((uint16_t)s);TX0_Write(',');TX0_WriteHex16((uint16_t)fn); TX0_Write(',');TX0_WriteHex16((uint16_t)state);TX0_WriteStr(" ) ");
 	if( s->count < GETC_MAX_SOURCES) {
 		s->stack[s->count].getc=fn;
@@ -58,9 +59,9 @@ void add_getc(input_stack_t *s,getc_fn fn, void *state) {	// {{{
 	};
 }	// }}}
 
-input_stack_t get_STK;
+HIGRAM input_stack_t get_STK;
 
-void C_getc_init(input_stack_t *s){	// {{{
+TEXT void C_getc_init(input_stack_t *s){	// {{{
 //TX0_WriteStr(" C_getc_init("); TX0_WriteHex16((uint16_t)s);TX0_WriteStr(" ) ");
 	s->count=0;
 }	// }}}

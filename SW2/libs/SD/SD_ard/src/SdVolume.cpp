@@ -1,3 +1,7 @@
+#define HIGHRAM __attribute__((section(".highram.ArduinoSD" )))
+#define TEXT __attribute__((section(".text.ArduinoSD")))
+
+
 /* Arduino SdFat Library
    Copyright (C) 2009 by William Greiman
 
@@ -21,14 +25,14 @@
 //------------------------------------------------------------------------------
 // raw block cache
 // init cacheBlockNumber_to invalid SD block number
-uint32_t SdVolume::cacheBlockNumber_ = 0XFFFFFFFF;
-cache_t  SdVolume::cacheBuffer_;     // 512 byte cache for Sd2Card
-Sd2Card* SdVolume::sdCard_;          // pointer to SD card object
-uint8_t  SdVolume::cacheDirty_ = 0;  // cacheFlush() will write block if true
-uint32_t SdVolume::cacheMirrorBlock_ = 0;  // mirror  block for second FAT
+HIGHRAM uint32_t SdVolume::cacheBlockNumber_ = 0XFFFFFFFF;
+HIGHRAM cache_t  SdVolume::cacheBuffer_;     // 512 byte cache for Sd2Card
+HIGHRAM Sd2Card* SdVolume::sdCard_;          // pointer to SD card object
+HIGHRAM uint8_t  SdVolume::cacheDirty_ = 0;  // cacheFlush() will write block if true
+HIGHRAM uint32_t SdVolume::cacheMirrorBlock_ = 0;  // mirror  block for second FAT
 //------------------------------------------------------------------------------
 // find a contiguous group of clusters
-uint8_t SdVolume::allocContiguous(uint32_t count, uint32_t* curCluster) {
+TEXT uint8_t SdVolume::allocContiguous(uint32_t count, uint32_t* curCluster) {
   // start of group
   uint32_t bgnCluster;
 
@@ -108,7 +112,7 @@ uint8_t SdVolume::allocContiguous(uint32_t count, uint32_t* curCluster) {
   return true;
 }
 //------------------------------------------------------------------------------
-uint8_t SdVolume::cacheFlush(uint8_t blocking) {
+TEXT uint8_t SdVolume::cacheFlush(uint8_t blocking) {
   if (cacheDirty_) {
     if (!sdCard_->writeBlock(cacheBlockNumber_, cacheBuffer_.data, blocking)) {
       return false;
@@ -127,7 +131,7 @@ uint8_t SdVolume::cacheFlush(uint8_t blocking) {
   return true;
 }
 //------------------------------------------------------------------------------
-uint8_t SdVolume::cacheMirrorBlockFlush(uint8_t blocking) {
+TEXT uint8_t SdVolume::cacheMirrorBlockFlush(uint8_t blocking) {
   if (cacheMirrorBlock_) {
     if (!sdCard_->writeBlock(cacheMirrorBlock_, cacheBuffer_.data, blocking)) {
       return false;
@@ -137,7 +141,7 @@ uint8_t SdVolume::cacheMirrorBlockFlush(uint8_t blocking) {
   return true;
 }
 //------------------------------------------------------------------------------
-uint8_t SdVolume::cacheRawBlock(uint32_t blockNumber, uint8_t action) {
+TEXT uint8_t SdVolume::cacheRawBlock(uint32_t blockNumber, uint8_t action) {
   if (cacheBlockNumber_ != blockNumber) {
     if (!cacheFlush()) {
       return false;
@@ -152,7 +156,7 @@ uint8_t SdVolume::cacheRawBlock(uint32_t blockNumber, uint8_t action) {
 }
 //------------------------------------------------------------------------------
 // cache a zero block for blockNumber
-uint8_t SdVolume::cacheZeroBlock(uint32_t blockNumber) {
+TEXT uint8_t SdVolume::cacheZeroBlock(uint32_t blockNumber) {
   if (!cacheFlush()) {
     return false;
   }
@@ -167,7 +171,7 @@ uint8_t SdVolume::cacheZeroBlock(uint32_t blockNumber) {
 }
 //------------------------------------------------------------------------------
 // return the size in bytes of a cluster chain
-uint8_t SdVolume::chainSize(uint32_t cluster, uint32_t* size) const {
+TEXT uint8_t SdVolume::chainSize(uint32_t cluster, uint32_t* size) const {
   uint32_t s = 0;
   do {
     if (!fatGet(cluster, &cluster)) {
@@ -180,7 +184,7 @@ uint8_t SdVolume::chainSize(uint32_t cluster, uint32_t* size) const {
 }
 //------------------------------------------------------------------------------
 // Fetch a FAT entry
-uint8_t SdVolume::fatGet(uint32_t cluster, uint32_t* value) const {
+TEXT uint8_t SdVolume::fatGet(uint32_t cluster, uint32_t* value) const {
   if (cluster > (clusterCount_ + 1)) {
     return false;
   }
@@ -200,7 +204,7 @@ uint8_t SdVolume::fatGet(uint32_t cluster, uint32_t* value) const {
 }
 //------------------------------------------------------------------------------
 // Store a FAT entry
-uint8_t SdVolume::fatPut(uint32_t cluster, uint32_t value) {
+TEXT uint8_t SdVolume::fatPut(uint32_t cluster, uint32_t value) {
   // error if reserved cluster
   if (cluster < 2) {
     return false;
@@ -236,7 +240,7 @@ uint8_t SdVolume::fatPut(uint32_t cluster, uint32_t value) {
 }
 //------------------------------------------------------------------------------
 // free a cluster chain
-uint8_t SdVolume::freeChain(uint32_t cluster) {
+TEXT uint8_t SdVolume::freeChain(uint32_t cluster) {
   // clear free cluster location
   allocSearchStart_ = 2;
 
@@ -272,7 +276,7 @@ uint8_t SdVolume::freeChain(uint32_t cluster) {
    failure include not finding a valid partition, not finding a valid
    FAT file system in the specified partition or an I/O error.
 */
-uint8_t SdVolume::init(Sd2Card* dev, uint8_t part) {
+TEXT uint8_t SdVolume::init(Sd2Card* dev, uint8_t part) {
   uint32_t volumeStartBlock = 0;
   sdCard_ = dev;
   // if part == 0 assume super floppy with FAT boot sector in block zero
