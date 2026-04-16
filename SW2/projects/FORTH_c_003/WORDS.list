@@ -173,13 +173,13 @@ DEFWORD w_ADDR_R,		0,		"&R",			f_ADDR_R		; (  -- &R ) return R stack address [xx
 DEFWORD w_ADDR_S,		0,		"&S",			f_ADDR_S		; (  -- &S ) data Stack address [xxxx]
 DEFWORD w_AND,			0,		"AND",			f_AND			; ( a b -- a&b ) bitwise AND of two stack items
 DEFWORD w_BEGIN,		FLG_IMMEDIATE,	"BEGIN",		f_BEGIN			; Compilation ( C: -- 0 do-sys ) compile '(begin)' to definition
-DEFWORD w_BINSTR,		0,		"BINSTR",		f_BINSTR		;  ( "name" x1 x2 .. xn-1 xn n -- ) CREATE word for binary string:  save binary string (1B bytes) to memory, 10 20 30 3 BINSTR THREE create word THREE ( -- addr len ) returning string "\10\20\30"
 DEFWORD w_BRANCH,		FLG_ARG_3,	"BRANCH",		f_BRANCH		; ( -- ) add following P24 to IP and NEXT there; -3 is endless loop [----]
 DEFWORD w_BRK,			0,		"BRK",			f_BRK			; (  --  ) do nothing, breakpoint may be set here [xxxx]
 DEFWORD w_BRK0,			0,		"BRK0",			f_BRK0			; (  --  ) do nothing, breakpoint may be set here [xxxx]
 DEFWORD w_BRK1,			0,		"BRK1",			f_BRK1			; (  --  ) do nothing, breakpoint may be set here [xxxx]
 DEFWORD w_BRK2,			0,		"BRK2",			f_BRK2			; (  --  ) do nothing, breakpoint may be set here [xxxx]
 DEFWORD w_BRK3,			0,		"BRK3",			f_BRK3			; (  --  ) do nothing, breakpoint may be set here [xxxx]
+DEFWORD w_BSTR_,		0,		"B{",			f_BSTR_			; ( "name" -- addr ) create LITSTRING like word ( -- addr len ), use with closing }B  (addr is start of characters, just after len, same for both)
 DEFWORD w_CALL,			0,		"CALL",			f_CALL			; ( a addr  -- a b ) call C func on addr with param a, save result to b
 DEFWORD w_CELLS,		0,		"CELLS",		f_CELLS			; ( a -- b ) b = a * CELL_size
 DEFWORD w_CELLS_plus,		0,		"CELLS+",		f_CELLS_plus		; ( a b -- c ) c = a + b * CELL_size (Usage: ARRAY_A index CELLS+ @ = value at  ARRAY_A[index] )
@@ -188,14 +188,14 @@ DEFWORD w_CLS,			0,		"CLS",			f_CLS			; (  --  ) clear screen, mocve cursor to 0
 DEFWORD w_COLON,		0,		":",			f_COLON			; ( C: "<spaces>name" -- colon-sys ) create new word [0450]
 DEFWORD w_COMMENT,		FLG_IMMEDIATE,	"(",			f_COMMENT		; ( "text)"  --  ) skip comment to paired ) [----]
 DEFWORD w_COMPARE,		0,		"COMPARE",		f_COMPARE		; ( c-addr1 u1 c-addr2 u2 -- n ) compare 2 strings  n=0 identical, n= -1 string1 is LESS than string2
-DEFWORD w_COMPILEcomma,		0,		"COMPILE,",		f_comma			; ( x --  ) compile x at HERE
 DEFWORD w_COUNT,		0,		"COUNT",		f_COUNT			; ( c-addr1  -- c-addr2 u2 ) counted string to string
 DEFWORD w_CR,			0,		"CR",			f_CR			; (  --  ) do new line 
-DEFWORD w_CREATE,		0,		"CREATE",		f_CREATE		; ( "<spaces>name" -- ) Create a definition for name  [1000]
+DEFWORD w_CREATE,		0,		"CREATE",		f_CREATE		; ( "<spaces>name" -- ) Create a definition for name  [1000] : CREATE HEADER ' (create) , ;
 DEFWORD w_CURSOR_XY,		0,		"CURSOR_XY",		f_CURSOR_XY		; ( x y --  ) move cursor to x,y [xxxx]
 DEFWORD w_CUR_char,		0,		"CUR_char",		f_CUR_char		; ( c --  ) set c as cursor marker
 DEFWORD w_CUR_visible,		0,		"CUR_visible",		f_CUR_visible		; ( flag --  ) set cursor visibility
 DEFWORD w_CUR_yx,		0,		"CUR_yx",		f_CUR_yx		; ( y x  --  ) move cursor to Y,X  [----]
+DEFWORD w_Ccomma,		0,		"C,",			f_Ccomma		; ( c --  ) compile c at HERE (1B)
 DEFWORD w_DEFINITIONS,		0,		"DEFINITIONS",		f_DEFINITIONS		; ( -- ) set CURRENT to first WL in ORDER
 DEFWORD w_DEF_CHAR,		0,		"DEF_CHAR",		f_DEF_CHAR		; ( c --  ) set default character for CLS and scroll
 DEFWORD w_DEF_COLOR,		0,		"DEF_COLOR",		f_DEF_COLOR		; ( c --  ) set default color c for CLS and scroll
@@ -222,6 +222,7 @@ DEFWORD w_FIND_NAME,		0,		"FIND-NAME",		f_FIND_NAME		; ( addr u  -- addr u 0 | x
 DEFWORD w_FIND_NAME_f,		0,		"FIND-NAME_f",		f_docol, yes		; FIND-NAME_f ( c-addr u -- c-addr u 0 | xt 1 | xt -1 )  1=immediate, -1=normal 0=not found - FORTH version, use C word instead
 DEFWORD w_GET_CURRENT,		0,		"GET-CURRENT",		f_docol, yes		; ( -- wid ) get current wordlist : GET-CURRENT ( -- wid ) TCB_WL_CURRENT @ ;
 DEFWORD w_GET_ORDER,		0,		"GET-ORDER",		f_docol, yes		; ( -- wid_n .. wid_1 n ) get current search order : GET-ORDER ( -- wid_n .. wid_1 n ) TCB_WL_ORDER_len C@ 0 DO TCB_WL_ORDER I CELLS+ @ LOOP TCB_WL_ORDER_len C@ ;
+DEFWORD w_HEADER,		0,		"HEADER",		f_HEADER		; ( "<spaces>name" -- ) First part of CREATE, does not fill codeword
 DEFWORD w_HEADLESS,		0,		"HEADLESS",		f_HEADLESS		; (  --  ) stop generation of VGA signal [----]
 DEFWORD w_HEADMORE,		0,		"HEADMORE",		f_HEADMORE		; (  --  ) start generation of VGA signal again [----]
 DEFWORD w_I,			0,		"I",			f_I			; (  -- x ) return value of inner loop control variable
@@ -302,6 +303,7 @@ DEFWORD w_WAIT,			0,		"WAIT",			f_WAIT			; ( x  --  ) wait x ticks (0 - no wait)
 DEFWORD w_WHILE,		FLG_IMMEDIATE,	"WHILE",		f_WHILE			; ( do-sys -- addr do-sys ) BEGIN condition WHILE action REPEAT
 DEFWORD w_WORDLIST,		0,		"WORDLIST",		f_docol, yes		; ( -- wid ) create wordlist : WORDLIST ( -- wid ) HERE 0 , ; \ reserve CELL, store zeroes there, return its address
 DEFWORD w_WORDS,		0,		"WORDS",		f_WORDS			; (  --  ) print all words [xxxx]
+DEFWORD w__BSTR,		0,		"}B",			f__BSTR			; ( addr -- ) close B{ like this: B{ NewLine 10 C, 13 C, }B   NewLine TELL 
 DEFWORD w__begin_,		FLG_HIDDEN,	"(begin)",		f__begin_,	line=2	; Runtime: ( -- ) just label
 DEFWORD w__create_,		FLG_HIDDEN,	"(create)",		f__create_,	line=2	; Runtime ( -- a-addr ) push address of datafield for name  [1000]
 DEFWORD w__do_,			FLG_HIDDEN,	"(do)",			f__do_,		line=2	; Runtime: ( limit first -- ) ( R:  -- limit first ) set loop params
@@ -323,7 +325,7 @@ DEFWORD w_at,			0,		"@",			f_at			; ( addr -- value ) fetch cell from address
 DEFWORD w_brackettick,			FLG_IMMEDIATE,		"[']",			f_docol, yes		; ( "name" --  ) xt of next word is compiled
 DEFWORD w_char_at,		0,		"C@",			f_char_at		; ( addr -- byte ) fetch byte from address
 DEFWORD w_char_store,		0,		"C!",			f_char_store		; ( byte addr -- )  store byte to address
-DEFWORD w_comma,		0,		",",			f_comma			; ( x --  ) compile x at HERE
+DEFWORD w_comma,		0,		",",			f_comma			; ( x --  ) compile x at HERE (3B)
 DEFWORD w_dot,			0,		".",			f_dot			; ( x  --  ) print value
 DEFWORD w_dot_hex,		0,		".h",			f_dot_hex		; ( x  --  ) print hexa value and space [xxxx]
 DEFWORD w_double,		0,		"2*",			f_double		; ( a -- b ) b = a * 2 [xxxx]
@@ -363,7 +365,7 @@ DEFWORD w_right_bracket,	0,		"]",			f_right_bracket		; (  --  ) leave interpreta
 DEFWORD w_store,		0,		"!",			f_store			; ( value addr -- ) store cell to address
 DEFWORD w_strequ,		0,		"STR=",			f_strequ		; ( c-addr1 u1 c-addr2 u2 -- flag ) compare 2 strings  flag=-1 identical, flag=0 different
 DEFWORD w_strnonequ,		0,		"STR<>",		f_strnonequ		; ( c-addr1 u1 c-addr2 u2 -- flag ) compare 2 strings  flag=0 identical, flag=-1 different
-DEFWORD w_tick,			0,		"'",			f_docol, yes		; ( "name" -- 0 | xt  ) xt of next word in TIB [----]
+DEFWORD w_tick,			0,		"'",			f_docol, yes		; ( "name" -- 0 | xt  ) xt of next word in TIB ( not in colon definition ) [----]
 DEFWORD w_toL,			0,		">L",			f_toL			; ( x  --  )( L: -- x ) move CELL from data stack to L stack
 DEFWORD w_toR,			0,		">R",			f_toR			; ( x  --  )( R: -- x ) move CELL from data stack to return stack
 DEFWORD w_wid_item,		0,		"wid[]",		f_wid_item		; ( i -- wid_i ) get i.th order wordlist (1 most actual) [xxx]

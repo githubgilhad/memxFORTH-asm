@@ -43,7 +43,7 @@ DEFWORD w_INTERPRET,		0,		"INTERPRET",		f_docol, yes		; ( -- )  : INTERPRET ... 
 	P24 6f - .
 5:
 	
-	P24 w_COMPILEcomma_cw
+	P24 w_comma_cw
 	
 ;	P24 w_THEN_cw
 6:				; 6:	; IMMEDIATE
@@ -119,7 +119,7 @@ DEFWORD w_INTERPRET,		0,		"INTERPRET",		f_docol, yes		; ( -- )  : INTERPRET ... 
 ;;					1= IF		\ (5) IMMEDIATE
 ;;						EXECUTE
 ;;					ELSE		\ 5:(6) IMMEDIATE
-;;						COMPILE,
+;;						,
 ;;					THEN		\ 6: IMMEDIATE
 ;;				ELSE			\ 4:(5) state 
 ;;					DROP		\ (xt flag -- xt)

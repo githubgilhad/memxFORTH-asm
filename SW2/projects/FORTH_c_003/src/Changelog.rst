@@ -15,6 +15,8 @@ Changelog
 --------------------------------------------------------------------------------
 
 %START%
+* 2026.04.16 23:11:22 - DEFWORD w__BSTR,		0,		"}B",			f__BSTR			; ( addr -- ) close B{ like this: B{ NewLine 10 C, 13 C, }B   NewLine TELL 
+* 2026.04.16 23:11:08 - DEFWORD w_BSTR_,		0,		"B{",			f_BSTR_			; ( "name" -- addr ) create LITSTRING like word ( -- addr len ), use with closing }B  (addr is start of characters, just after len, same for both)
 * 2026.03.26 12:39:18 - DEFWORD w_WAIT,			0,		"WAIT",			f_WAIT			; ( a  --  ) wait a ticks (0 - no wait)
 * 2026.03.26 12:33:01 - DEFWORD w_LOR,			0,		"||",			f_LOR			; ( a b -- a||b ) logical OR of two stack items
 * 2026.03.26 12:32:52 - DEFWORD w_OR,			0,		"OR",			f_OR			; ( a b -- a|b ) bitwise OR of two stack items

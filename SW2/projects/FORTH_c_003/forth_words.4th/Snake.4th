@@ -1,28 +1,49 @@
 HEADLESS
+
 0 VALUE is_demo
+10 VALUE speed
+
+: nop ;
 ' KEYpress DEFER get_key
+' nop DEFER fruit_fall 
 
 0 0 0 0 VALUE hx VALUE hy VALUE hd VALUE hdd ( head )
+0 0 0 VALUE tx VALUE ty VALUE td ( tail )
 0 0 VALUE tgx VALUE tgy ( target fruit  )
-( item )
-( : brick $A0 ; )
-: brick 235 ;
-'*' 231 232 233 4 BINSTR fruit_str : fruit_str_addr fruit_str DROP ;
-: is_fruit ( c -- flag ) fruit_str ISINSTR ;
-32 234 2 BINSTR grass_str : random_grass grass_str RANDOM + C@ ;
-: is_grass ( c -- flag ) grass_str ISINSTR ;
-236 237 238 239 4 BINSTR tail_str : tail_str_addr tail_str DROP ;
-240 241 242 243 4 BINSTR head_str : head_str_addr head_str DROP ;
-244 245 246 '#' 247 248 '#' 249 250 '#' 251 252 '#' 253 254 255 16 BINSTR body_str : body_str_addr body_str DROP ;
-: can_go ( c -- flag ) DUP is_grass SWAP is_fruit || ;
 
-( score, max )
 0 0 0 0 VALUE score VALUE maxscore VALUE crash VALUE grow
+
+( item )
+B{ fruit_str 231 C, 232 C, 233 C, '*' C, }B 
+B{ grass_str 234 C, 32 C, }B 
+: brick 235 ;
+B{ tail_str 236 C, 237 C, 238 C, 239 C, }B
+B{ head_str 240 C, 241 C, 242 C, 243 C, }B
+B{ body_str 244 C, 245 C, 246 C, '#' C, 247 C, 248 C, '#' C, 249 C, 250 C, '#' C, 251 C, 252 C, '#' C, 253 C, 254 C, 255 C, }B
+
+: tail_str_addr tail_str DROP ;
+: head_str_addr head_str DROP ;
+: body_str_addr body_str DROP ;
+
+
+: is_fruit ( c -- flag ) fruit_str ISINSTR ;
+: is_grass ( c -- flag ) grass_str ISINSTR ;
+: is_tail  ( c -- flag ) tail_str ISINSTR ;
+: is_body  ( c -- flag ) body_str ISINSTR ;
+: is_wall  ( c -- flag ) brick = ;
+
+: can_go   ( c -- flag ) DUP is_grass SWAP is_fruit || ;
+
+: random_fruit fruit_str RANDOM + C@ ;
+: random_grass grass_str RANDOM + C@ ;
+
+
 : show_score
 	1 2 CUR_yx  ." SCORE: " score . SPACE
 	score maxscore > IF score TO maxscore 1 MAX_COLUMNS 2/ 1- CUR_yx brick EMIT $4D ROW_COLOR THEN
 	1 MAX_COLUMNS 2/   CUR_yx  ." MAX: " maxscore .
 	;
+
 ( wall )
 : wall CLS HEADLESS
 	MAX_COLUMNS 0 DO  0 I brick VRAM_yx! ( ) 2 I brick VRAM_yx! ( )  4 I brick VRAM_yx! ( )  MAX_LINES 1- I brick VRAM_yx! ( )  MAX_LINES 3 - I brick VRAM_yx! LOOP
@@ -34,8 +55,8 @@ HEADLESS
 	MAX_LINES 2 - 10 CUR_yx ." Eat them all !"
 	HEADMORE
 	;
-: is_wall ( c -- flag ) brick = ;
-: test_wall ( y x --  )  VRAM_yx@ is_wall IF 1 TO crash THEN ;
+
+
 ( movement )
 ( dirs are derived from 2468 keys on num block - "2/ 1-" )
 : do_step ( y x d -- y x )
@@ -54,28 +75,19 @@ HEADLESS
 
 ( body )
 : show_body ( y x old new ) SWAP 4* + body_str_addr + C@ VRAM_yx! ;
-: is_body ( c -- flag ) body_str ISINSTR ;
-: test_body ( y x --  )  VRAM_yx@ is_body IF 2 TO crash THEN ;
 ( fruit )
-: random_fruit fruit_str RANDOM + C@ ;
-: place_fruit is_demo IF EXIT THEN MAX_LINES 8 - RANDOM 5 + MAX_COLUMNS 2 - RANDOM 1+ DUP2 VRAM_yx@ is_grass IF random_fruit VRAM_yx! ELSE DROP2 THEN ;
-: show_fruit ( -- ) 15 RANDOM IFNOT place_fruit THEN ;
-: test_target ( -- ) ( hx tgx = hy tgy = && ) 1
-	IF 
-		BEGIN 
-			MAX_LINES 8 - RANDOM 5 + MAX_COLUMNS 2 - RANDOM 1+ DUP2 VRAM_yx@ ( y x c )  
-			DUP	is_fruit	IF DROP TO tgx TO tgy EXIT THEN 
-				is_grass	IF DUP2 random_fruit VRAM_yx! TO tgx TO tgy EXIT 
-						ELSE DROP2 THEN 
-		REPEAT
-	THEN ;
-: test_fruit ( y x --  ) VRAM_yx@ is_fruit IF 1 TO grow is_demo IF test_target ELSE 1 +TO score THEN THEN ;
+: place_fruit ( -- ) ( every fruit is new target ) 
+	BEGIN 
+		MAX_LINES 8 - RANDOM 5 + MAX_COLUMNS 2 - RANDOM 1+ DUP2 VRAM_yx@ ( y x c )  
+		DUP	is_fruit	IF DROP TO tgx TO tgy EXIT THEN 
+			is_grass	IF DUP2 random_fruit VRAM_yx! TO tgx TO tgy EXIT 
+					ELSE DROP2 THEN 
+	REPEAT
+	;
+: add_fruit ( -- ) 15 RANDOM IFNOT place_fruit THEN ;
 ( tail )
-0 0 0 VALUE tx VALUE ty VALUE td
 : hide_tail ty tx random_grass VRAM_yx! ;
-: is_tail ( c -- flag ) tail_str ISINSTR ;
 : show_tail ty tx tail_str_addr td + C@ VRAM_yx! ;
-: test_tail ( y x --  )  VRAM_yx@ is_tail IF 2 TO crash THEN ;
 : move_tail
 	grow crash ||
 	IFNOT
@@ -85,9 +97,14 @@ HEADLESS
 	THEN
 	;
 ( head )
-10 VALUE speed
 : hide_head hy hx random_grass VRAM_yx! ;
 : show_head hy hx head_str_addr hd + C@ VRAM_yx! ;
+
+: test_wall  ( y x --  ) VRAM_yx@ is_wall  IF 1 TO crash THEN ;
+: test_body  ( y x --  ) VRAM_yx@ is_body  IF 2 TO crash THEN ;
+: test_tail  ( y x --  ) VRAM_yx@ is_tail  IF 2 TO crash THEN ;
+: test_fruit ( y x --  ) VRAM_yx@ is_fruit IF 1 TO grow is_demo IF place_fruit ELSE 1 +TO score THEN THEN ;
+
 : move_head
 	speed WAIT hide_head
 	hy hx hd ( body here )
@@ -107,20 +124,20 @@ HEADLESS
 
 : snake_game 
 		wall show_score
-		is_demo IFNOT place_fruit place_fruit place_fruit THEN
 		MAX_COLUMNS 2/ TO hx
 		MAX_LINES 2/ TO hy
 		2 TO hd
 		0 TO score
 		show_head
 		hx 1- TO tx hy TO ty hd TO td show_tail
-		is_demo IF hx TO tgx hy TO tgy test_target THEN
 		0 TO crash
+		place_fruit
+		is_demo IFNOT place_fruit place_fruit THEN
 		BEGIN
 			0 TO grow
 			move_head
 			move_tail
-			show_fruit
+			fruit_fall
 			show_score
 			is_demo IF KEYpress IF 3 TO crash THEN THEN
 (			BEGIN KEYpress 0= UNTIL )
@@ -146,9 +163,9 @@ VARIABLE dirs 1 ALLOT ( dirs is 4 byte array of char  )
 	0 ( fake moves ) choose_dirs 4 0 DO hy hx hd dirs  I + C@ DUP >R key_to_dir do_step VRAM_yx@ can_go IF DROP R> LEAVE ELSE DROP R> THEN LOOP ;
 
 : demo_key ( -- key ) try_dirs ;
-: demo LIT3 demo_key  IS get_key 1 TO is_demo ;
+: demo LIT3 demo_key  IS get_key LIT3 nop IS fruit_fall 1 TO is_demo ;
 ( GAME )
-: game LIT3 KEYpress  IS get_key 0 TO is_demo ;
+: game LIT3 KEYpress  IS get_key LIT3 add_fruit IS fruit_fall 0 TO is_demo ;
 game 
 
 : snake_wrap

@@ -1,7 +1,8 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
 
-DEFWORD w_CREATE,		0,		"CREATE",		f_CREATE		; ( "<spaces>name" -- ) Create a definition for name  [1000]
+DEFWORD w_CREATE,		0,		"CREATE",		f_CREATE		; ( "<spaces>name" -- ) Create a definition for name  [1000] : CREATE HEADER ' (create) , ;
+DEFWORD w_HEADER,		0,		"HEADER",		f_HEADER		; ( "<spaces>name" -- ) First part of CREATE, does not fill codeword
 DEFWORD w__create_,		FLG_HIDDEN,	"(create)",		f__create_,	line=2	; Runtime ( -- a-addr ) push address of datafield for name  [1000]
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
@@ -9,7 +10,7 @@ gfunc f_CREATE	; {{{ #
 	call func_CREATE
 	jmp NEXT
 ; }}}
-gfunc func_CREATE	; {{{ # 
+gfunc func_HEADER	; {{{ 
 	TCB_member TCB_WL_CURRENT	; &TCB_WL_CURRENT
 		RB3at			; &wid
 	Set3 DT,Parsx			; DT=&wid
@@ -50,14 +51,25 @@ gfunc func_CREATE	; {{{ #
 	Sub31 TOS,Tx
 	brne 2b
 3:
-;	Ldi3 Parsx,ww_do_create_cw
+	Set3 Parsx,Zx
+	TCB_memberW3	TCB_HERE,	Parsx; HERE
+	PopST TOS
+	ret
+; }}}
+gfunc f_HEADER	; {{{ # 
+	call func_HEADER
+	jmp NEXT
+; }}}
+gfunc func_CREATE	; {{{  
+	call func_HEADER
+	TCB_memberR3	TCB_HERE,	Parsx	; HERE
+						; add cw f__create_
+	Set3 Zx,Parsx
 	Ldi3 Parsx,f__create_
-	Set3 Zx,Temp
 	call W3at
 	Set3 Parsx,Zx
 	TCB_member	TCB_HERE	; &HERE
 		RW3at
-	PopST TOS
 	ret
 ; }}}
 gfunc f__create_	; {{{ # ( -- addr ) return DT

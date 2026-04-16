@@ -12,7 +12,7 @@ HEADLESS
 	FIND-NAME ?DUP			(  ( c-addr u --  xt flag flag | c-addr u 0 ) )
 	IF				(  (3) word found )
 		DROP			( zahodit flag )
-		COMPILE,
+		,
 	ELSE				(  3:(4) word found  // nenalezeno -> číslo? )
 		CERROR			(  ( c-addr u -- ) )
 		EXIT
@@ -49,11 +49,6 @@ HEADLESS
 ;
 
 
-( C, appends a byte to the current compiled word. )
-: C,
-	HERE @ C!	( store the character in the compiled image )
-	1 HERE +!	( increment HERE pointer by 1 byte )
-;
 
 : S" IMMEDIATE		( -- addr len )
 	TCB.STATE C@ IF	( compiling? )
