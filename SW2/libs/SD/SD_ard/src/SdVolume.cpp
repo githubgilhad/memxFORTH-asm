@@ -1,3 +1,4 @@
+#define DATA __attribute__((section(".data.ArduinoSD" )))
 #define HIGHRAM __attribute__((section(".highram.ArduinoSD" )))
 #define TEXT __attribute__((section(".text.ArduinoSD")))
 
@@ -25,11 +26,11 @@
 //------------------------------------------------------------------------------
 // raw block cache
 // init cacheBlockNumber_to invalid SD block number
-HIGHRAM uint32_t SdVolume::cacheBlockNumber_ = 0XFFFFFFFF;
+DATA uint32_t SdVolume::cacheBlockNumber_ = 0XFFFFFFFF;
 HIGHRAM cache_t  SdVolume::cacheBuffer_;     // 512 byte cache for Sd2Card
 HIGHRAM Sd2Card* SdVolume::sdCard_;          // pointer to SD card object
-HIGHRAM uint8_t  SdVolume::cacheDirty_ = 0;  // cacheFlush() will write block if true
-HIGHRAM uint32_t SdVolume::cacheMirrorBlock_ = 0;  // mirror  block for second FAT
+DATA uint8_t  SdVolume::cacheDirty_ = 0;  // cacheFlush() will write block if true
+DATA uint32_t SdVolume::cacheMirrorBlock_ = 0;  // mirror  block for second FAT
 //------------------------------------------------------------------------------
 // find a contiguous group of clusters
 TEXT uint8_t SdVolume::allocContiguous(uint32_t count, uint32_t* curCluster) {

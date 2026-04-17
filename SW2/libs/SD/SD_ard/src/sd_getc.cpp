@@ -1,3 +1,4 @@
+#define DATA __attribute__((section(".data.SD" )))
 #define HIGHRAM __attribute__((section(".highram.SD" )))
 #define TEXT __attribute__((section(".text.SD")))
 
@@ -24,7 +25,7 @@ typedef struct {
 #define SD_MAX_STCK 4
 
 HIGHRAM sd_input_t sd_stack[SD_MAX_STCK] ;
-HIGHRAM uint8_t sd_used_mask = 0 ;
+DATA uint8_t sd_used_mask = 0 ;
 
 // =========================
 // Alokace

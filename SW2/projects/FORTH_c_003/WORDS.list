@@ -245,7 +245,7 @@ DEFWORD w_LIT2,			FLG_ARG_2,	"LIT2",			f_LIT2			; ( -- value ) push literal valu
 DEFWORD w_LIT3,			FLG_ARG_3,	"LIT3",			f_LIT3			; ( -- value ) push literal value 3B
 DEFWORD w_LITERAL,		FLG_IMMEDIATE,	"LITERAL",		f_LITERAL		; ( x -- ) compile x to current word 3B (as LIT3 x)
 DEFWORD w_LITSTRING,		FLG_PSTRING,	"LITSTRING",		f_LITSTRING		; ( -- addr len ) push addr and len of string on the stack - similar to LIT
-DEFWORD w_LOGO,		0,		"LOGO",		f_docol, yes		; (  --  ) do something TODO [----]
+DEFWORD w_LOGO,		0,		"LOGO",		f_docol, yes		; (  --  ) Show logo
 DEFWORD w_LOOP,			FLG_IMMEDIATE,	"LOOP",			f_LOOP			; Compilation ( C: 0 back1 .. backn do-sys --  ) compile '(loop)' to definition
 DEFWORD w_LOR,			0,		"||",			f_LOR			; ( a b -- a||b ) logical OR of two stack items
 DEFWORD w_Lfrom,		0,		"L>",			f_Lfrom			; (  -- x ) ( L: x -- ) move CELL from L stack to data stack

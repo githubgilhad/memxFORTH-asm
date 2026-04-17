@@ -1,3 +1,4 @@
+#define DATA __attribute__((section(".data.ArduinoSD" )))
 #define HIGHRAM __attribute__((section(".highram.ArduinoSD" )))
 #define TEXT __attribute__((section(".text.ArduinoSD")))
 
@@ -27,11 +28,11 @@
 #include <Arduino.h>
 //------------------------------------------------------------------------------
 // callback function for date/time
-HIGHRAM void (*SdFile::dateTime_)(uint16_t* date, uint16_t* time) = NULL;
+DATA void (*SdFile::dateTime_)(uint16_t* date, uint16_t* time) = NULL;
 
 #if ALLOW_DEPRECATED_FUNCTIONS
   // suppress cpplint warnings with NOLINT comment
-  HIGHRAM void (*SdFile::oldDateTime_)(uint16_t& date, uint16_t& time) = NULL;  // NOLINT
+  DATA void (*SdFile::oldDateTime_)(uint16_t& date, uint16_t& time) = NULL;  // NOLINT
 #endif  // ALLOW_DEPRECATED_FUNCTIONS
 //------------------------------------------------------------------------------
 // add a cluster to a file

@@ -1,3 +1,4 @@
+#define DATA __attribute__((section(".data.ArduinoSD" )))
 #define HIGHRAM __attribute__((section(".highram.ArduinoSD" )))
 #define TEXT __attribute__((section(".text.ArduinoSD")))
 
@@ -15,9 +16,6 @@
  */
 
 #include "SPI.h"
-
-
-
 
   TEXT SPISettings::SPISettings(uint32_t clock, uint8_t bitOrder, uint8_t dataMode) {
     if (__builtin_constant_p(clock)) {
@@ -165,12 +163,12 @@ TEXT  void SPISettings::init_MightInline(uint32_t clock, uint8_t bitOrder, uint8
 
 HIGHRAM SPIClass SPI;
 
-HIGHRAM uint8_t SPIClass::initialized = 0;
-HIGHRAM uint8_t SPIClass::interruptMode = 0;
-HIGHRAM uint8_t SPIClass::interruptMask = 0;
-HIGHRAM uint8_t SPIClass::interruptSave = 0;
+DATA uint8_t SPIClass::initialized = 0;
+DATA uint8_t SPIClass::interruptMode = 0;
+DATA uint8_t SPIClass::interruptMask = 0;
+DATA uint8_t SPIClass::interruptSave = 0;
 #ifdef SPI_TRANSACTION_MISMATCH_LED
-HIGHRAM uint8_t SPIClass::inTransactionFlag = 0;
+DATA uint8_t SPIClass::inTransactionFlag = 0;
 #endif
 
 TEXT void SPIClass::begin()
