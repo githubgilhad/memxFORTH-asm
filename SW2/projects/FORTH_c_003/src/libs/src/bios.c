@@ -274,6 +274,9 @@ TEXT void VGA_set_cursor_XY(uint8_t x, uint8_t y) {		// {{{  set new value
 	cursor_Y = y;
 	Fix_Cursor;
 }	// }}}
+TEXT uint16_t VGA_get_cursor_XY() {				// get value (r24 = X, r25 = Y) X+256*Y
+	return cursor_X + 256* cursor_Y;
+}	// }}
 TEXT void VGA_put_char_XY(char c, uint8_t x, uint8_t y) {	// {{{  put char on screen without moving cursor
 	VRAM[y][x] = c;
 }	// }}}

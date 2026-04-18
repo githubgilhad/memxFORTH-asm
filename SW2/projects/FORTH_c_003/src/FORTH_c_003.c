@@ -680,6 +680,7 @@ TEXT int main(void) {
 	VT_test.set_cursor_X.ptr = (__memx const void *)(uintptr_t)			VGA_set_cursor_X;
 	VT_test.set_cursor_Y.ptr = (__memx const void *)(uintptr_t)			VGA_set_cursor_Y;
 	VT_test.set_cursor_XY.ptr = (__memx const void *)(uintptr_t)			VGA_set_cursor_XY;
+	VT_test.get_cursor_XY.ptr = (__memx const void *)(uintptr_t)			VGA_get_cursor_XY;
 	VT_test.put_char_XY.ptr = (__memx const void *)(uintptr_t)			VGA_put_char_XY;
 	VT_test.set_def_color.ptr = (__memx const void *)(uintptr_t)			VGA_set_def_color;
 	VT_test.set_def_char.ptr = (__memx const void *)(uintptr_t)			VGA_set_def_char;

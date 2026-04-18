@@ -1,4 +1,4 @@
-/* vim: ft=cpp showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list: tabstop=8 linebreak tags=./tags;,tags; 
+/* vim: ft=cpp showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list: tabstop=8 linebreak tags=./tags;,tags;
  * */
 // ,,g = gcc, exactly one space after "set"
 
@@ -16,9 +16,27 @@ TEXT uint8_t C_getc(input_stack_t *s, char *out) {	// {{{ FORTH will use this to
 //		TX0_WriteHex8(s->count);
 		input_source_t src = s->stack[s->count-1];
 		uint8_t r = src.getc(src.state, out);
-		
-		if (r == GETC_OK) { 		// ECHO 
-			VGA_write_char(*out);
+
+		if (r == GETC_OK) { 		// ECHO
+			if ( ! ( *out==10 || *out==13 || *out==kb_Back || *out=='\t' ) )	// "invisible" chars
+				VGA_write_char(*out);
+			if ( *out=='\t') VGA_write_char(' ');
+			if ( *out==kb_Back)	// Backspace
+				{
+					uint16_t cur;
+					uint8_t x,y;
+					cur=VGA_get_cursor_XY();
+					x=cur & 0xFF; y=(cur >>8)&0xFF;
+					if (x==0) {
+						x= TextVGA_COLUMNS-1;
+						y--;
+					} else {
+						x--;
+					};
+					VGA_set_cursor_XY(x, y);
+					VGA_write_char(' ');
+					VGA_set_cursor_XY(x, y);
+				}
 			TX0_Write(*out);
 			if (*out==13){
 				TX0_Write(10);

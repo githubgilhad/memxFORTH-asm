@@ -40,16 +40,17 @@
 	.equ VT_set_cursor_X, 15
 	.equ VT_set_cursor_Y, 18
 	.equ VT_set_cursor_XY, 21
-	.equ VT_put_char_XY, 24
-	.equ VT_set_def_color, 27
-	.equ VT_set_row_color, 30
-	.equ VT_set_row_color_Y, 33
-	.equ VT_set_def_char, 36
-	.equ VT_char_at_XY, 39
-	.equ VT_MAX_LINES, 42
-	.equ VT_MAX_COLUMNS, 45
-	.equ VT_wait, 48
-	.equ VT_cr, 51
-	.equ VT_HEADLESS, 54
-	.equ VT_HEADMORE, 57
-	.equ VT_SIZE, 60
+	.equ VT_get_cursor_XY, 24
+	.equ VT_put_char_XY, 27
+	.equ VT_set_def_color, 30
+	.equ VT_set_row_color, 33
+	.equ VT_set_row_color_Y, 36
+	.equ VT_set_def_char, 39
+	.equ VT_char_at_XY, 42
+	.equ VT_MAX_LINES, 45
+	.equ VT_MAX_COLUMNS, 48
+	.equ VT_wait, 51
+	.equ VT_cr, 54
+	.equ VT_HEADLESS, 57
+	.equ VT_HEADMORE, 60
+	.equ VT_SIZE, 63

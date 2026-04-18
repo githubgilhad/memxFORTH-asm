@@ -1,7 +1,8 @@
 ; .. vim: ft=asm showbreak=--»\  noexpandtab fileencoding=utf-8 nomodified   wrap textwidth=0 foldmethod=marker foldmarker={{{,}}} foldcolumn=4 ruler showcmd lcs=tab\:|- list tabstop=8 noexpandtab nosmarttab softtabstop=0 shiftwidth=0 linebreak  
 
 DEFWORD w_comma,		0,		",",			f_comma			; ( x --  ) compile x at HERE (3B)
-DEFWORD w_Ccomma,		0,		"C,",			f_Ccomma		; ( c --  ) compile c at HERE (1B)
+DEFWORD w_Ccomma,		0,		"C,",			f_Ccomma		; ( char --  ) compile char at HERE (1B)
+DEFWORD w_Bcomma,		0,		"B,",			f_Bcomma		; ( byte --  ) compile byte at HERE (1B)
 
 .section CURRENT_TEXT_SECTION,"ax",@progbits
 gfunc f_comma	; {{{ #
@@ -17,6 +18,18 @@ gfunc f_comma	; {{{ #
 	jmp NEXT
 	; }}}
 gfunc f_Ccomma	; {{{ #
+	TCB_member	TCB_HERE
+			RB3at
+		Set3	Zx, Parsx
+		Set3	Parsx, TOS
+			RW1at
+		Set3	Parsx, Zx
+	TCB_member	TCB_HERE
+			RW3at
+		PopST	TOS
+	jmp NEXT
+	; }}}
+gfunc f_Bcomma	; {{{ #
 	TCB_member	TCB_HERE
 			RB3at
 		Set3	Zx, Parsx

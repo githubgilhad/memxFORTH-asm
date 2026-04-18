@@ -58,6 +58,7 @@ void gen_offsets(void)		// this is envelope for our generated text, it will NOT 
 	GEN(VT_set_cursor_X,		offsetof(Virtual_Table, set_cursor_X));
 	GEN(VT_set_cursor_Y,		offsetof(Virtual_Table, set_cursor_Y));
 	GEN(VT_set_cursor_XY,		offsetof(Virtual_Table, set_cursor_XY));
+	GEN(VT_get_cursor_XY,		offsetof(Virtual_Table, get_cursor_XY));
 	GEN(VT_put_char_XY,		offsetof(Virtual_Table, put_char_XY));
 	GEN(VT_set_def_color,		offsetof(Virtual_Table, set_def_color));
 	GEN(VT_set_row_color,		offsetof(Virtual_Table, set_row_color));

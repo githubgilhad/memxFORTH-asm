@@ -31,6 +31,7 @@ void VGA_set_cursor_char(uint8_t c);			// set new value, return old
 void VGA_set_cursor_X(uint8_t x);			// set new value, return old
 void VGA_set_cursor_Y(uint8_t y);			// set new value, return old
 void VGA_set_cursor_XY(uint8_t x, uint8_t y);		// set new value
+uint16_t VGA_get_cursor_XY();				// get value (r24 = X, r25 = Y) X+256*Y
 void VGA_put_char_XY(char c, uint8_t x, uint8_t y);	// put char on screen without moving cursor
 void VGA_set_def_color(uint8_t col);			// set current row color
 void VGA_set_def_char(uint8_t c);			// set default char for cls and scroll

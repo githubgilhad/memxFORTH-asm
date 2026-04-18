@@ -89,6 +89,8 @@ gfunc func_PARSE_NAME	; {{{ #
 		4:
 		cpi	Tx,	kb_Back
 		brne	8f
+	mov	r0,r1
+	inc	r0		; r0 = 1 for incrementing pairs of lower registers
 		Sub2	t_in, r0,r1
 		Sub2	t_in, r0,r1
 		rjmp 2b

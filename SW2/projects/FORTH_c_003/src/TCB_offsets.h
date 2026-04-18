@@ -27,6 +27,7 @@ typedef struct __attribute__((packed)) {
 	P24 set_cursor_X;
 	P24 set_cursor_Y;
 	P24 set_cursor_XY;
+	P24 get_cursor_XY;
 	P24 put_char_XY;
 	P24 set_def_color;
 	P24 set_row_color;

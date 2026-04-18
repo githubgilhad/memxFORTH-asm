@@ -51,7 +51,7 @@ HEADLESS
 
 
 : S" IMMEDIATE		( -- addr len )
-	TCB.STATE C@ IF	( compiling? )
+	TCB.STATE B@ IF	( compiling? )
 		LIT3 LITSTRING ,	( compile LITSTRING )
 		HERE @		( save the address of the length word on the stack )
 		0 C,		( dummy 1 byte length - we don't know what it is yet )
@@ -65,14 +65,14 @@ HEADLESS
 		DUP		( get the saved address of the length word )
 		HERE @ SWAP -	( calculate the length )
 		1 -		( subtract 1 (because we measured from the start of the length word) )
-		SWAP C!		( and back-fill the length location )
+		SWAP B!		( and back-fill the length location )
 	ELSE		( immediate mode )
 		HERE @		( get the start address of the temporary space )
 		BEGIN
 			BEGIN KEY ?DUP UNTIL ( get next character of the string )
 			DUP '"' <>
 		WHILE
-			OVER C!		( save next character )
+			OVER B!		( save next character )
 			1+		( increment address )
 		REPEAT
 		DROP		( drop the final " character )
@@ -82,7 +82,7 @@ HEADLESS
 	THEN
 ;
 : ." IMMEDIATE		( -- )
-	TCB.STATE C@ IF	( compiling? )
+	TCB.STATE B@ IF	( compiling? )
 		[COMPILE] S"	( read the string, and compile LITSTRING, etc. )
 		LIT3 TELL ,	( compile the final TELL )
 	ELSE

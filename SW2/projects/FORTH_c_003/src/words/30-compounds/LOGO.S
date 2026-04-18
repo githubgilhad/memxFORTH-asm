@@ -17,9 +17,9 @@ DEFWORD w_LOGO,		0,		"LOGO",		f_docol, yes		; (  --  ) Show logo
 		P24s w_I_cw, w_zero_cw, w_LIT3_cw, 0x7C, w_VRAM_yx_set_cw							; 	I 0 $7c VRAM_yx!
 		P24s w_I_cw, w_MAX_COLUMNS_cw, w_one_minus_cw, w_LIT3_cw, 0x7C, w_VRAM_yx_set_cw				; 	I MAX_COLUMNS 1- $7c VRAM_yx!
 	P24s w__loop__cw, /* 0xFFFFDC */  2b - .										; LOOP
-	P24s w_LITSTRING_cw													; S" MEGA HOME FORTH"
-		.byte	0x0F
-		.ascii "MEGA HOME FORTH"
+	P24s w_LITSTRING_cw													; S" MEGA HOME FORTH MHF-002"
+		.byte	0x17
+		.ascii "MEGA HOME FORTH MHF-002"
 	P24s w_DUP_cw, w_MAX_COLUMNS_cw, w_SWAP_cw, w_minus_cw, w_half_cw, w_one_cw, w_SWAP_cw, w_CUR_yx_cw, w_TELL_cw		; DUP MAX_COLUMNS SWAP - 2/ 1 SWAP CUR_yx TELL 
 	P24s w_VER_NUM_cw, w_DUP_cw, w_MAX_COLUMNS_cw, w_SWAP_cw, w_minus_cw, w_half_cw, w_LIT3_cw, 3, w_SWAP_cw, w_CUR_yx_cw, w_TELL_cw
 																; VER_NUM     DUP MAX_COLUMNS SWAP - 2/ 3 SWAP CUR_yx TELL 

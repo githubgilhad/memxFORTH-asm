@@ -12,6 +12,7 @@ DEFCONSTI1	"VGA_B_DKRED",		"VGA_B_DKRED",		VGA_B_DKRED,		line=3
 DEFCONSTI1	"VGA_B_DKYELLOW",	"VGA_B_DKYELLOW",	VGA_B_DKYELLOW,		line=3
 DEFCONSTI1	"VGA_B_GRAY",		"VGA_B_GRAY",		VGA_B_GRAY,		line=3
 DEFCONSTI1	"VGA_B_GREEN",		"VGA_B_GREEN",		VGA_B_GREEN,		line=3
+DEFCONSTI1	"VGA_B_INTENSE",	"VGA_B_INTENSE",	VGA_B_DKGRAY,		line=3
 DEFCONSTI1	"VGA_B_MAGENTA",	"VGA_B_MAGENTA",	VGA_B_MAGENTA,		line=3
 DEFCONSTI1	"VGA_B_RED",		"VGA_B_RED",		VGA_B_RED,		line=3
 DEFCONSTI1	"VGA_B_WHITE",		"VGA_B_WHITE",		VGA_B_WHITE,		line=3
@@ -26,6 +27,7 @@ DEFCONSTI1	"VGA_DKRED",		"VGA_DKRED",		VGA_DKRED,		line=3
 DEFCONSTI1	"VGA_DKYELLOW",		"VGA_DKYELLOW",		VGA_DKYELLOW,		line=3
 DEFCONSTI1	"VGA_GRAY",		"VGA_GRAY",		VGA_GRAY,		line=3
 DEFCONSTI1	"VGA_GREEN",		"VGA_GREEN",		VGA_GREEN,		line=3
+DEFCONSTI1	"VGA_INTENSE",		"VGA_INTENSE",		VGA_DKGRAY,		line=3
 DEFCONSTI1	"VGA_MAGENTA",		"VGA_MAGENTA",		VGA_MAGENTA,		line=3
 DEFCONSTI1	"VGA_RED",		"VGA_RED",		VGA_RED	,		line=3
 DEFCONSTI1	"VGA_WHITE",		"VGA_WHITE",		VGA_WHITE,		line=3
@@ -166,6 +168,7 @@ DEFWORD w_2R_at,		0,		"2R@",			f_2R_at			; (  -- x y ) ( R: x y -- x y ) copy 2 
 DEFWORD w_2Rfrom,		0,		"2R>",			f_2Rfrom		; (  -- x y ) ( R: x y -- ) move 2 CELLs from return stack to data stack (in order)
 DEFWORD w_2toL,			0,		"2>L",			f_2toL			; ( x y  --  )( L: -- x y ) move 2 CELLs from data stack to L stack (in order)
 DEFWORD w_2toR,			0,		"2>R",			f_2toR			; ( x y  --  )( R: -- x y ) move 2 CELLs from data stack to return stack (in order)
+DEFWORD w_3BtoC,		0,		"3B>C",			f_3BtoC			; ( lo hi hlo -- a ) implode 3 BYTES to Cell
 DEFWORD w_ABS,		0,		"ABS",		f_ABS		; ( x -- |x| ) absolute value
 DEFWORD w_ADDR_D,		0,		"&D",			f_ADDR_S		; (  -- &D ) data D stack address [xxxx]
 DEFWORD w_ADDR_L,		0,		"&L",			f_ADDR_L		; (  -- &L ) secondary L stack address [xxxx]
@@ -179,7 +182,8 @@ DEFWORD w_BRK0,			0,		"BRK0",			f_BRK0			; (  --  ) do nothing, breakpoint may b
 DEFWORD w_BRK1,			0,		"BRK1",			f_BRK1			; (  --  ) do nothing, breakpoint may be set here [xxxx]
 DEFWORD w_BRK2,			0,		"BRK2",			f_BRK2			; (  --  ) do nothing, breakpoint may be set here [xxxx]
 DEFWORD w_BRK3,			0,		"BRK3",			f_BRK3			; (  --  ) do nothing, breakpoint may be set here [xxxx]
-DEFWORD w_BSTR_,		0,		"B{",			f_BSTR_			; ( "name" -- addr ) create LITSTRING like word ( -- addr len ), use with closing }B  (addr is start of characters, just after len, same for both)
+DEFWORD w_BSTR_,		0,		"B{",			f_BSTR_			; ( "name" -- addr ) create BYTESTRING word ( -- addr len ), use with closing }B  (addr is start of characters, just after len(3B) , same for both)
+DEFWORD w_Bcomma,		0,		"B,",			f_Bcomma		; ( byte --  ) compile byte at HERE (1B)
 DEFWORD w_CALL,			0,		"CALL",			f_CALL			; ( a addr  -- a b ) call C func on addr with param a, save result to b
 DEFWORD w_CELLS,		0,		"CELLS",		f_CELLS			; ( a -- b ) b = a * CELL_size
 DEFWORD w_CELLS_plus,		0,		"CELLS+",		f_CELLS_plus		; ( a b -- c ) c = a + b * CELL_size (Usage: ARRAY_A index CELLS+ @ = value at  ARRAY_A[index] )
@@ -191,11 +195,14 @@ DEFWORD w_COMPARE,		0,		"COMPARE",		f_COMPARE		; ( c-addr1 u1 c-addr2 u2 -- n ) 
 DEFWORD w_COUNT,		0,		"COUNT",		f_COUNT			; ( c-addr1  -- c-addr2 u2 ) counted string to string
 DEFWORD w_CR,			0,		"CR",			f_CR			; (  --  ) do new line 
 DEFWORD w_CREATE,		0,		"CREATE",		f_CREATE		; ( "<spaces>name" -- ) Create a definition for name  [1000] : CREATE HEADER ' (create) , ;
+DEFWORD w_CSTR_,		0,		"C{",			f_CSTR_			; ( "name" -- addr ) create CELLSTRING word ( -- addr len ), use with closing }C  (addr is start of CELLS, just after len(3B) , same for both)
 DEFWORD w_CURSOR_XY,		0,		"CURSOR_XY",		f_CURSOR_XY		; ( x y --  ) move cursor to x,y [xxxx]
 DEFWORD w_CUR_char,		0,		"CUR_char",		f_CUR_char		; ( c --  ) set c as cursor marker
 DEFWORD w_CUR_visible,		0,		"CUR_visible",		f_CUR_visible		; ( flag --  ) set cursor visibility
-DEFWORD w_CUR_yx,		0,		"CUR_yx",		f_CUR_yx		; ( y x  --  ) move cursor to Y,X  [----]
-DEFWORD w_Ccomma,		0,		"C,",			f_Ccomma		; ( c --  ) compile c at HERE (1B)
+DEFWORD w_CUR_yx,		0,		"CUR_yx",		f_CUR_yx		; ( y x -- ) move cursor to Y,X  [----]
+DEFWORD w_CUR_yx_at,		0,		"CUR_yx@",		f_CUR_yx_at		; ( -- y x ) get cursor position [----]
+DEFWORD w_Ccomma,		0,		"C,",			f_Ccomma		; ( char --  ) compile char at HERE (1B)
+DEFWORD w_Cto3B,		0,		"C>3B",			f_Cto3B			; ( a -- lo hi hlo ) expand Cell to 3 BYTES
 DEFWORD w_DEFINITIONS,		0,		"DEFINITIONS",		f_DEFINITIONS		; ( -- ) set CURRENT to first WL in ORDER
 DEFWORD w_DEF_CHAR,		0,		"DEF_CHAR",		f_DEF_CHAR		; ( c --  ) set default character for CLS and scroll
 DEFWORD w_DEF_COLOR,		0,		"DEF_COLOR",		f_DEF_COLOR		; ( c --  ) set default color c for CLS and scroll
@@ -304,6 +311,7 @@ DEFWORD w_WHILE,		FLG_IMMEDIATE,	"WHILE",		f_WHILE			; ( do-sys -- addr do-sys )
 DEFWORD w_WORDLIST,		0,		"WORDLIST",		f_docol, yes		; ( -- wid ) create wordlist : WORDLIST ( -- wid ) HERE 0 , ; \ reserve CELL, store zeroes there, return its address
 DEFWORD w_WORDS,		0,		"WORDS",		f_WORDS			; (  --  ) print all words [xxxx]
 DEFWORD w__BSTR,		0,		"}B",			f__BSTR			; ( addr -- ) close B{ like this: B{ NewLine 10 C, 13 C, }B   NewLine TELL 
+DEFWORD w__CSTR,		0,		"}C",			f__CSTR			; ( addr -- ) close C{ like this: C{ 10 CELLS ALLOT }C .. l == 10  addr 9 CELLS+ is last item 
 DEFWORD w__begin_,		FLG_HIDDEN,	"(begin)",		f__begin_,	line=2	; Runtime: ( -- ) just label
 DEFWORD w__create_,		FLG_HIDDEN,	"(create)",		f__create_,	line=2	; Runtime ( -- a-addr ) push address of datafield for name  [1000]
 DEFWORD w__do_,			FLG_HIDDEN,	"(do)",			f__do_,		line=2	; Runtime: ( limit first -- ) ( R:  -- limit first ) set loop params
@@ -323,6 +331,8 @@ DEFWORD w__until_,	FLG_HIDDEN + FLG_ARG_3,	"(until)",		f_0BRANCH,	line=2	; Runti
 DEFWORD w__while_,		FLG_ARG_3,	"(while)",		f_0BRANCH,	line=2	; ( flag --  ) jump if ZERO [----]
 DEFWORD w_at,			0,		"@",			f_at			; ( addr -- value ) fetch cell from address
 DEFWORD w_brackettick,			FLG_IMMEDIATE,		"[']",			f_docol, yes		; ( "name" --  ) xt of next word is compiled
+DEFWORD w_byte_at,		0,		"B@",			f_byte_at		; ( addr -- byte ) fetch byte from address
+DEFWORD w_byte_store,		0,		"B!",			f_byte_store		; ( byte addr -- )  store byte to address
 DEFWORD w_char_at,		0,		"C@",			f_char_at		; ( addr -- byte ) fetch byte from address
 DEFWORD w_char_store,		0,		"C!",			f_char_store		; ( byte addr -- )  store byte to address
 DEFWORD w_comma,		0,		",",			f_comma			; ( x --  ) compile x at HERE (3B)
@@ -342,6 +352,7 @@ DEFWORD w_left_bracket,		FLG_IMMEDIATE,	"[",			f_left_bracket		; (  --  ) leave 
 DEFWORD w_less,			0,		"<",			f_less			; ( x y -- flag ) x < y
 DEFWORD w_minus,		0,		"-",			f_minus			; ( a b -- a-b ) subtract top from second
 DEFWORD w_minus_TO,		FLG_IMMEDIATE,	"-TO",			f_minus_TO		; ( "name" val  --  ) sub from value { 2 -TO test 	test ( -- 22 ) }
+DEFWORD w_minus_byte_store,	0,		"-B!",			f_minus_byte_store	; ( byte addr -- )  sub byte from address
 DEFWORD w_minus_char_store,	0,		"-C!",			f_minus_char_store	; ( byte addr -- )  sub byte from address
 DEFWORD w_minus_one,		0,		"-1",			f_minus_one		; (  -- 0 ) push minus one on stack : -1 -1 ;
 DEFWORD w_minus_store,		0,		"-!",			f_minus_store		; ( value addr -- ) sub cell from address
@@ -354,6 +365,7 @@ DEFWORD w_one_non_equals,	0,		"1<>",			f_one_non_equals	; ( x -- flag ) x <> 0
 DEFWORD w_one_plus,		0,		"1+",			f_one_plus		; ( a -- b ) b = a + 1 [0290]
 DEFWORD w_plus,			0,		"+",			f_plus			; ( a b -- a+b ) add top two stack items
 DEFWORD w_plus_TO,		FLG_IMMEDIATE,	"+TO",			f_plus_TO		; ( "name" val  --  ) add to value   { 3 +TO test 	test ( -- 25 ) }
+DEFWORD w_plus_byte_store,	0,		"+B!",			f_plus_byte_store	; ( byte addr -- )  add byte to address
 DEFWORD w_plus_char_store,	0,		"+C!",			f_plus_char_store	; ( byte addr -- )  add byte to address
 DEFWORD w_plus_store,		0,		"+!",			f_plus_store		; ( value addr -- ) add cell to address
 DEFWORD w_plus_word_store,	0,		"+W!",			f_plus_word_store	; ( word addr -- )  add word to address

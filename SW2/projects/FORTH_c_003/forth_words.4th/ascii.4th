@@ -1,11 +1,11 @@
 : ascii 
 	CR
-	BASE C@ $10 BASE C!
+	BASE B@ $10 BASE B!
 	SPACE SPACE $10 0 DO I . LOOP CR CR
 	$10 0 DO I . SPACE 
 		$10 0 DO J 4* 4* I + EMIT LOOP 
 		CR
 	LOOP
-	BASE C!
+	BASE B!
 	CR
 ;
