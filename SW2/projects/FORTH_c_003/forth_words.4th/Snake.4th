@@ -3,7 +3,9 @@ HEADLESS
 0 VALUE is_demo
 10 VALUE speed
 10 VALUE game_speed
-1 VALUE demo_speed
+0 VALUE demo_speed
+1 VALUE demo_score
+1 VALUE demo_max_score
 
 : nop ;
 ' KEYpress DEFER get_key
@@ -14,6 +16,7 @@ HEADLESS
 0 0 VALUE tgx VALUE tgy ( target fruit  )
 
 0 0 0 0 VALUE score VALUE maxscore VALUE crash VALUE grow
+256 VALUE minscore 0 VALUE sumscore 0 VALUE numscore
 
 ( item )
 B{ fruit_str 231 C, 232 C, 233 C, '*' C, }B
@@ -42,8 +45,9 @@ B{ body_str 244 C, 245 C, 246 C, '#' C, 247 C, 248 C, '#' C, 249 C, 250 C, '#' C
 
 : show_score
 	1 2 CUR_yx  ." SCORE: " score . SPACE
-	score maxscore > IF score TO maxscore 1 MAX_COLUMNS 2/ 1- CUR_yx brick EMIT $4D ROW_COLOR THEN
-	1 MAX_COLUMNS 2/   CUR_yx  ." MAX: " maxscore .
+	score maxscore > IF is_demo 0= demo_max_score || IF score TO maxscore THEN ( 1 MAX_COLUMNS 2/ 1- CUR_yx brick EMIT ) $4D ROW_COLOR THEN
+	( 1 MAX_COLUMNS 2/   CUR_yx  ." MAX: " maxscore . )
+	 ." MAX: " maxscore . SPACE ." MIN: " minscore . SPACE numscore IF ." AVG:" sumscore numscore / . SPACE ." of " numscore . THEN SPACE
 	;
 
 ( wall )
@@ -107,7 +111,7 @@ B{ body_str 244 C, 245 C, 246 C, '#' C, 247 C, 248 C, '#' C, 249 C, 250 C, '#' C
 : test_wall  ( y x --  ) VRAM_yx@ is_wall  IF 1 TO crash THEN ;
 : test_body  ( y x --  ) VRAM_yx@ is_body  IF 2 TO crash THEN ;
 : test_tail  ( y x --  ) VRAM_yx@ is_tail  IF 2 TO crash THEN ;
-: test_fruit ( y x --  ) VRAM_yx@ is_fruit IF 1 TO grow is_demo IF place_fruit ELSE 1 +TO score THEN THEN ;
+: test_fruit ( y x --  ) VRAM_yx@ is_fruit IF 1 TO grow is_demo IF place_fruit demo_score IF 1 +TO score THEN ELSE 1 +TO score THEN THEN ;
 
 : move_head
 	speed WAIT hide_head
@@ -138,7 +142,7 @@ B{ body_str 244 C, 245 C, 246 C, '#' C, 247 C, 248 C, '#' C, 249 C, 250 C, '#' C
 		place_fruit
 		is_demo IFNOT place_fruit place_fruit THEN
 		BEGIN
-			0 TO grow
+			grow 0 > IF grow 1- TO grow THEN
 			move_head
 			move_tail
 			fruit_fall
@@ -146,6 +150,8 @@ B{ body_str 244 C, 245 C, 246 C, '#' C, 247 C, 248 C, '#' C, 249 C, 250 C, '#' C
 			is_demo IF KEYpress IF 3 TO crash THEN THEN
 (			BEGIN KEYpress 0= UNTIL )
 		crash UNTIL
+		crash 3 <> IF score 5 > IF 1 +TO numscore score +TO sumscore score minscore < IF score TO minscore THEN THEN THEN
+		show_score
 		3 7 CUR_yx $D8 ROW_COLOR SPACE crash 1 = IF  ." * Avoid Walls ! *" ELSE crash 2 = IF ." * Avoid yourself ! *" ELSE ." * Avoid users ! * "  THEN THEN SPACE
 	;
 ( DEMO words )

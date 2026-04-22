@@ -9,9 +9,15 @@
 	kΩ
 
 
-.. image:: MemxFORTHChipandColorfulStack.png
+.. |MemxFORTHChipandColorfulStack| image:: MemxFORTHChipandColorfulStack.png
 	:width: 250
 	:target: MemxFORTHChipandColorfulStack.png
+
+.. |FORTH-logo-0002| image:: FORTH-logo-0002.png
+	:width: 250
+	:target: FORTH-logo-0002.png
+
+|MemxFORTHChipandColorfulStack| |FORTH-logo-0002|
 
 memxFORTH-asm
 =============
