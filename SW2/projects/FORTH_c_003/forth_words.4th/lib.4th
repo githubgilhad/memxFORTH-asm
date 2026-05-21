@@ -103,5 +103,8 @@ THEN
 : DEFER CREATE , DOES> @ EXECUTE ;
 : IS IMMEDIATE [ ' TO , ] ;
 
+: CO   2R> SWAP 2>R ;
+: RB  ( -- ) BASE C@ R> 2>R  CO  R> BASE C! ;
+
 HEADMORE
 

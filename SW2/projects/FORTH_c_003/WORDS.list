@@ -143,6 +143,25 @@ DEFCONSTI1	"kb_xPlus",	"kb_xPlus",	kb_xPlus,	line=3
 DEFCONSTI1	"kb_xSlash",	"kb_xSlash",	kb_xSlash,	line=3
 DEFCONSTI1	"kb_xStar",	"kb_xStar",	kb_xStar,	line=3
 DEFCONSTI1 "BL",		BL,		' ',		line=3
+DEFCONSTI2	"NOTE_A4",	"NOTE_A4",	NOTE_A4,	line=3
+DEFCONSTI2	"NOTE_A5",	"NOTE_A5",	NOTE_A5,	line=3
+DEFCONSTI2	"NOTE_AS4",	"NOTE_AS4",	NOTE_AS4,	line=3
+DEFCONSTI2	"NOTE_B4",	"NOTE_B4",	NOTE_B4,	line=3
+DEFCONSTI2	"NOTE_B5",	"NOTE_B5",	NOTE_B5,	line=3
+DEFCONSTI2	"NOTE_C4",	"NOTE_C4",	NOTE_C4,	line=3
+DEFCONSTI2	"NOTE_C5",	"NOTE_C5",	NOTE_C5,	line=3
+DEFCONSTI2	"NOTE_CS4",	"NOTE_CS4",	NOTE_CS4,	line=3
+DEFCONSTI2	"NOTE_D4",	"NOTE_D4",	NOTE_D4,	line=3
+DEFCONSTI2	"NOTE_D5",	"NOTE_D5",	NOTE_D5,	line=3
+DEFCONSTI2	"NOTE_DS4",	"NOTE_DS4",	NOTE_DS4,	line=3
+DEFCONSTI2	"NOTE_E4",	"NOTE_E4",	NOTE_E4,	line=3
+DEFCONSTI2	"NOTE_E5",	"NOTE_E5",	NOTE_E5,	line=3
+DEFCONSTI2	"NOTE_F4",	"NOTE_F4",	NOTE_F4,	line=3
+DEFCONSTI2	"NOTE_F5",	"NOTE_F5",	NOTE_F5,	line=3
+DEFCONSTI2	"NOTE_FS4",	"NOTE_FS4",	NOTE_FS4,	line=3
+DEFCONSTI2	"NOTE_G4",	"NOTE_G4",	NOTE_G4,	line=3
+DEFCONSTI2	"NOTE_G5",	"NOTE_G5",	NOTE_G5,	line=3
+DEFCONSTI2	"NOTE_GS4",	"NOTE_GS4",	NOTE_GS4,	line=3
 DEFCONSTI2 "TCB.TIB.max", TCB_TIB_max, TIB_SIZE
 DEFTCBVAR "BASE", TCB_BASE
 DEFTCBVAR "HERE",TCB_HERE		; first free byte in RAM
@@ -284,6 +303,8 @@ DEFWORD w_SEARCH_WORDLIST,	0,		"SEARCH_WORDLIST",	f_docol, yes		; ( c-addr u wid
 DEFWORD w_SEMICOLON,		FLG_IMMEDIATE,	";",			f_SEMICOLON		; (  --  ) ends colon definition, make word visible [----]
 DEFWORD w_SET_CURRENT,		0,		"SET-CURRENT",		f_docol, yes		; ( wid -- ) set current wordlist : SET-CURRENT ( wid -- ) TCB_WL_CURRENT ! ;
 DEFWORD w_SHOW,			0,		"SHOW",			f_SHOW			; ( xt --  ) shows word [xxxx]
+DEFWORD w_SOUND_PLAY,		0,		"SOUND.PLAY",		f_SOUND_PLAY		; ( NOTE_A4  --  ) start sound with this divisor
+DEFWORD w_SOUND_STOP,		0,		"SOUND.STOP",		f_SOUND_STOP		; (  --  ) stop playing sound 
 DEFWORD w_SPACE,		0,		"SPACE",		f_SPACE		; (  -- ) push and EMIT SPACE
 DEFWORD w_SWAP,			0,		"SWAP",			f_SWAP			; ( a b -- b a ) SWAP top two stack items
 DEFWORD w_SWAP2,		0,		"SWAP2",		f_SWAP2			; ( a b c d -- c d b a ) SWAP top two pairs of stack items

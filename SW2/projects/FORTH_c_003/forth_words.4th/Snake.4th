@@ -5,7 +5,7 @@ HEADLESS
 10 VALUE game_speed
 0 VALUE demo_speed
 1 VALUE demo_score
-1 VALUE demo_max_score
+0 VALUE demo_max_score
 
 : nop ;
 ' KEYpress DEFER get_key
