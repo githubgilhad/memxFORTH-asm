@@ -14,6 +14,18 @@
 CPLD_kecy
 --------------------------------------------------------------------------------
 
+ATF1504AS pozorovani: na prepnuti vstupu staci 130 |kOhm| proti zemi/+5V, 140  |kOhm| uz nikoli. Stejne tak nestaci LED+330 |Ohm|.
+CASTOR ma necelych 6kB
+
+* Rozhodnuti: 
+	* Pridam EEPROM 32kB (68C256), ty mam celkem 3 (vcetne Omen Kilo a BreadBoard 6309 compu)
+	* Pridam konfig prepinac BootFrom s 10 |kOhm| odporem a piny GND - IO - +5V - pokud bude nastaven nahoru, bude EEPROM defaultne pripojena
+	* Pridam registr do ATF1, pokud bude adresa v EEPROM tak se podle nej bud (pripoji EEPROM a nahlasi MR=ROM) nebo (pripoji RAM a nahlasi MR=LoRAM a vypne Write) (s vyjimkou HALT/BA stavu) (Reg.7, z reserved rozsahu)
+	* ten registr se pri resetu nastavi dle prepinace, pujde cist CPU a pujde prepsat CPU (do dalsiho resetu)
+		* ops, defaulty neumim, tak to bude live signal, a registr bude zapnuti/vypnuti override, zapis to prepne na pozadovanou vyslednou hodnotu xxxx xxDA A=actual, D=default (mozna vytahnout oba na LEDky?)
+	* MR pujdou na LED pres oddelovace, VIA D-latch fix bude pouzivat 74HC chip (pro jistotu)
+
+
 Problem: kod pro CLPD ATF1504AS-10AU100
 
 Jsem programator, nikoli navrhar CPLD, takze prevazne myslim seriove, nikoli paralelne a popisuju co chci dosahnout, nikoli jakymi presne cestami. Neco jsem konzultoval v predeslych sedankach a doplnil do popisu. Pripadne potrebne tabulky jsou popsany v textu, zkus je vygenerovat a pokud se mi nebudou libit, tak je opoznamkuju a dovysvetlim.
@@ -540,4 +552,37 @@ fyzicky SystemRAM
 * Pokud ji CPU namapuje do EMSx okna, tak do toho okna jde psat a okamzite to je zmene i v "ROM" oblasti.
 * Pri HALT stavu do ni jde psat normalne (ostatne tohle je hlavni duvod HALT stavu - naplnit ji pri bootu)
 
+Dalsi upresneni
+--------------------------------------------------------------------------------
 
+ChipA.C a ChipB.C jsou latchované
+
+ChipA.A a ChipB.A jsou latchované
+
+Pri soubehu pozadavku na chip je celkem jedno, kdo vyhraje, zda CPU nebo MHF (v praxi by vubec nemelo nastat kvuli jinym okolnostem)
+
+Chip.D je urcen pro CPU, SHARE_DIRTY je urcen pro MHF, ATF2 aktivne ridi oboje 
+
+DIRTY je mozna zavadejici nazev, 
+
+Chip.D se nastavi, kdyz MHF ziska chip, maže se kdyz chip ziska CPU. (Dulezity bod je, ze kdyz se CPU vzda chipu a MHF se ho jeste nepokusilo ziskat, je Chip.D smazany.)
+
+ATF2 nastavi SHARE_DIRTY, kdyz CPU ziska chip, smaze  kdyz MHF ziska chip, nastavi kdyz MHF chip ma a CPU ho chce ziskat, smaze ho, kdyz se MHF vzda chipu.
+
+SHARE_GRANTED je generovan ATF2 pro MHF jako zrcadleni latchu ChipX.A
+
+V HALT rezimu ridi RAM vzdy maximalne jedna deska MHF (jak se ty desky mezi sebou dohonou jde mimo sbernici). Idealne by RAM mohly ridit (na stridacku) jedna, nebo druha, ale pokud by to bylo prilis slozite, tak postaci kdyz ji bude ridit MHF_A
+
+MR generuje ATF1, cte ho ATF2 (aby se usetrily piny pro dekodovani cele adresy). Tabulku jsi pochopil spravne.
+
+Co se signalu E tyce - MHF ma relativne slozity vnitrni pristup ke sbernici a neni synchronizovane s CPU. Pokud nekde dojde ke zpozdeni, nic se nedeje, par taktu neni problem.
+
+CPU generuje E R/W a ocekava, ze se vse bude chovat jako obycejna RAM. Protoze v kazdem cyklu E pristupuje pouze k jedne adrese na jednom chipu, nehrozi zadne problemy s cache (neni tam) ani s konkurencnim pristupem (neni tam) ani s mapovanim (v jednom cyklu se neco zapise, cte se to az zase v jinem cyklu). Pouzij klidne synchronni latch.
+
+Nesejde mi na implementaci, jestli A+C budou dva vnitrni nezavisle bity, nebo jedna dvojice se stejnym vyznamem. Jestli to pomuze usetrit termy, tak to pouzij. Specialni fitter nemam, jedine, co umim je nacpat rovnice do WinCupl a pak prohlizet vysledek. Takze pokud vyjde 45 cel, tak to bude prima, pokud vyjde 85, tak budu muset vymyslet neco jineho, ale to se dozvim teprve az WinCupl ty rovnice zpracuje.
+
+Dev_0 je vnejsi vodic, ATF1 i ATF2 jsou k nemu pripojeny, podle adresy je vzdy jeden z ATF v HiZ stavu a druhy tento vodic nastavuje na 0/1 ATF2 cte i zapisuje do D[0..7], ty jsou pripojeny na skutecnou datovou sbernici, stejne jako CPU, RAM a vse ostatni (jinymi slovy - kdyz CPU pracuje s RAM, zapisuje a cte do RAM chipu, kdyz CPU pracuje s registry, zapisuje a cte do ATF2 a ATF2 se chova stejne jako RAM)
+
+Dev_1..Dev_7 jsou selected v nule a not selected v 1 Read a Write jsi taky pochopil spravne
+
+Napis ty CUPL

@@ -3,9 +3,16 @@ HEADLESS
 0 VALUE is_demo
 10 VALUE speed
 10 VALUE game_speed
-0 VALUE demo_speed
+2 VALUE demo_speed
 1 VALUE demo_score
 0 VALUE demo_max_score
+
+NOTE_A4 VALUE tone
+NOTE_A5 VALUE tone_fruit
+NOTE_A4 VALUE tone_norm
+NOTE_C4 2/ VALUE tone_fail
+0 VALUE tone_on
+: SND tone_on IF SOUND.STOP 0 TO tone_on ELSE tone SOUND.PLAY 1 TO tone_on THEN ;
 
 : nop ;
 ' KEYpress DEFER get_key
@@ -111,10 +118,14 @@ B{ body_str 244 C, 245 C, 246 C, '#' C, 247 C, 248 C, '#' C, 249 C, 250 C, '#' C
 : test_wall  ( y x --  ) VRAM_yx@ is_wall  IF 1 TO crash THEN ;
 : test_body  ( y x --  ) VRAM_yx@ is_body  IF 2 TO crash THEN ;
 : test_tail  ( y x --  ) VRAM_yx@ is_tail  IF 2 TO crash THEN ;
-: test_fruit ( y x --  ) VRAM_yx@ is_fruit IF 1 TO grow is_demo IF place_fruit demo_score IF 1 +TO score THEN ELSE 1 +TO score THEN THEN ;
+: test_fruit ( y x --  ) VRAM_yx@ is_fruit IF 
+	0 TO tone_on tone_fruit TO tone SOUND.STOP tone SOUND.PLAY
+	1 TO grow 
+		is_demo IF place_fruit demo_score IF 1 +TO score THEN ELSE 1 +TO score THEN 
+	ELSE tone_norm TO tone THEN ;
 
 : move_head
-	speed WAIT hide_head
+	SND speed 2/ WAIT SND speed 2/ WAIT hide_head
 	hy hx hd ( body here )
 		hy hx ( new head )
 			hd get_key key_to_dir ( dir )
@@ -153,6 +164,7 @@ B{ body_str 244 C, 245 C, 246 C, '#' C, 247 C, 248 C, '#' C, 249 C, 250 C, '#' C
 		crash 3 <> IF score 5 > IF 1 +TO numscore score +TO sumscore score minscore < IF score TO minscore THEN THEN THEN
 		show_score
 		3 7 CUR_yx $D8 ROW_COLOR SPACE crash 1 = IF  ." * Avoid Walls ! *" ELSE crash 2 = IF ." * Avoid yourself ! *" ELSE ." * Avoid users ! * "  THEN THEN SPACE
+		SOUND.STOP tone_fail SOUND.PLAY 40 WAIT SOUND.STOP
 	;
 ( DEMO words )
 

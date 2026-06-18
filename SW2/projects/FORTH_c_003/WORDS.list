@@ -304,7 +304,7 @@ DEFWORD w_SEMICOLON,		FLG_IMMEDIATE,	";",			f_SEMICOLON		; (  --  ) ends colon d
 DEFWORD w_SET_CURRENT,		0,		"SET-CURRENT",		f_docol, yes		; ( wid -- ) set current wordlist : SET-CURRENT ( wid -- ) TCB_WL_CURRENT ! ;
 DEFWORD w_SHOW,			0,		"SHOW",			f_SHOW			; ( xt --  ) shows word [xxxx]
 DEFWORD w_SOUND_PLAY,		0,		"SOUND.PLAY",		f_SOUND_PLAY		; ( NOTE_A4  --  ) start sound with this divisor
-DEFWORD w_SOUND_STOP,		0,		"SOUND.STOP",		f_SOUND_STOP		; (  --  ) stop playing sound 
+DEFWORD w_SOUND_STOP,		0,		"SOUND.STOP",		f_SOUND_STOP		; (  --  ) stop playing sound
 DEFWORD w_SPACE,		0,		"SPACE",		f_SPACE		; (  -- ) push and EMIT SPACE
 DEFWORD w_SWAP,			0,		"SWAP",			f_SWAP			; ( a b -- b a ) SWAP top two stack items
 DEFWORD w_SWAP2,		0,		"SWAP2",		f_SWAP2			; ( a b c d -- c d b a ) SWAP top two pairs of stack items
