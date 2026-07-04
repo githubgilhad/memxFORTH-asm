@@ -7,12 +7,14 @@ HEADLESS
 1 VALUE demo_score
 0 VALUE demo_max_score
 
-NOTE_A4 VALUE tone
 NOTE_A5 VALUE tone_fruit
 NOTE_A4 VALUE tone_norm
-NOTE_C4 2/ VALUE tone_fail
+NOTE_C4 4/ VALUE tone_fail
+tone_norm VALUE tone
 0 VALUE tone_on
-: SND tone_on IF SOUND.STOP 0 TO tone_on ELSE tone SOUND.PLAY 1 TO tone_on THEN ;
+0 VALUE sound_on
+
+: SND sound_on IF tone_on IF SOUND.STOP 0 TO tone_on ELSE tone SOUND.PLAY 1 TO tone_on THEN THEN ;
 
 : nop ;
 ' KEYpress DEFER get_key
@@ -119,7 +121,7 @@ B{ body_str 244 C, 245 C, 246 C, '#' C, 247 C, 248 C, '#' C, 249 C, 250 C, '#' C
 : test_body  ( y x --  ) VRAM_yx@ is_body  IF 2 TO crash THEN ;
 : test_tail  ( y x --  ) VRAM_yx@ is_tail  IF 2 TO crash THEN ;
 : test_fruit ( y x --  ) VRAM_yx@ is_fruit IF 
-	0 TO tone_on tone_fruit TO tone SOUND.STOP tone SOUND.PLAY
+	0 TO tone_on tone_fruit TO tone SOUND.STOP sound_on IF tone SOUND.PLAY THEN
 	1 TO grow 
 		is_demo IF place_fruit demo_score IF 1 +TO score THEN ELSE 1 +TO score THEN 
 	ELSE tone_norm TO tone THEN ;
@@ -164,7 +166,7 @@ B{ body_str 244 C, 245 C, 246 C, '#' C, 247 C, 248 C, '#' C, 249 C, 250 C, '#' C
 		crash 3 <> IF score 5 > IF 1 +TO numscore score +TO sumscore score minscore < IF score TO minscore THEN THEN THEN
 		show_score
 		3 7 CUR_yx $D8 ROW_COLOR SPACE crash 1 = IF  ." * Avoid Walls ! *" ELSE crash 2 = IF ." * Avoid yourself ! *" ELSE ." * Avoid users ! * "  THEN THEN SPACE
-		SOUND.STOP tone_fail SOUND.PLAY 40 WAIT SOUND.STOP
+		SOUND.STOP sound_on IF one_fail SOUND.PLAY 40 WAIT THEN SOUND.STOP
 	;
 ( DEMO words )
 
