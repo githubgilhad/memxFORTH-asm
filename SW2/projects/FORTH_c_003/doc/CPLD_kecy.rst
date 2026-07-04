@@ -108,7 +108,7 @@ Memory Regions generuje ATF1 a vypadaji takto:
 	 +---------------+---------------+-----------------------------------------+
 	 |   0100	 | A020..A0FF	 | Memory mapped devices [1..7] x 32 B     |
 	 +---------------+---------------+-----------------------------------------+
-	 |   0011	 | A100..FFFF	 | Native RAM ~ ROM 23.75K                 |
+	 |   0011	 | A100..FFFF	 | Native ROM 23.75K                       |
 	 +---------------+---------------+-----------------------------------------+
 
 Typ se predava ATF2, aby nepotrebovalo CA[0..15] pro detekci.
