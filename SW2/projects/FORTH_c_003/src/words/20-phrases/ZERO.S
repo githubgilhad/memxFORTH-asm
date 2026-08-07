@@ -29,3 +29,20 @@ gfunc f_minus_one	; {{{ #
 	rjmp NEXT
 	; }}}
 
+.macro	PUSHXxx start,stop	; {{{ save registers from start to stop iclusive
+	.set __reg, \start
+	.rept (\stop - \start + 1)
+		push __reg
+		.set __reg, __reg + 1
+	.endr
+.endm	; }}}
+.macro	POPXxx	 start,stop ; {{{ load registers from start to stop iclusive
+	.set __reg, \stop
+	.rept (\stop - \start + 1)
+		pop __reg
+		.set __reg, __reg - 1
+	.endr
+.endm	; }}}
+
+PUSHXxx 1,30
+POPXxx 1,30

@@ -12,7 +12,7 @@ gfunc f_EXPORT	; {{{ #
 	call	C_export
 	POP_R0_R31
 	PopST	TOS
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 gfunc f_SHOW	; {{{ #
 	PUSH_R0_R31
@@ -21,7 +21,7 @@ gfunc f_SHOW	; {{{ #
 	call	C_show
 	POP_R0_R31
 	PopST	TOS
-	rjmp NEXT
+	jmp NEXT
 ; }}}
 
 
