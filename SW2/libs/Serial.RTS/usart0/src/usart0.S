@@ -161,6 +161,7 @@ usart0_setup:		; destroy r24 {{{
 	cbi _SFR_IO_ADDR(RTS_PORT(PORT)), RTS_PIN	   ; výchozí: RTS = 0 (můžeme přijímat)
 
 	; CTS pin jako vstup
+	; Nastavení PB4 jako vstupu (pokud už není)
 	cbi _SFR_IO_ADDR(CTS_PORT(DDR)), CTS_PIN
 	sbi _SFR_IO_ADDR(CTS_PORT(PORT)), CTS_PIN	   ; pull-up
 
@@ -174,6 +175,17 @@ usart0_setup:		; destroy r24 {{{
 ;	sbis _SFR_IO_ADDR(CTS_PORT(PIN)), CTS_PIN	; CTS check – if is low, we can send so no need for INT
 ;	cbi _SFR_IO_ADDR(EIMSK), INT3      ; zakazat INT3
 
+
+	; Povolení Pin Change Interruptu pro PB4
+	; PCMSK0 registrem vybíráme, které piny z Portu B budou generovat interrupt
+	lds r24, PCMSK0
+	ori r24, (1 << PCINT4) ; Bit 4 odpovídá PB4
+	sts PCMSK0, r24
+
+	; Povolení celé skupiny PCINT0 (Port B) v globálním registru PCICR
+	; lds r24, PCICR
+	; ori r24, (1 << PCIE0)  ; Povolit PCINT0_vect (az kdyz bude potreba)
+	; sts PCICR, r24
 	ret
 ; === }}}
 
@@ -271,7 +283,10 @@ USART0_UDRE_ISR:
 	rjmp TX_send		; yes, we can
 				; no we cannot - disable USART0_UDRE_ISR, enable CTS_PIN INTR
 	
-;	sbi _SFR_IO_ADDR(EIMSK), INT3      ; povolit INT3
+	; Povolení celé skupiny PCINT0 (Port B) v globálním registru PCICR
+	lds r24, PCICR
+	ori r24, (1 << PCIE0)  ; Povolit PCINT0_vect (az kdyz bude potreba)
+	sts PCICR, r24
 ; USART0_UDRE_ISR_disable:
 	push r16
 	lds r16, UCSR0B		; disable us
@@ -316,18 +331,27 @@ TX_send:
 	IRQ_pop_entry
 	reti
 ; === }}}
-; === INT0_ISR - reti now, FIXME {{{
-.global INT0_ISR
-INT0_ISR:	; called when CTS is low and send is still blocked
-reti
+; === PCINT0 Pin Changed PB0..PB7 {{{
+.global __vector_9
+__vector_9:
+
+.global PCINT0_ISR
+PCINT0_ISR:
+	; called when CTS is low and send is still blocked (check this)
 	IRQ_push_entry
-	cbi _SFR_IO_ADDR(EIMSK), INT3      ; zakazat INT3
+	sbic _SFR_IO_ADDR(PINB), 4 ; Skip if Bit in I/O register is Clear (CTS is low)
+	rjmp .L_PCINT0_exit        ; Pokud je 1 (Set), je stále zakázán, snad příště ...
+	lds r24, PCICR
+	andi r24, ~(1 << PCIE0)  
+	sts PCICR, r24
+	;
 	push r16
 	lds r16, UCSR0B		; enable TX
 	ori r16, (1 << UDRIE0)
 	sts UCSR0B, r16
 
 	pop r16
+.L_PCINT0_exit:
 	IRQ_pop_entry
 	reti
 

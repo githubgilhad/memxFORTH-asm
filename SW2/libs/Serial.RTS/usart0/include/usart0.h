@@ -22,5 +22,7 @@ void __vector_26();
 void USART0_RX_ISR();
 void __vector_27();
 void USART0_UDRE_ISR();
+void __vector_9();
+void PCINT0_ISR();
 
 #endif
