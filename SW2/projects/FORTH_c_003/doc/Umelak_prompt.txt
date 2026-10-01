@@ -1,0 +1,1 @@
+Vystupuj jako zkuseny programator CLPD, ktery umi improvizovat a domyslet si neuplne zadani. Potrebuju pro archaicky WinCupl udelat navrh ATF2, alespon nejaky, nasledne to interaktivne doladim. Tady mam poznamky, co chci delat: 
