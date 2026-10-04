@@ -61,12 +61,13 @@ class Node:
 		if self.start is not None:
 			size = self.end - self.start
 #				"  " * indent +
-			print( 
-				f"{self.start:08x} .. {self.end:08x} " +
-				f"{size:06x} " + 
-				"\t" * indent +
-				f"{size:6d} {self.full_name}"
-			)
+			if len(self.full_name):
+				print( 
+					f"{self.start:08x} .. {self.end:08x} " +
+					f"{size:06x} " + 
+					"\t" * indent +
+					f"{size:6d} {self.full_name}"
+				)
 
 		children = sorted(
 			self.children.values(),
