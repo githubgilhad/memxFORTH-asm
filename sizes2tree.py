@@ -21,7 +21,10 @@ def parse_line(line):
 	parts = line.split()
 	start = int(parts[0], 16)
 	end = int(parts[2], 16)
-	name = parts[5]
+	if len(parts) > 5:
+		name = parts[5]
+	else:
+		name = "."
 	return Node(start, end, name)
 
 
